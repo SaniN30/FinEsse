@@ -60,6 +60,8 @@ create policy quiz_attempts_select on quiz_attempts
   for select
   using (is_own_or_linked_profile(profile_id));
 
-create policy quiz_attempts_insert on quiz_attempts
-  for insert
-  with check (profile_id = auth.uid());
+-- No insert/update/delete policy for `authenticated`: attempts are written
+-- exclusively by the security-definer grade_quiz_attempt() function, which
+-- runs as the table owner and is not subject to policies scoped to
+-- `authenticated`. Adding a self-insert policy here would let a student
+-- bypass grading and fabricate a passing score/answers directly.
