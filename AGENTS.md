@@ -24,15 +24,18 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   content (roles reference table, modeling exercises + rubric-graded submissions), and the
   Phase 5 AI Interview Coach (question bank, submission RPC, Gemini-based rubric-scoring
   Edge Function) are documented in `BACKEND.md` — read it before touching `supabase/` or
-  writing any frontend code that talks to the backend.
+  writing any frontend code that talks to the backend. Phase 5 has no audio/speech-to-text
+  pipeline (transcript is plain text input).
 
 ## Auth / consent frontend (Phase 6)
 
-- Supabase browser client: `lib/supabase/client.ts`, reading
+- Supabase browser client: `lib/supabase/client.ts` (exports the `supabase` singleton
+  and a `getSupabaseClient()` accessor for the same instance), reading
   `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` from `.env.local`
   (gitignored — populate from your own Supabase project credentials, never commit
   them). Session state lives in `lib/supabase/auth-context.tsx`
-  (`AuthProvider`/`useAuth`), mounted once in `app/layout.tsx`.
+  (`AuthProvider`/`useAuth`), mounted once in `app/layout.tsx` — this is the only
+  auth context; don't create a parallel one.
 - Routes: `/signup`, `/login` (parent), `/consent`, `/create-student`,
   `/student-login`, `/dashboard` — implements Flow A from
   `data/finesse-uiux-planning/report.md` §3. There is deliberately no
@@ -53,6 +56,18 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   `tests/integration/` suite (vitest against the live/local Supabase project,
   run via `npm run test:integration`), which already covers the backend
   consent gate end-to-end.
+
+## School lesson→quiz→XP loop and Pocket Money Planner (Phase 7)
+
+- Mastery/XP/balances are always fetched live from the `skill_mastery`/`xp_events`/
+  `account_balances`/`savings_goal_progress` views per `BACKEND.md`'s "derive on read"
+  principle — never cache a computed level/balance client-side. School lesson→quiz→XP UI
+  lives under `app/school/` + `components/school/`; the Pocket Money Planner lives in
+  `components/PocketMoneyPlanner.tsx` + `components/pocket-money/`.
+- Its component tests live alongside Phase 6's in `tests/components/` (plural — a second
+  spec directory covered by the same `vitest.config.component.ts` and
+  `npm run test:component`), with its own `tests/components/setup.ts` adding an
+  `IntersectionObserver` mock for framer-motion's `whileInView`.
 
 ## Maintaining this file
 
