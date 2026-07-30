@@ -6,8 +6,6 @@ import { useAuth } from "@/lib/supabase/auth-context";
 import { RoleCard } from "@/components/roles/RoleCard";
 import type { Role, SkillMastery } from "@/lib/supabase/types";
 
-const MASTERY_THRESHOLD_FALLBACK = 0.8;
-
 export function RoleExplorerGrid() {
   const { profile } = useAuth();
   const [roles, setRoles] = useState<Role[] | null>(null);
@@ -32,16 +30,28 @@ export function RoleExplorerGrid() {
 
       if (!profile) return;
 
-      const { data: masteryRows } = await supabase
-        .from("skill_mastery")
-        .select("skill_id, attempts_considered, rolling_accuracy")
-        .eq("profile_id", profile.id);
+      const [{ data: masteryRows }, { data: skillRows }] = await Promise.all([
+        supabase
+          .from("skill_mastery")
+          .select("skill_id, attempts_considered, rolling_accuracy")
+          .eq("profile_id", profile.id),
+        supabase.from("skills").select("id, mastery_threshold"),
+      ]);
 
       if (!isMounted || !masteryRows) return;
 
+      const thresholdBySkillId = new Map<string, number>(
+        (skillRows ?? []).map((skill: { id: string; mastery_threshold: number }) => [
+          skill.id,
+          skill.mastery_threshold,
+        ]),
+      );
+
       const mastered = new Set<string>(
         (masteryRows as SkillMastery[])
-          .filter((row) => row.rolling_accuracy >= MASTERY_THRESHOLD_FALLBACK)
+          .filter(
+            (row) => row.rolling_accuracy >= (thresholdBySkillId.get(row.skill_id) ?? 0.8),
+          )
           .map((row) => row.skill_id),
       );
       setMasteredSkillIds(mastered);
