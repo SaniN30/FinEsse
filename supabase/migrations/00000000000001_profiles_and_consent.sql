@@ -46,6 +46,12 @@ alter table parental_consents
 create index idx_profiles_parent_id on profiles (parent_id);
 create index idx_parental_consents_parent_id on parental_consents (parent_id);
 
+-- Each parental consent record is explicit, per-child consent and may be
+-- used to create at most one student login.
+create unique index idx_profiles_consent_id_unique
+  on profiles (consent_id)
+  where consent_id is not null;
+
 create or replace function enforce_student_consent()
 returns trigger
 language plpgsql
