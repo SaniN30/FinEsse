@@ -112,6 +112,19 @@ export async function createStudentAccount(
   return { status: res.status, body };
 }
 
+export async function scoreInterviewSession(accessToken: string, sessionId: string) {
+  const res = await fetch(`${SUPABASE_URL}/functions/v1/score-interview-session`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ session_id: sessionId }),
+  });
+  const body = await res.json();
+  return { status: res.status, body };
+}
+
 export async function signInStudent(email: string, pin: string) {
   const client = anonClient();
   const { data, error } = await client.auth.signInWithPassword({ email, password: pin });

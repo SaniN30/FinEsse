@@ -283,10 +283,15 @@ never computed or accepted from the client. Execute is granted to
 
 #### Scoring: `score-interview-session` Edge Function
 
-Takes `{ session_id }`, calls the Claude API with a fixed rubric system
-prompt (STAR structure, clarity, filler-word count — constrained to a
-structured JSON response, not free prose) and writes the result onto
-`interview_sessions.rubric_scores`. The rubric prompt is deliberately framed
+Takes `{ session_id }`, calls the Gemini API (`gemini-flash-latest`,
+`generateContent` with `responseMimeType: "application/json"`) with a fixed
+rubric system prompt (STAR structure, clarity, filler-word count —
+constrained to a structured JSON response, not free prose) and writes the
+result onto `interview_sessions.rubric_scores`. Gemini rather than Claude
+because it's the provider with a usable free tier for this project's
+budget — the fixed-rubric JSON-output approach is provider-agnostic, so
+swapping the underlying call needed no schema/RLS changes; only the HTTP
+call and the env var name changed. The rubric prompt is deliberately framed
 as self-practice coaching, never "pass/fail" or "you failed" language,
 consistent with the AI coach's "practice for you" positioning
 (`.lavish/finesse-plan.html` "AI Interview Prep"). On success it also
@@ -299,13 +304,16 @@ ownership — `session.profile_id !== user.id` is rejected even if RLS somehow
 let the row through) and the `rubric_scores` update / `xp_events` insert with
 the `service_role` key, because there is deliberately no self-update/
 self-insert policy for those (see RLS below) — this function is the only
-place allowed to write them. Reads `ANTHROPIC_API_KEY` from
-`Deno.env.get(...)` (a Supabase Edge Function secret) — never hardcoded.
+place allowed to write them. Reads `GEMINI_API_KEY` from
+`Deno.env.get(...)` (a Supabase Edge Function secret, set via
+`supabase secrets set`) — never hardcoded.
 
-**Status:** deployed, but the live-LLM path is untested — the linked Supabase
-project has no `ANTHROPIC_API_KEY` secret configured yet. Everything else
-(schema, seed, submission RPC + RLS) is migrated to the live project and
-covered by `tests/integration/interview-sessions.test.ts`.
+**Status:** deployed and verified live end-to-end — a real transcript
+submitted through `submit_interview_session`, scored via a live call to the
+Gemini API, with `rubric_scores` written and an `xp_events` row inserted,
+all covered by `tests/integration/interview-scoring.test.ts`. Schema, seed,
+and submission RPC + RLS are covered by
+`tests/integration/interview-sessions.test.ts`.
 
 ## Row Level Security
 
@@ -463,8 +471,15 @@ operator-facing deletion tool itself is out of scope for this phase.
   a linked parent can read (including the transcript) but cannot insert
   into a child's `interview_sessions` directly, and calling the submission
   RPC as the parent only ever creates a session owned by the parent, never
-  the child. The `score-interview-session` Edge Function's live-LLM path has
-  no test — the linked project has no `ANTHROPIC_API_KEY` secret yet.
+  the child.
+- `interview-scoring.test.ts` (Phase 5) — exercises the live-LLM path: a
+  submitted transcript is scored end-to-end by `score-interview-session`
+  against the real Gemini API, `rubric_scores` lands on the session row
+  matching the function's response, and an `xp_events` row is inserted with
+  a positive `xp_delta`; a student cannot score another student's session
+  (404 — RLS hides the row entirely, so there's nothing to compare
+  ownership against). Requires `GEMINI_API_KEY` configured as a Supabase
+  Edge Function secret on the linked project.
 
 All tests pass against a provisioned free-tier Supabase project (migrations
 applied with `supabase db push`, functions deployed with

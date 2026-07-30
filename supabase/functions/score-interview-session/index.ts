@@ -1,7 +1,10 @@
-// Scores a submitted interview transcript with the Claude API and writes
+// Scores a submitted interview transcript with the Gemini API and writes
 // the result back onto the session -- this is the one place a rubric score
 // for an interview session is ever computed. The client never supplies a
 // score, same principle as grade_quiz_attempt/grade_modeling_submission.
+// Gemini (not Claude) because the free tier is the only one available for
+// this project's budget -- same fixed-rubric JSON-output approach either
+// way, so swapping providers later needs no schema/RLS changes.
 //
 // The rubric prompt is deliberately framed as self-practice feedback (STAR
 // structure, clarity, filler-word count), never "pass/fail" or "you failed"
@@ -20,7 +23,7 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
 import { corsHeaders } from "../_shared/cors.ts";
 
-const CLAUDE_MODEL = "claude-sonnet-5";
+const GEMINI_MODEL = "gemini-flash-latest";
 
 const RUBRIC_SYSTEM_PROMPT = `You are a supportive interview-practice coach helping a student rehearse for a finance internship interview. This is self-practice, not a real interview and not a pass/fail evaluation -- frame all feedback as coaching for next time, never as "you failed" or a verdict on the student's worth. Be specific and encouraging.
 
@@ -51,34 +54,34 @@ async function scoreTranscript(
   questionText: string,
   transcript: string,
 ): Promise<RubricScores> {
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: RUBRIC_SYSTEM_PROMPT }] },
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: `Interview question: ${questionText}\n\nStudent's transcript:\n${transcript}` },
+            ],
+          },
+        ],
+        generationConfig: { responseMimeType: "application/json" },
+      }),
     },
-    body: JSON.stringify({
-      model: CLAUDE_MODEL,
-      max_tokens: 1024,
-      system: RUBRIC_SYSTEM_PROMPT,
-      messages: [
-        {
-          role: "user",
-          content: `Interview question: ${questionText}\n\nStudent's transcript:\n${transcript}`,
-        },
-      ],
-    }),
-  });
+  );
 
   if (!res.ok) {
-    throw new Error(`Claude API error: ${res.status} ${await res.text()}`);
+    throw new Error(`Gemini API error: ${res.status} ${await res.text()}`);
   }
 
   const data = await res.json();
-  const text = data.content?.[0]?.text;
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (typeof text !== "string") {
-    throw new Error("Claude API returned no text content");
+    throw new Error("Gemini API returned no text content");
   }
 
   return JSON.parse(text) as RubricScores;
@@ -100,9 +103,9 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: "session_id is required" }, 400);
     }
 
-    const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY");
-    if (!anthropicApiKey) {
-      return jsonResponse({ error: "ANTHROPIC_API_KEY is not configured" }, 500);
+    const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
+    if (!geminiApiKey) {
+      return jsonResponse({ error: "GEMINI_API_KEY is not configured" }, 500);
     }
 
     const callerClient = createClient(
@@ -146,7 +149,7 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: "interview question not found" }, 404);
     }
 
-    const rubricScores = await scoreTranscript(anthropicApiKey, question.question_text, session.transcript);
+    const rubricScores = await scoreTranscript(geminiApiKey, question.question_text, session.transcript);
 
     const admin = createClient(
       Deno.env.get("SUPABASE_URL")!,
