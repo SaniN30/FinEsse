@@ -26,16 +26,15 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   Edge Function) are documented in `BACKEND.md` — read it before touching `supabase/` or
   writing any frontend code that talks to the backend. Phase 5 has no audio/speech-to-text
   pipeline (transcript is plain text input).
+- Frontend data layer: `lib/supabase/client.ts` is the one browser Supabase client
+  singleton (`getSupabaseClient()`); `lib/supabase/auth-context.tsx` (`AuthProvider`/
+  `useAuth`, mounted once in `app/layout.tsx`) is the one session/profile listener. Any
+  new auth or data-fetching code should build on these rather than creating another
+  client instance. Needs `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY` (see
+  `.env.local`, gitignored).
 
 ## Auth / consent frontend (Phase 6)
 
-- Supabase browser client: `lib/supabase/client.ts` (exports the `supabase` singleton
-  and a `getSupabaseClient()` accessor for the same instance), reading
-  `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` from `.env.local`
-  (gitignored — populate from your own Supabase project credentials, never commit
-  them). Session state lives in `lib/supabase/auth-context.tsx`
-  (`AuthProvider`/`useAuth`), mounted once in `app/layout.tsx` — this is the only
-  auth context; don't create a parallel one.
 - Routes: `/signup`, `/login` (parent), `/consent`, `/create-student`,
   `/student-login`, `/dashboard` — implements Flow A from
   `data/finesse-uiux-planning/report.md` §3. There is deliberately no
@@ -68,6 +67,20 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   spec directory covered by the same `vitest.config.component.ts` and
   `npm run test:component`), with its own `tests/components/setup.ts` adding an
   `IntersectionObserver` mock for framer-motion's `whileInView`.
+
+## College-tier frontend (Phase 8)
+
+- College-tier screens live under `app/college/{lessons,quiz,roles,modeling}` and reuse
+  tier-agnostic components (`components/lessons`, `components/quiz`) built against the
+  School-tier schema (`lessons`/`quizzes`/`quiz_questions_public`/`grade_quiz_attempt`) —
+  the same components should be reused for School-tier screens rather than duplicated.
+  The Modeling exercise form (`components/modeling`) derives its numeric input fields
+  from the `{"key": <number>, ...}` convention every modeling exercise's `instructions`
+  text spells out (see `lib/modeling.ts`), since the rubric's keys are never exposed to
+  the client. `grade_modeling_submission`'s per-metric `metrics` breakdown (boolean per
+  key, no expected values) was added in
+  `supabase/migrations/00000000000022_grade_modeling_submission_metric_breakdown.sql`,
+  additive to Phase 4.
 
 ## Parent dashboard aggregate rollup (Phase 8)
 
