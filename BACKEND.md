@@ -230,7 +230,7 @@ operator-facing deletion tool itself is out of scope for this phase.
   record. This proves the consent gate is a DB-level invariant, not just an
   application-layer check.
 
-All 20 tests pass against a provisioned free-tier Supabase project (migrations
+All 21 tests pass against a provisioned free-tier Supabase project (migrations
 applied with `supabase db push`, functions deployed with
 `supabase functions deploy`). Test accounts are created via the Admin API
 (`auth.admin.createUser`) rather than the public sign-up flow, since the
