@@ -249,11 +249,63 @@ exercise (a revenue-growth projection) on the Financial Statement Modeling
 skill; 6 `roles` cards (investment banking analyst, quant, risk analyst,
 ops analyst, fintech PM, equity research associate).
 
-### `interview_sessions`
+### AI Interview Coach: `interview_questions`, `interview_sessions` (Phase 5)
 
-`profile_id`, `firm_style`, `transcript` (jsonb), `rubric_scores` (jsonb).
-Structure intentionally loose (jsonb) since the interview rubric/format is
-still evolving in later phases.
+Backend/data only — no frontend UI, and no audio pipeline (MediaRecorder/
+speech-to-text wiring is a later phase alongside the eventual frontend
+pass). A session's `transcript` is plain text, already transcribed
+client-side or by a later Edge Function by the time it reaches this layer.
+
+`interview_questions` — shared reference content (like `skills`/`roles`),
+not tier-gated: `firm_style` (e.g. `JPMorgan Chase`, `Goldman Sachs`,
+`Morgan Stanley`), `question_text`, `category` (`behavioral` \|
+`technical`), `published`. Seeded with 9 real early-career finance
+interview questions across those 3 firm styles
+(`00000000000019_seed_interview_questions.sql`).
+
+`interview_sessions` (table declared in Phase 1, migration 004) — `profile_id`,
+`question_id` (added in migration 020, FK to `interview_questions`),
+`firm_style` (denormalized from the question at submission time),
+`transcript` (retyped from `jsonb` to `text` in migration 020 — Phase 1
+declared it speculatively before this phase's shape was known; the table
+had no production data yet), `rubric_scores` (`jsonb`, `{}` until scored).
+
+#### Submission: `submit_interview_session(p_question_id, p_transcript)`
+
+`SECURITY DEFINER`, same principle as `grade_quiz_attempt`/
+`grade_modeling_submission`: identifies the student from `auth.uid()`, never
+a client-supplied `profile_id`, so a student can only ever submit a session
+as themselves. Validates the transcript is non-empty and the question exists
+and is `published`, looks up `firm_style` from the question, and inserts one
+`interview_sessions` row with `rubric_scores` left at its column default —
+never computed or accepted from the client. Execute is granted to
+`authenticated` only.
+
+#### Scoring: `score-interview-session` Edge Function
+
+Takes `{ session_id }`, calls the Claude API with a fixed rubric system
+prompt (STAR structure, clarity, filler-word count — constrained to a
+structured JSON response, not free prose) and writes the result onto
+`interview_sessions.rubric_scores`. The rubric prompt is deliberately framed
+as self-practice coaching, never "pass/fail" or "you failed" language,
+consistent with the AI coach's "practice for you" positioning
+(`.lavish/finesse-plan.html` "AI Interview Prep"). On success it also
+inserts an `xp_events` row (`source = 'interview_session'`, already a valid
+source from Phase 1) so a completed practice session contributes to the
+mastery graph like any other activity.
+
+Runs the read as the calling student (forwarded JWT, so ordinary RLS proves
+ownership — `session.profile_id !== user.id` is rejected even if RLS somehow
+let the row through) and the `rubric_scores` update / `xp_events` insert with
+the `service_role` key, because there is deliberately no self-update/
+self-insert policy for those (see RLS below) — this function is the only
+place allowed to write them. Reads `ANTHROPIC_API_KEY` from
+`Deno.env.get(...)` (a Supabase Edge Function secret) — never hardcoded.
+
+**Status:** deployed, but the live-LLM path is untested — the linked Supabase
+project has no `ANTHROPIC_API_KEY` secret configured yet. Everything else
+(schema, seed, submission RPC + RLS) is migrated to the live project and
+covered by `tests/integration/interview-sessions.test.ts`.
 
 ## Row Level Security
 
@@ -290,6 +342,24 @@ written exclusively by the `SECURITY DEFINER` `grade_modeling_submission()`
 function, deliberately with no self-insert policy, so a student can't
 fabricate a passing score directly. `roles` has one `select` policy
 (published + authenticated) and no write policy for `authenticated` at all.
+
+`interview_questions` (Phase 5) has one `select` policy (published +
+authenticated) and no write policy for `authenticated` at all, same pattern
+as `roles`.
+
+`interview_sessions` (Phase 5 tightening) has a `select`-only policy
+(`is_own_or_linked_profile`, unchanged from Phase 1) — a linked parent gets
+read visibility including the raw transcript, since it isn't sensitive
+financial data, mirroring the "visibility, not control" posture already
+applied to `quiz_attempts`/`modeling_submissions`. The Phase 1 `insert`/
+`update` policies were dropped, because both used
+`is_own_or_linked_profile`, which let a linked parent create or edit a
+child's session directly. There is no `insert`/`update` policy for
+`authenticated` at all now: rows are written exclusively by
+`submit_interview_session()` (insert, always `profile_id = auth.uid()` —
+even a parent calling it only ever creates a session for themselves) and the
+`score-interview-session` Edge Function (update, via `service_role`, which
+bypasses RLS entirely).
 
 `accounts`/`transactions`/`postings` (Phase 3 tightening): `select` still
 uses `is_own_or_linked_profile`/`is_own_or_linked_account`, so a linked
@@ -387,6 +457,14 @@ operator-facing deletion tool itself is out of scope for this phase.
   `modeling_exercises_public`; `roles` is readable by any authenticated
   user, unreadable to an anonymous client, and not writable by a
   non-service-role client.
+- `interview-sessions.test.ts` (Phase 5) — `submit_interview_session`
+  creates a session row owned by the submitting student, rejects an empty
+  transcript; a student cannot read another student's `interview_sessions`;
+  a linked parent can read (including the transcript) but cannot insert
+  into a child's `interview_sessions` directly, and calling the submission
+  RPC as the parent only ever creates a session owned by the parent, never
+  the child. The `score-interview-session` Edge Function's live-LLM path has
+  no test — the linked project has no `ANTHROPIC_API_KEY` secret yet.
 
 All tests pass against a provisioned free-tier Supabase project (migrations
 applied with `supabase db push`, functions deployed with
