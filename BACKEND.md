@@ -154,12 +154,16 @@ RLS check and parent-dashboard query filters on it.
 `lessons`/`quizzes` are readable by any authenticated user whose own
 `profiles.tier` matches the underlying skill's tier, once `published`.
 `quiz_questions` has no policies at all (see above — read via
-`quiz_questions_public` instead). `quiz_attempts` is append-only: a student
-can read/insert only their own rows (`is_own_or_linked_profile` for select,
-a stricter `profile_id = auth.uid()` for insert so a parent cannot write on
-a child's behalf); a linked parent can read (not write) a child's attempts —
-visibility, not control, consistent with the consumer-research finding
-already reflected in Phase 1's consent model.
+`quiz_questions_public` instead). `quiz_attempts` is append-only and has a
+`select` policy only (`is_own_or_linked_profile`) — no `insert`/`update`/
+`delete` policy for `authenticated` at all. Rows are written exclusively by
+the `SECURITY DEFINER` `grade_quiz_attempt()` function (below), which runs
+as the table owner and bypasses `authenticated`-scoped policies; a
+self-insert policy was deliberately rejected because it would let a student
+bypass grading and fabricate a passing score/answers directly. A linked
+parent can read (not write) a child's attempts — visibility, not control,
+consistent with the consumer-research finding already reflected in Phase 1's
+consent model.
 
 ## Auth / consent flow (COPPA + GDPR-K)
 
