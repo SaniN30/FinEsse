@@ -80,6 +80,57 @@ banking integration.
   `postings` — it validates at `COMMIT`, not per-row, so the several postings
   that make up one transaction can be inserted across statements within the
   same DB transaction before the zero-sum check runs.
+- `accounts.target_amount_cents` (Phase 3) is only meaningful for
+  `type = 'savings_goal'`; null for wallets.
+
+#### Pocket Money Planner: savings-goal RPCs (Phase 3)
+
+Three `SECURITY DEFINER` RPCs
+(`supabase/migrations/00000000000011_savings_goals.sql`), same pattern as
+Phase 2's `grade_quiz_attempt` — each identifies the caller from
+`auth.uid()`, never a client-supplied `profile_id`, and verifies any goal
+account referenced actually belongs to that caller before touching it:
+
+- `create_savings_goal(p_name, p_target_amount_cents)` — opens an `accounts`
+  row of `type = 'savings_goal'` for the calling student, returns the new
+  account id.
+- `deposit_to_savings_goal(p_goal_account_id, p_amount_cents, p_description)`
+  — posts a balanced `transaction` moving funds from the student's own
+  `student_wallet` into their own `savings_goal` account. Lazily creates the
+  wallet (`get_or_create_student_wallet`) if the student doesn't have one
+  yet, since no other path provisions one.
+- `withdraw_from_savings_goal(p_goal_account_id, p_amount_cents, p_description)`
+  — posts a balanced `transaction` moving funds back out, rejecting an
+  amount greater than the goal's current balance. This is the student's own
+  "my choice" autonomy zone per the plan's Tone & Trust Principles: the
+  student, not the parent, authorizes withdrawal, so there is no
+  parent-approval gate on either deposits or withdrawals — same
+  visibility-not-control posture already used for parent access to a
+  child's `quiz_attempts` (Phase 2).
+
+All amounts are integer cents, matching `postings.amount_cents`.
+
+#### Progress calculation
+
+No stored balance column (same "derive on read" principle as `skill_mastery`
+and total XP) — two `security_invoker` views compute it from `postings`:
+
+- `account_balances` — `account_id`, `profile_id`, `type`, `name`,
+  `target_amount_cents`, `balance_cents` (signed sum of that account's
+  postings) for every account.
+- `savings_goal_progress` — the same, filtered to `type = 'savings_goal'`,
+  plus `percent_complete` (`balance_cents / target_amount_cents * 100`,
+  capped at 100, null if there's no target).
+
+Both views are declared `with (security_invoker = true)`. This matters
+because migrations run as the `postgres` role, which has `BYPASSRLS` in
+Supabase — an ordinary (`security_invoker = false`) view owned by `postgres`
+would run with the owner's privileges and silently bypass the
+`accounts`/`postings` RLS policies below, leaking every account to every
+caller. `security_invoker = true` makes the view evaluate RLS as the calling
+user instead, the opposite of `quiz_questions_public`'s deliberate
+owner-bypass (which exists specifically to hide one column, not to open up
+row visibility).
 
 ### School-tier content: `lessons`, `quizzes`, `quiz_questions`, `quiz_attempts`
 
@@ -165,6 +216,21 @@ parent can read (not write) a child's attempts — visibility, not control,
 consistent with the consumer-research finding already reflected in Phase 1's
 consent model.
 
+`accounts`/`transactions`/`postings` (Phase 3 tightening): `select` still
+uses `is_own_or_linked_profile`/`is_own_or_linked_account`, so a linked
+parent can read a child's savings-goal accounts and transactions. `insert`/
+`update` on `accounts`, and `insert` on `postings`, were tightened from
+"self or linked profile/account" to self-only (`profile_id = auth.uid()` /
+resolved through the owning account) — a parent could otherwise open,
+rename, or post transactions against a child's savings goal directly,
+bypassing the RPCs' student-only checks. `transactions.insert` was already
+self-only (`created_by = auth.uid()`). The savings-goal RPCs remain the only
+way funds move, and they're `SECURITY DEFINER` so they aren't affected by
+this tightening — they run as the function owner and enforce
+`profile_id = auth.uid()` themselves before touching any account.
+consistent with the consumer-research finding already reflected in Phase 1's
+consent model.
+
 ## Auth / consent flow (COPPA + GDPR-K)
 
 There is no independent student sign-up. The flow is:
@@ -229,8 +295,15 @@ operator-facing deletion tool itself is out of scope for this phase.
   trigger, both for a missing `consent_id` and for a `consent_given = false`
   record. This proves the consent gate is a DB-level invariant, not just an
   application-layer check.
+- `savings-goals.test.ts` — deposit increases the goal balance and decreases
+  the student wallet (and the transaction nets to zero, verified via
+  `account_balances`/`savings_goal_progress`); withdrawal reverses it; an
+  over-large withdrawal is rejected; a student cannot deposit into or
+  withdraw from another student's goal; a linked parent can read a child's
+  savings-goal account/transactions/progress but cannot write to the
+  account or call the deposit RPC on the child's behalf.
 
-All 21 tests pass against a provisioned free-tier Supabase project (migrations
+All tests pass against a provisioned free-tier Supabase project (migrations
 applied with `supabase db push`, functions deployed with
 `supabase functions deploy`). Test accounts are created via the Admin API
 (`auth.admin.createUser`) rather than the public sign-up flow, since the
