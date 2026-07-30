@@ -1,4 +1,4 @@
-# FinEsse Backend (Phase 1)
+# FinEsse Backend (Phase 1 + Phase 2)
 
 Data layer and auth on Supabase (Postgres + Auth + Edge Functions), scoped to
 fit entirely within Supabase's free tier. No frontend UI ships in this phase —
@@ -81,6 +81,55 @@ banking integration.
   that make up one transaction can be inserted across statements within the
   same DB transaction before the zero-sum check runs.
 
+### School-tier content: `lessons`, `quizzes`, `quiz_questions`, `quiz_attempts`
+
+Phase 2. Lessons and quizzes are shared reference content (like `skills`),
+not per-student rows; `quiz_attempts` is the per-student append-only log.
+
+- `lessons` belongs to a `skill` (`skill_id`), has a `content_type`
+  (`article` \| `video` \| `interactive`), `content_url` and/or
+  `content_body`, an `order_index`, and a `published` flag.
+- `quizzes` belongs to a `skill` and/or a `lesson` (at least one required),
+  with a `pass_threshold` (default 0.8) and `published` flag.
+  `quiz_skill_id(quiz_id)` resolves which skill a quiz should award mastery
+  against, whether the quiz hangs off a skill directly or off one of that
+  skill's lessons.
+- `quiz_questions` holds `question`, `options` (jsonb), `correct_answer`,
+  and `order_index`. **`correct_answer` is never exposed to clients** —
+  `quiz_questions` has RLS enabled with zero select policies (default deny
+  to every non-service-role caller), so the only readable surface is the
+  `quiz_questions_public` view (`id`, `quiz_id`, `question`, `options`,
+  `order_index`), which is owned by the migration role and therefore reads
+  through as that owner, bypassing the base table's RLS for just those
+  columns. Only the grading function below reads `correct_answer` directly.
+- `quiz_attempts` (`profile_id`, `quiz_id`, `score`, `passed`, `answers`,
+  `attempted_at`) is append-only, same pattern as `skill_attempts`/`xp_events`.
+- `xp_events.source` gained a `'quiz_attempt'` value alongside Phase 1's
+  `skill_attempt` \| `interview_session` \| `bonus`.
+
+#### Auto-grading: `grade_quiz_attempt(p_quiz_id, p_answers)`
+
+A `SECURITY DEFINER` Postgres RPC (`supabase/migrations/00000000000008_grade_quiz_attempt.sql`),
+called directly via `supabase-js`'s `.rpc()` — no Edge Function needed since
+grading only needs `auth.uid()`, not the Auth Admin API.
+
+- Identifies the student from `auth.uid()`, never a client-supplied
+  `profile_id` — a student can only ever grade an attempt as themselves.
+- `p_answers` is a jsonb array of `{"question_id": uuid, "answer": text}`.
+  The score is always computed here from `quiz_questions.correct_answer`;
+  any other fields the client includes (a submitted `score`, `passed`, etc.)
+  are ignored — same "never trust client-submitted XP/score" principle as
+  Phase 1's derived XP rollups.
+- Always inserts one `quiz_attempts` row. If `score >= pass_threshold`, also
+  inserts a `skill_attempts` row (`is_correct = true`, resolved skill via
+  `quiz_skill_id`) and an `xp_events` row (`source = 'quiz_attempt'`,
+  `source_id` = the new attempt id) — mirroring Phase 1's mastery-graph
+  pattern where XP/mastery is always a derived write from a scoring event,
+  never trusted from the client directly.
+- `SECURITY DEFINER` is required specifically so this function can read
+  `quiz_questions.correct_answer`, which regular callers cannot. Execute is
+  granted to `authenticated` only (revoked from `public`).
+
 ### `interview_sessions`
 
 `profile_id`, `firm_style`, `transcript` (jsonb), `rubric_scores` (jsonb).
@@ -101,6 +150,16 @@ RLS check and parent-dashboard query filters on it.
 
 `skill_attempts` and `xp_events` only have `select`/`insert` policies (no
 `update`/`delete`) to keep them genuinely append-only.
+
+`lessons`/`quizzes` are readable by any authenticated user whose own
+`profiles.tier` matches the underlying skill's tier, once `published`.
+`quiz_questions` has no policies at all (see above — read via
+`quiz_questions_public` instead). `quiz_attempts` is append-only: a student
+can read/insert only their own rows (`is_own_or_linked_profile` for select,
+a stricter `profile_id = auth.uid()` for insert so a parent cannot write on
+a child's behalf); a linked parent can read (not write) a child's attempts —
+visibility, not control, consistent with the consumer-research finding
+already reflected in Phase 1's consent model.
 
 ## Auth / consent flow (COPPA + GDPR-K)
 
@@ -151,6 +210,14 @@ operator-facing deletion tool itself is out of scope for this phase.
   student's or their parent's own row.
 - `ledger-balance.test.ts` — unbalanced postings are rejected at commit,
   balanced postings succeed.
+- `quiz-grading.test.ts` — an all-correct submission passes and awards a
+  `skill_attempts` row + XP; a below-threshold submission does neither; a
+  client cannot force a pass by adding a fabricated `score`/`passed` field to
+  its answers; a student cannot read or insert another student's
+  `quiz_attempts`; a linked parent can read but not insert a child's
+  `quiz_attempts`; `correct_answer` is unreadable through the base
+  `quiz_questions` table but question/options are readable via
+  `quiz_questions_public`.
 - `consent-gate.test.ts` — `create-student-account` rejects a fabricated
   consent id, rejects another parent's consent record, and — critically — a
   **direct `service_role` insert into `profiles`** bypassing the Edge
@@ -159,7 +226,7 @@ operator-facing deletion tool itself is out of scope for this phase.
   record. This proves the consent gate is a DB-level invariant, not just an
   application-layer check.
 
-All 12 tests pass against a provisioned free-tier Supabase project (migrations
+All 20 tests pass against a provisioned free-tier Supabase project (migrations
 applied with `supabase db push`, functions deployed with
 `supabase functions deploy`). Test accounts are created via the Admin API
 (`auth.admin.createUser`) rather than the public sign-up flow, since the
