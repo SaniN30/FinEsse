@@ -19,9 +19,10 @@ scaffold: design system + landing page only, no backend/Supabase wiring yet.
   content lands in later phases).
 - Tailwind v4 theme tokens are defined as CSS variables in `app/globals.css` under
   `@theme inline` (no `tailwind.config` color overrides needed).
-- Backend (Phase 1): Supabase schema, RLS, auth/consent flow, and the ledger/mastery-graph
-  model are documented in `BACKEND.md` — read it before touching `supabase/` or writing
-  any frontend code that talks to the backend. No frontend UI exists for these features yet.
+- Backend (Phase 1 + 2): Supabase schema, RLS, auth/consent flow, the ledger/mastery-graph
+  model, and the School-tier lesson/quiz content schema + auto-grading RPC are documented
+  in `BACKEND.md` — read it before touching `supabase/` or writing any frontend code that
+  talks to the backend. No frontend UI exists for these features yet.
 
 ## Maintaining this file
 
