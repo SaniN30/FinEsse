@@ -53,6 +53,7 @@ begin
       select a->>'answer'
       from jsonb_array_elements(p_answers) a
       where (a->>'question_id')::uuid = qq.id
+      limit 1
     );
 
   v_score := v_correct::numeric / v_total;
