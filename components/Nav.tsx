@@ -1,7 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
+import { useAuth } from "@/lib/supabase/auth-context";
 
 const links = [
   { href: "/school", label: "School" },
@@ -10,6 +12,10 @@ const links = [
 ];
 
 export function Nav() {
+  const router = useRouter();
+  const { session, profile, signOut } = useAuth();
+  const isParent = Boolean(session) && profile?.role !== "student";
+
   return (
     <motion.header
       initial={{ opacity: 0, y: -16 }}
@@ -32,7 +38,29 @@ export function Nav() {
             </a>
           ))}
         </nav>
-        <Button size="md">Get started</Button>
+        {session ? (
+          <div className="flex items-center gap-3">
+            {isParent ? (
+              <a href="/dashboard" className="text-sm font-medium text-neutral-500 hover:text-foreground">
+                Dashboard
+              </a>
+            ) : null}
+            <Button
+              size="md"
+              variant="secondary"
+              onClick={async () => {
+                await signOut();
+                router.push("/");
+              }}
+            >
+              Log out
+            </Button>
+          </div>
+        ) : (
+          <Button size="md" onClick={() => router.push("/signup")}>
+            Get started
+          </Button>
+        )}
       </div>
     </motion.header>
   );
