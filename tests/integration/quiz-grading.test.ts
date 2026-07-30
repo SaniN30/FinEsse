@@ -147,6 +147,18 @@ describe("quiz auto-grading", () => {
     expect(data).toHaveLength(0);
   });
 
+  it("prevents a student from inserting a self-authored quiz_attempt directly, bypassing grading", async () => {
+    const { error } = await studentA.client.from("quiz_attempts").insert({
+      profile_id: studentA.userId,
+      quiz_id: WHAT_IS_MONEY_QUIZ_ID,
+      score: 1,
+      passed: true,
+      answers: [],
+    });
+
+    expect(error).not.toBeNull();
+  });
+
   it("prevents a student from inserting a quiz_attempt for another student", async () => {
     const { error } = await studentB.client.from("quiz_attempts").insert({
       profile_id: studentA.userId,
