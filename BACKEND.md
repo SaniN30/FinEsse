@@ -108,7 +108,11 @@ account referenced actually belongs to that caller before touching it:
   visibility-not-control posture already used for parent access to a
   child's `quiz_attempts` (Phase 2).
 
-All amounts are integer cents, matching `postings.amount_cents`.
+All amounts are integer cents, matching `postings.amount_cents`. Both
+`deposit_to_savings_goal` and `withdraw_from_savings_goal` take a
+`pg_advisory_xact_lock` on the wallet/goal account before reading its
+balance, to prevent a race between two concurrent calls overdrawing the
+same account.
 
 #### Progress calculation
 
@@ -228,8 +232,6 @@ self-only (`created_by = auth.uid()`). The savings-goal RPCs remain the only
 way funds move, and they're `SECURITY DEFINER` so they aren't affected by
 this tightening — they run as the function owner and enforce
 `profile_id = auth.uid()` themselves before touching any account.
-consistent with the consumer-research finding already reflected in Phase 1's
-consent model.
 
 ## Auth / consent flow (COPPA + GDPR-K)
 
