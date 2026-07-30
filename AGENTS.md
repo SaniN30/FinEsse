@@ -6,17 +6,17 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 # FinEsse
 
-Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion. Phase 0
-scaffold: design system + landing page only, no backend/Supabase wiring yet.
+Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
 
 - Design system (fonts, palette, spacing, motion conventions): see `DESIGN.md` at
   repo root — read it before adding any new UI so later phases stay visually
   consistent.
 - Reusable primitives live in `components/` (`Button`, `LevelCard`, `ProgressBar`,
-  `Nav`, `Hero`, `LevelSection`, `PocketMoneyPlanner`, `TierPlaceholder`) — prefer
-  extending these over ad-hoc styling.
+  `Nav`, `Hero`, `LevelSection`, `PocketMoneyPlanner`, `TierPlaceholder`) and
+  `components/auth/` (`AuthCard`, `FormField`, `PinInput`) — prefer extending these
+  over ad-hoc styling.
 - Routes: `/` (landing), `/school`, `/college`, `/job-ready` (tier placeholders,
-  content lands in later phases).
+  content lands in later phases), plus the Phase 6 auth flow below.
 - Tailwind v4 theme tokens are defined as CSS variables in `app/globals.css` under
   `@theme inline` (no `tailwind.config` color overrides needed).
 - Backend (Phase 1-5): Supabase schema, RLS, auth/consent flow, the ledger/mastery-graph
@@ -24,9 +24,35 @@ scaffold: design system + landing page only, no backend/Supabase wiring yet.
   content (roles reference table, modeling exercises + rubric-graded submissions), and the
   Phase 5 AI Interview Coach (question bank, submission RPC, Gemini-based rubric-scoring
   Edge Function) are documented in `BACKEND.md` — read it before touching `supabase/` or
-  writing any frontend code that talks to the backend. No frontend UI exists for these
-  features yet, and Phase 5 has no audio/speech-to-text pipeline (transcript is plain text
-  input).
+  writing any frontend code that talks to the backend.
+
+## Auth / consent frontend (Phase 6)
+
+- Supabase browser client: `lib/supabase/client.ts`, reading
+  `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` from `.env.local`
+  (gitignored — populate from your own Supabase project credentials, never commit
+  them). Session state lives in `lib/supabase/auth-context.tsx`
+  (`AuthProvider`/`useAuth`), mounted once in `app/layout.tsx`.
+- Routes: `/signup`, `/login` (parent), `/consent`, `/create-student`,
+  `/student-login`, `/dashboard` — implements Flow A from
+  `data/finesse-uiux-planning/report.md` §3. There is deliberately no
+  independent student sign-up route; a student account can only be created by
+  an authenticated parent via `/consent` → `/create-student`.
+- The live Supabase project has email confirmation enabled (`mailer_autoconfirm:
+  false`), so `signUp()` often returns no session — `/signup` shows a "confirm
+  your email" state in that case, and `/login` + `ensureParentProfile()`
+  (`lib/supabase/auth-actions.ts`) create the `profiles` row on first
+  post-confirmation login instead.
+- The backend has no lookup from a student's display name to their synthetic
+  login email (`profiles` RLS blocks anonymous reads by design), so
+  `/student-login` can only list students this browser has already created —
+  see the caching note in `lib/supabase/student-registry.ts`. This is a known
+  frontend-only workaround, not a backend contract.
+- Component tests for this flow live in `tests/component/` (vitest + jsdom +
+  React Testing Library, run via `npm run test:component`) — separate from the
+  `tests/integration/` suite (vitest against the live/local Supabase project,
+  run via `npm run test:integration`), which already covers the backend
+  consent gate end-to-end.
 
 ## Maintaining this file
 
