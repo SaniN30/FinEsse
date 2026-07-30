@@ -1,0 +1,131 @@
+@import "tailwindcss";
+
+:root {
+  /* Neutral scale — warm ink, not stock gray */
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f7f6f3;
+  --color-neutral-100: #efece5;
+  --color-neutral-200: #ddd7cc;
+  --color-neutral-300: #bcb3a2;
+  --color-neutral-400: #948a78;
+  --color-neutral-500: #6f6656;
+  --color-neutral-600: #514a3d;
+  --color-neutral-700: #37322a;
+  --color-neutral-800: #24211b;
+  --color-neutral-900: #171510;
+  --color-neutral-950: #0c0b08;
+
+  /* Primary — Amethyst (brand core) */
+  --color-primary-50: #f2effe;
+  --color-primary-100: #e4defd;
+  --color-primary-200: #c9bdfb;
+  --color-primary-300: #a993f7;
+  --color-primary-400: #8a6bf2;
+  --color-primary-500: #6e46ea;
+  --color-primary-600: #5a30d6;
+  --color-primary-700: #4824ab;
+  --color-primary-800: #351c7d;
+  --color-primary-900: #221452;
+
+  /* Secondary — Signal Blue */
+  --color-secondary-400: #5b8cff;
+  --color-secondary-500: #3d6bef;
+  --color-secondary-600: #2a4fd1;
+
+  /* Accent — Mint (growth / money) */
+  --color-accent-300: #7cf2cd;
+  --color-accent-400: #3fe0ac;
+  --color-accent-500: #1fc491;
+  --color-accent-600: #14a377;
+
+  /* Tier accents */
+  --color-tier-school: #5b8cff;
+  --color-tier-college: #8a6bf2;
+  --color-tier-jobready: #1fc491;
+
+  --background: var(--color-neutral-50);
+  --foreground: var(--color-neutral-900);
+  --surface: var(--color-neutral-0);
+  --surface-border: var(--color-neutral-200);
+
+  --radius-card: 1.25rem;
+  --shadow-soft: 0 1px 2px rgba(23, 21, 16, 0.04), 0 12px 32px -12px rgba(23, 21, 16, 0.12);
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+:root[data-theme="dark"] {
+  --background: var(--color-neutral-950);
+  --foreground: var(--color-neutral-100);
+  --surface: var(--color-neutral-900);
+  --surface-border: var(--color-neutral-800);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: var(--color-neutral-950);
+    --foreground: var(--color-neutral-100);
+    --surface: var(--color-neutral-900);
+    --surface-border: var(--color-neutral-800);
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-border: var(--surface-border);
+
+  --color-primary-50: var(--color-primary-50);
+  --color-primary-100: var(--color-primary-100);
+  --color-primary-200: var(--color-primary-200);
+  --color-primary-300: var(--color-primary-300);
+  --color-primary-400: var(--color-primary-400);
+  --color-primary-500: var(--color-primary-500);
+  --color-primary-600: var(--color-primary-600);
+  --color-primary-700: var(--color-primary-700);
+  --color-primary-800: var(--color-primary-800);
+  --color-primary-900: var(--color-primary-900);
+
+  --color-secondary-400: var(--color-secondary-400);
+  --color-secondary-500: var(--color-secondary-500);
+  --color-secondary-600: var(--color-secondary-600);
+
+  --color-accent-300: var(--color-accent-300);
+  --color-accent-400: var(--color-accent-400);
+  --color-accent-500: var(--color-accent-500);
+  --color-accent-600: var(--color-accent-600);
+
+  --color-tier-school: var(--color-tier-school);
+  --color-tier-college: var(--color-tier-college);
+  --color-tier-jobready: var(--color-tier-jobready);
+
+  --color-neutral-0: var(--color-neutral-0);
+  --color-neutral-50: var(--color-neutral-50);
+  --color-neutral-100: var(--color-neutral-100);
+  --color-neutral-200: var(--color-neutral-200);
+  --color-neutral-300: var(--color-neutral-300);
+  --color-neutral-400: var(--color-neutral-400);
+  --color-neutral-500: var(--color-neutral-500);
+  --color-neutral-600: var(--color-neutral-600);
+  --color-neutral-700: var(--color-neutral-700);
+  --color-neutral-800: var(--color-neutral-800);
+  --color-neutral-900: var(--color-neutral-900);
+  --color-neutral-950: var(--color-neutral-950);
+
+  --font-display: var(--font-space-grotesk);
+  --font-sans: var(--font-inter);
+
+  --radius-card: var(--radius-card);
+  --shadow-soft: var(--shadow-soft);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+}
