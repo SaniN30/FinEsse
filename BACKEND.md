@@ -1,4 +1,4 @@
-# FinEsse Backend (Phase 1 + Phase 2)
+# FinEsse Backend (Phase 1-4)
 
 Data layer and auth on Supabase (Postgres + Auth + Edge Functions), scoped to
 fit entirely within Supabase's free tier. No frontend UI ships in this phase —
@@ -185,6 +185,70 @@ grading only needs `auth.uid()`, not the Auth Admin API.
   `quiz_questions.correct_answer`, which regular callers cannot. Execute is
   granted to `authenticated` only (revoked from `public`).
 
+### College-tier content: `roles`, `modeling_exercises`, `modeling_submissions` (Phase 4)
+
+Reuses the Phase 2 `lessons`/`quizzes`/`quiz_questions`/`quiz_attempts` schema
+and `grade_quiz_attempt` RPC as-is for College-tier lessons/quizzes — no
+schema changes needed there, just new rows (`skills.tier = 'college'`,
+chained into the mastery graph via `prerequisite_skill_id` off the most
+advanced seeded School skill). Two genuinely new concepts:
+
+- `roles` — shared reference content (like `skills`/`lessons`), not
+  per-student rows. Finance role cards for the plan's "Role Explorer"
+  feature: `title`, `description`, `typical_pay_range`, `required_skill_ids`
+  (a plain `uuid[]`, not a join table — read-heavy reference data, no need
+  for referential-integrity FKs here), `published`. Publicly readable to any
+  authenticated user once published; writable only by `service_role` (no
+  `authenticated`-scoped write policy at all).
+- `modeling_exercises` — belongs to a `skill`, has `instructions` and a
+  structured `rubric` (jsonb keyed by metric name, e.g.
+  `{"revenue_growth_pct": {"expected": 12.5, "tolerance": 0.5}}`) plus a
+  `pass_threshold`. Same "hide the answer key" posture as `quiz_questions`:
+  the base table has no select policy for `authenticated`, so `rubric` is
+  never directly readable; students read via `modeling_exercises_public`
+  (owned by the migration role, omits `rubric`, and — unlike
+  `quiz_questions_public`, which relies on `quizzes_select`'s RLS policy for
+  gating — embeds its own published/tier check directly in the view
+  definition, since there's no separate gating table to lean on).
+- `modeling_submissions` (`profile_id`, `exercise_id`, `submitted_values`
+  jsonb, `score`, `passed`, `submitted_at`) — the per-student append-only
+  submission log, same pattern as `quiz_attempts`.
+- `xp_events.source` gained a `'modeling_submission'` value alongside Phase
+  2's `'quiz_attempt'`.
+
+#### Auto-grading: `grade_modeling_submission(p_exercise_id, p_submitted_values)`
+
+A `SECURITY DEFINER` Postgres RPC
+(`supabase/migrations/00000000000015_grade_modeling_submission.sql`), same
+shape as `grade_quiz_attempt`: rubric-based comparison only in this phase,
+no free-form AI grading.
+
+- Identifies the student from `auth.uid()`, never a client-supplied
+  `profile_id`.
+- For each key in the rubric, compares the client's submitted value against
+  `{"expected", "tolerance"}` (`|submitted - expected| <= tolerance`); the
+  score is `correct_metrics / total_metrics`, always computed here, never
+  trusted from the client (a submitted `score`/`passed` field in
+  `p_submitted_values` is ignored, same principle as quiz grading). A
+  malformed/non-numeric submitted value degrades to "wrong for that metric"
+  rather than raising, same defensive posture as the duplicate-`question_id`
+  fix already applied to `grade_quiz_attempt`.
+- Always inserts one `modeling_submissions` row. If `score >= pass_threshold`,
+  also inserts a `skill_attempts` row and an `xp_events` row
+  (`source = 'modeling_submission'`) — same derived-XP pattern as quiz
+  grading.
+- Execute is granted to `authenticated` only (revoked from `public`).
+
+#### Seed content (Phase 4)
+
+`supabase/migrations/00000000000016_seed_college_content.sql` — 4 College
+skills chained off School's `earning-pocket-money`: Finance Roles Overview →
+Capital Markets Basics → Company Valuation Basics → Financial Statement
+Modeling, each with one lesson + one 2-question quiz; one guided modeling
+exercise (a revenue-growth projection) on the Financial Statement Modeling
+skill; 6 `roles` cards (investment banking analyst, quant, risk analyst,
+ops analyst, fintech PM, equity research associate).
+
 ### `interview_sessions`
 
 `profile_id`, `firm_style`, `transcript` (jsonb), `rubric_scores` (jsonb).
@@ -219,6 +283,13 @@ bypass grading and fabricate a passing score/answers directly. A linked
 parent can read (not write) a child's attempts — visibility, not control,
 consistent with the consumer-research finding already reflected in Phase 1's
 consent model.
+
+`modeling_submissions` (Phase 4) is append-only with a `select`-only policy
+(`is_own_or_linked_profile`), same reasoning as `quiz_attempts` — rows are
+written exclusively by the `SECURITY DEFINER` `grade_modeling_submission()`
+function, deliberately with no self-insert policy, so a student can't
+fabricate a passing score directly. `roles` has one `select` policy
+(published + authenticated) and no write policy for `authenticated` at all.
 
 `accounts`/`transactions`/`postings` (Phase 3 tightening): `select` still
 uses `is_own_or_linked_profile`/`is_own_or_linked_account`, so a linked
@@ -304,6 +375,18 @@ operator-facing deletion tool itself is out of scope for this phase.
   withdraw from another student's goal; a linked parent can read a child's
   savings-goal account/transactions/progress but cannot write to the
   account or call the deposit RPC on the child's behalf.
+- `college-content.test.ts` (Phase 4) — a College-tier quiz grades
+  end-to-end via the reused `grade_quiz_attempt` RPC; a modeling submission
+  is scored by `grade_modeling_submission` and awards XP/a `skill_attempts`
+  row on pass, nothing on fail, ignores a client-forged `score`/`passed`
+  field, and degrades gracefully (no crash) on non-numeric submitted
+  values; a student cannot read/write another student's
+  `modeling_submissions`; a linked parent can read but not write a child's
+  College `quiz_attempts`/`modeling_submissions`; `rubric` is unreadable
+  through the base `modeling_exercises` table but readable (without it) via
+  `modeling_exercises_public`; `roles` is readable by any authenticated
+  user, unreadable to an anonymous client, and not writable by a
+  non-service-role client.
 
 All tests pass against a provisioned free-tier Supabase project (migrations
 applied with `supabase db push`, functions deployed with
