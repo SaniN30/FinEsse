@@ -69,6 +69,8 @@ as $$
 declare
   v_account_id uuid;
 begin
+  perform pg_advisory_xact_lock(hashtextextended('student_wallet:' || p_profile_id::text, 0));
+
   select id into v_account_id
   from accounts
   where profile_id = p_profile_id and type = 'student_wallet'
@@ -210,6 +212,8 @@ begin
   ) then
     raise exception 'savings goal % not found for caller', p_goal_account_id;
   end if;
+
+  perform pg_advisory_xact_lock(hashtextextended('savings_goal:' || p_goal_account_id::text, 0));
 
   select coalesce(sum(amount_cents), 0) into v_balance_cents
   from postings
