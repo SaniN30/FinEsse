@@ -43,7 +43,7 @@ One row per person (parent or student), `id` = `auth.users.id`.
 | `parent_id` | self-FK, null for parents, required for students |
 | `tier` | `school` \| `college` \| `job_ready` |
 | `date_of_birth` | collected only for COPPA age/consent record-keeping (data minimization — no other demographic fields) |
-| `consent_id` | FK to `parental_consents`, required for students |
+| `consent_id` | FK to `parental_consents`, required for students; a unique partial index (`idx_profiles_consent_id_unique`) prevents the same consent record from being reused for more than one student login |
 | `data_retention_requested_at` | set when a deletion/retention request is recorded, for GDPR-K/COPPA compliance |
 
 A DB trigger (`enforce_student_consent`) makes "student row requires a valid,
