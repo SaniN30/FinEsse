@@ -49,39 +49,49 @@ function jsonResponse(body: unknown, status: number): Response {
   });
 }
 
+class ScoringError extends Error {}
+
 async function scoreTranscript(
   apiKey: string,
   questionText: string,
   transcript: string,
 ): Promise<RubricScores> {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: RUBRIC_SYSTEM_PROMPT }] },
-        contents: [
-          {
-            role: "user",
-            parts: [
-              { text: `Interview question: ${questionText}\n\nStudent's transcript:\n${transcript}` },
-            ],
-          },
-        ],
-        generationConfig: { responseMimeType: "application/json" },
-      }),
-    },
-  );
+  let res: Response;
+  try {
+    res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: RUBRIC_SYSTEM_PROMPT }] },
+          contents: [
+            {
+              role: "user",
+              parts: [
+                { text: `Interview question: ${questionText}\n\nStudent's transcript:\n${transcript}` },
+              ],
+            },
+          ],
+          generationConfig: { responseMimeType: "application/json" },
+        }),
+      },
+    );
+  } catch (err) {
+    console.error("Gemini API request failed", err);
+    throw new ScoringError("failed to reach the scoring service");
+  }
 
   if (!res.ok) {
-    throw new Error(`Gemini API error: ${res.status} ${await res.text()}`);
+    console.error("Gemini API error", res.status, await res.text());
+    throw new ScoringError("the scoring service returned an error");
   }
 
   const data = await res.json();
   const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
   if (typeof text !== "string") {
-    throw new Error("Gemini API returned no text content");
+    console.error("Gemini API returned no text content", data);
+    throw new ScoringError("the scoring service returned an unexpected response");
   }
 
   return JSON.parse(text) as RubricScores;
@@ -178,6 +188,10 @@ Deno.serve(async (req) => {
 
     return jsonResponse({ session_id, rubric_scores: rubricScores }, 200);
   } catch (err) {
-    return jsonResponse({ error: (err as Error).message }, 500);
+    if (err instanceof ScoringError) {
+      return jsonResponse({ error: err.message }, 502);
+    }
+    console.error("Unexpected error scoring interview session", err);
+    return jsonResponse({ error: "internal server error" }, 500);
   }
 });
