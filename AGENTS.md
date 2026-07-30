@@ -22,7 +22,7 @@ scaffold: design system + landing page only, no backend/Supabase wiring yet.
 - Backend (Phase 1-5): Supabase schema, RLS, auth/consent flow, the ledger/mastery-graph
   model, the School-tier lesson/quiz content schema + auto-grading RPC, the College-tier
   content (roles reference table, modeling exercises + rubric-graded submissions), and the
-  Phase 5 AI Interview Coach (question bank, submission RPC, Claude-based rubric-scoring
+  Phase 5 AI Interview Coach (question bank, submission RPC, Gemini-based rubric-scoring
   Edge Function) are documented in `BACKEND.md` — read it before touching `supabase/` or
   writing any frontend code that talks to the backend. No frontend UI exists for these
   features yet, and Phase 5 has no audio/speech-to-text pipeline (transcript is plain text
