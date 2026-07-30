@@ -24,20 +24,27 @@ export function serviceClient(): SupabaseClient {
 let counter = 0;
 export function uniqueEmail(prefix: string): string {
   counter += 1;
-  return `${prefix}-${Date.now()}-${counter}@example.test`;
+  return `${prefix}-${Date.now()}-${counter}@example.com`;
 }
 
 export async function signUpParent(displayName: string) {
   const client = anonClient();
+  const admin = serviceClient();
   const email = uniqueEmail("parent");
   const password = "test-password-123";
 
-  const { data, error } = await client.auth.signUp({ email, password });
+  // Created via the Admin API (service_role), not the public signUp flow --
+  // avoids the hosted project's shared-SMTP signup email rate limit, which
+  // is far too low for a test suite that creates many accounts per run.
+  const { data, error } = await admin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+  });
   if (error || !data.user) {
     throw new Error(`parent signup failed: ${error?.message}`);
   }
 
-  const admin = serviceClient();
   const { error: profileError } = await admin.from("profiles").insert({
     id: data.user.id,
     role: "parent",

@@ -159,7 +159,12 @@ operator-facing deletion tool itself is out of scope for this phase.
   record. This proves the consent gate is a DB-level invariant, not just an
   application-layer check.
 
-This environment does not have Docker/Podman available, so these tests are
-written and type-check but have not been executed here — see the
-`fm/finesse-phase1-schema-auth` status log for that caveat. Run them with
-`npm run test:integration` once Docker is available.
+All 12 tests pass against a provisioned free-tier Supabase project (migrations
+applied with `supabase db push`, functions deployed with
+`supabase functions deploy`). Test accounts are created via the Admin API
+(`auth.admin.createUser`) rather than the public sign-up flow, since the
+hosted project's shared-SMTP sign-up path has a signup email rate limit far
+too low for a test suite creating many accounts per run; `fileParallelism` is
+disabled in `vitest.config.ts` for the same reason. This worktree has no
+Docker/Podman, so local `supabase start`/`db reset` still can't be exercised
+here, but `supabase db push` to a linked live project needs no Docker.
