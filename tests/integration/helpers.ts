@@ -93,7 +93,7 @@ export async function recordConsent(
 
 export async function createStudentAccount(
   accessToken: string,
-  opts: { consentId: string; displayName: string; pin: string },
+  opts: { consentId: string; displayName: string; pin: string; tier?: string },
 ) {
   const res = await fetch(`${SUPABASE_URL}/functions/v1/create-student-account`, {
     method: "POST",
@@ -105,6 +105,7 @@ export async function createStudentAccount(
       consent_id: opts.consentId,
       display_name: opts.displayName,
       pin: opts.pin,
+      tier: opts.tier,
     }),
   });
   const body = await res.json();
