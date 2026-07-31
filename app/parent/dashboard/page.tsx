@@ -23,10 +23,10 @@ function formatCents(cents: number): string {
  * is derivable from wallet_balance_cents + savings goal balances, is shown
  * here; the weekly-XP stat is deliberately skipped rather than invented.
  */
-function CombinedStatsStrip({ children }: { children: ParentDashboardChild[] }) {
-  if (children.length < 2) return null;
+function CombinedStatsStrip({ childProfiles }: { childProfiles: ParentDashboardChild[] }) {
+  if (childProfiles.length < 2) return null;
 
-  const totalSavedCents = children.reduce((sum, child) => {
+  const totalSavedCents = childProfiles.reduce((sum, child) => {
     const goalBalances = child.savings_goals.reduce((goalSum, goal) => goalSum + goal.balance_cents, 0);
     return sum + child.wallet_balance_cents + goalBalances;
   }, 0);
@@ -131,7 +131,7 @@ export default function ParentDashboardPage() {
             </div>
           ) : (
             <>
-              <CombinedStatsStrip children={children} />
+              <CombinedStatsStrip childProfiles={children} />
               <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 {children.map((child, index) => (
                   <ChildRollupCard key={child.profile_id} child={child} index={index} />

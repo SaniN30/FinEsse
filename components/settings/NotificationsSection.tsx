@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { SettingsSection } from "@/components/settings/SettingsSection";
 
 const STORAGE_KEY = "finesse-notification-prefs";
@@ -23,11 +23,7 @@ function loadPrefs(): NotificationPrefs {
 }
 
 export function NotificationsSection() {
-  const [prefs, setPrefs] = useState<NotificationPrefs>(DEFAULT_PREFS);
-
-  useEffect(() => {
-    setPrefs(loadPrefs());
-  }, []);
+  const [prefs, setPrefs] = useState<NotificationPrefs>(() => loadPrefs());
 
   function toggle(key: keyof NotificationPrefs) {
     const next = { ...prefs, [key]: !prefs[key] };

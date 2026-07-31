@@ -180,12 +180,19 @@ grading only needs `auth.uid()`, not the Auth Admin API.
   any other fields the client includes (a submitted `score`, `passed`, etc.)
   are ignored — same "never trust client-submitted XP/score" principle as
   Phase 1's derived XP rollups.
-- Always inserts one `quiz_attempts` row. If `score >= pass_threshold`, also
+- Always inserts one `quiz_attempts` row (every attempt is recorded, so
+  history/analytics are unaffected). If `score >= pass_threshold`, it also
   inserts a `skill_attempts` row (`is_correct = true`, resolved skill via
   `quiz_skill_id`) and an `xp_events` row (`source = 'quiz_attempt'`,
   `source_id` = the new attempt id) — mirroring Phase 1's mastery-graph
   pattern where XP/mastery is always a derived write from a scoring event,
-  never trusted from the client directly.
+  never trusted from the client directly — but only on the profile's *first*
+  passing attempt for that quiz; a `pg_advisory_xact_lock` on
+  `profile_id:quiz_id` serializes concurrent attempts so the already-passed
+  check can't race. Idempotency guard added in
+  `supabase/migrations/00000000000023_grade_quiz_attempt_idempotent_xp.sql`
+  (security audit Finding 2) after repeated retakes of an already-passed quiz
+  were found to farm unlimited XP.
 - `SECURITY DEFINER` is required specifically so this function can read
   `quiz_questions.correct_answer`, which regular callers cannot. Execute is
   granted to `authenticated` only (revoked from `public`).
@@ -245,14 +252,13 @@ no free-form AI grading.
   guard added in
   `supabase/migrations/00000000000023_grade_modeling_submission_idempotent.sql`
   (Phase 8 audit fix) after a benign resubmission of an already-passed
-  exercise was found to accumulate duplicate XP/mastery credit. `grade_quiz_attempt`
-  has no equivalent guard yet — a matching fix is owned by a separate
-  in-flight task and should be mirrored once merged, not duplicated here.
+  exercise was found to accumulate duplicate XP/mastery credit.
+  `grade_quiz_attempt` has the equivalent guard (see above).
 - Execute is granted to `authenticated` only (revoked from `public`).
 - Returns `{submission_id, score, passed, correct, total, metrics, already_completed}`,
   where `metrics` is a `{key: boolean}` breakdown of per-metric correctness
   (added additively in
-  `supabase/migrations/00000000000021_grade_modeling_submission_metric_breakdown.sql`,
+  `supabase/migrations/00000000000022_grade_modeling_submission_metric_breakdown.sql`,
   Phase 8) — it never exposes the rubric's hidden `expected`/`tolerance`
   values, only pass/fail per key — and `already_completed` is `true` when this
   pass was not the first (so XP/mastery were not re-awarded).
@@ -325,6 +331,12 @@ self-insert policy for those (see RLS below) — this function is the only
 place allowed to write them. Reads `GEMINI_API_KEY` from
 `Deno.env.get(...)` (a Supabase Edge Function secret, set via
 `supabase secrets set`) — never hardcoded.
+
+Idempotent against repeated/concurrent calls for the same session (security
+audit Finding 2): if `rubric_scores` is already set it's returned as-is
+without re-calling Gemini or re-inserting `xp_events`, and the write path
+itself gates on `.is("rubric_scores", null)` so two concurrent calls can't
+both pass the initial read-based check and double-award XP.
 
 **Status:** deployed and verified live end-to-end — a real transcript
 submitted through `submit_interview_session`, scored via a live call to the
@@ -431,9 +443,23 @@ There is no independent student sign-up. The flow is:
      `consent_id`) using `service_role`, which is the only writer for
      student profile rows.
 4. **Student login** — the student (or the parent, on the student's behalf)
-   signs in with the synthetic email + PIN via the normal
-   `supabase.auth.signInWithPassword` client call. No custom session code is
-   needed; it's a standard Supabase Auth password sign-in.
+   signs in with the synthetic email + PIN via the `student-login` Edge
+   Function (`lib/supabase/auth-actions.ts`'s `signInStudent`), not a direct
+   `supabase.auth.signInWithPassword` call — GoTrue has no failed-attempt
+   hook, so this function is the only supported path for student sign-in,
+   tracking failures against `profiles.failed_login_attempts` and locking the
+   account (`profiles.locked_until`) for 15 minutes after 5 failed attempts
+   (migration `00000000000022_student_login_lockout.sql`, security audit
+   Finding 1b). On success it returns a session (`access_token`/
+   `refresh_token`) that the client applies via `supabase.auth.setSession`.
+
+### CORS
+
+All Edge Functions get their `Access-Control-Allow-Origin` header from
+`getCorsHeaders()` (`supabase/functions/_shared/cors.ts`), which reads the
+`ALLOWED_ORIGINS` env var (comma-separated origins) rather than allowing `*`
+(security audit Finding 3). With `ALLOWED_ORIGINS` unset it falls back to
+`*`, which is fine for local dev — every deployed environment must set it.
 
 ### Deletion / retention
 

@@ -58,7 +58,7 @@ export default function SettingsPage() {
           <div className="space-y-6">
             <AccountSection
               email={session.user.email}
-              children={children}
+              linkedChildren={children}
               onChildRenamed={handleChildRenamed}
             />
             <AppearanceSection />

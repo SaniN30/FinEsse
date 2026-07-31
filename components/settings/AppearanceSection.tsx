@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/cn";
 import { SettingsSection } from "@/components/settings/SettingsSection";
 import {
@@ -16,11 +16,7 @@ const OPTIONS: { value: ThemePreference; label: string }[] = [
 ];
 
 export function AppearanceSection() {
-  const [preference, setPreference] = useState<ThemePreference>("system");
-
-  useEffect(() => {
-    setPreference(getStoredThemePreference());
-  }, []);
+  const [preference, setPreference] = useState<ThemePreference>(() => getStoredThemePreference());
 
   function handleSelect(value: ThemePreference) {
     setPreference(value);

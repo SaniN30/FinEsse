@@ -9,11 +9,11 @@ import type { Profile } from "@/lib/supabase/types";
 
 interface AccountSectionProps {
   email: string | undefined;
-  children: Profile[];
+  linkedChildren: Profile[];
   onChildRenamed: (childId: string, displayName: string) => void;
 }
 
-export function AccountSection({ email, children, onChildRenamed }: AccountSectionProps) {
+export function AccountSection({ email, linkedChildren, onChildRenamed }: AccountSectionProps) {
   const [newPassword, setNewPassword] = useState("");
   const [passwordStatus, setPasswordStatus] = useState<string | null>(null);
   const [editingChildId, setEditingChildId] = useState<string | null>(null);
@@ -71,11 +71,11 @@ export function AccountSection({ email, children, onChildRenamed }: AccountSecti
 
       <div>
         <p className="mb-2 text-sm font-medium text-foreground">Linked children</p>
-        {children.length === 0 ? (
+        {linkedChildren.length === 0 ? (
           <p className="text-sm text-neutral-500">No children linked yet.</p>
         ) : (
           <ul className="space-y-2">
-            {children.map((child) => (
+            {linkedChildren.map((child) => (
               <li
                 key={child.id}
                 className="flex items-center gap-3 rounded-xl border border-surface-border px-4 py-2.5"
