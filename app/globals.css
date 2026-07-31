@@ -38,16 +38,13 @@
   --color-accent-500: #1fc491;
   --color-accent-600: #14a377;
 
-  /* Tier accents */
-  --color-tier-school: #5b8cff;
-  --color-tier-college: #8a6bf2;
+  /* Tier accents — Lavish design-system values (approved final palette from
+     PR #15's "ship Lavish design system"), used both by LevelCard/tier
+     components and by the .theme-tier-* wrapper classes below. */
+  --color-tier-school: #c98b7d;
+  --color-tier-college: #6e46ea;
   --color-tier-jobready: #1fc491;
-
-  /* Lavish design-system pass: tier-visual-language accents (School pixel-art,
-     College transitional, Job-Ready minimal) — kept distinct from the Phase 0
-     tier accents above, which stay in place for existing LevelCard usage. */
-  --color-tier-school-lavish: #c98b7d;
-  --color-tier-college-lavish: #6e46ea;
+  /* Job-Ready's minimal treatment intentionally uses ink, not an accent hue. */
   --color-tier-jobready-ink: #1b1710;
   --color-success: #1fc491;
 
@@ -68,8 +65,8 @@
   --surface: var(--color-neutral-900);
   --surface-border: var(--color-neutral-800);
 
-  --color-tier-school-lavish: #d9a7a0;
-  --color-tier-college-lavish: #a98cf5;
+  --color-tier-school: #d9a7a0;
+  --color-tier-college: #a98cf5;
   --color-tier-jobready-ink: #f3f1ea;
   --color-success: #4fdbae;
 }
@@ -81,8 +78,8 @@
     --surface: var(--color-neutral-900);
     --surface-border: var(--color-neutral-800);
 
-    --color-tier-school-lavish: #d9a7a0;
-    --color-tier-college-lavish: #a98cf5;
+    --color-tier-school: #d9a7a0;
+    --color-tier-college: #a98cf5;
     --color-tier-jobready-ink: #f3f1ea;
     --color-success: #4fdbae;
   }
@@ -117,9 +114,6 @@
   --color-tier-school: var(--color-tier-school);
   --color-tier-college: var(--color-tier-college);
   --color-tier-jobready: var(--color-tier-jobready);
-
-  --color-tier-school-lavish: var(--color-tier-school-lavish);
-  --color-tier-college-lavish: var(--color-tier-college-lavish);
   --color-tier-jobready-ink: var(--color-tier-jobready-ink);
   --color-success: var(--color-success);
 
@@ -159,20 +153,41 @@ h1, h2, h3, h4, .font-display {
    border, and radius vocabulary for that tier and compose with existing
    components/tokens rather than replacing them. */
 .theme-tier-school {
-  --tier-accent: var(--color-tier-school-lavish);
+  --tier-accent: var(--color-tier-school);
   --tier-radius: 0.25rem;
   --tier-border-width: 2px;
+  /* Override the shared card radius so every existing rounded-[var(--radius-card)]
+     element in this subtree picks up the chunkier pixel-art radius for free. */
+  --radius-card: var(--tier-radius);
   image-rendering: pixelated;
 }
 
+.theme-tier-school h1 {
+  text-shadow: 3px 3px 0 var(--tier-accent);
+}
+
 .theme-tier-college {
-  --tier-accent: var(--color-tier-college-lavish);
+  --tier-accent: var(--color-tier-college);
   --tier-radius: 0.75rem;
   --tier-border-width: 1.5px;
+  --radius-card: var(--tier-radius);
+}
+
+.theme-tier-college h1 {
+  background-image: linear-gradient(90deg, var(--tier-accent), transparent);
+  background-size: 100% 3px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  padding-bottom: 0.35rem;
 }
 
 .theme-tier-jobready {
   --tier-accent: var(--color-tier-jobready-ink);
   --tier-radius: var(--radius-card);
   --tier-border-width: 1px;
+}
+
+.theme-tier-jobready h1 {
+  color: var(--tier-accent);
+  letter-spacing: 0.01em;
 }

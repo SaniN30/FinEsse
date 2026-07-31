@@ -8,28 +8,28 @@ const levels: Array<{
   title: string;
   tagline: string;
   topics: string[];
-  progress: number;
+  stat: string;
 }> = [
   {
     tier: "school",
     title: "School",
     tagline: "Build the basics: pocket money, saving habits, and the first real budget.",
     topics: ["Saving vs. spending", "Pocket money planning", "Needs vs. wants"],
-    progress: 65,
+    stat: "4 skills to start",
   },
   {
     tier: "college",
     title: "College",
     tagline: "Navigate student budgets, part-time income, and your first credit decisions.",
     topics: ["Budgeting on variable income", "Student credit basics", "Avoiding debt traps"],
-    progress: 40,
+    stat: "4 skills + role explorer",
   },
   {
     tier: "jobready",
     title: "Job-Ready",
     tagline: "Move from paycheck to portfolio: taxes, investing, and long-term planning.",
     topics: ["Reading a payslip", "Investing fundamentals", "Retirement & taxes"],
-    progress: 20,
+    stat: "9 interview questions",
   },
 ];
 

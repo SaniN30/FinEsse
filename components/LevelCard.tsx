@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/cn";
-import { ProgressBar } from "@/components/ProgressBar";
 
 export type LevelTier = "school" | "college" | "jobready";
 
@@ -11,7 +10,7 @@ interface LevelCardProps {
   title: string;
   tagline: string;
   topics: string[];
-  progress: number;
+  stat: string;
   index?: number;
 }
 
@@ -44,7 +43,7 @@ export function LevelCard({
   title,
   tagline,
   topics,
-  progress,
+  stat,
   index = 0,
 }: LevelCardProps) {
   const styles = tierStyles[tier];
@@ -83,7 +82,10 @@ export function LevelCard({
         ))}
       </ul>
 
-      <ProgressBar value={progress} colorClassName={styles.accent} label="Curriculum ready" />
+      <div className="flex items-center gap-2 text-xs font-medium text-neutral-500">
+        <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", styles.accent)} />
+        {stat}
+      </div>
     </motion.article>
   );
 }
