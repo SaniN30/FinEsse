@@ -268,10 +268,15 @@ no free-form AI grading.
 `supabase/migrations/00000000000016_seed_college_content.sql` — 4 College
 skills chained off School's `earning-pocket-money`: Finance Roles Overview →
 Capital Markets Basics → Company Valuation Basics → Financial Statement
-Modeling, each with one lesson + one 2-question quiz; one guided modeling
-exercise (a revenue-growth projection) on the Financial Statement Modeling
-skill; 6 `roles` cards (investment banking analyst, quant, risk analyst,
-ops analyst, fintech PM, equity research associate).
+Modeling, each with one lesson + one quiz; one guided modeling exercise on
+the Financial Statement Modeling skill; 6 `roles` cards (investment banking
+analyst, quant, risk analyst, ops analyst, fintech PM, equity research
+associate). `supabase/migrations/00000000000028_expand_college_content.sql`
+later expands each lesson to 2-4x length with a worked example + recap,
+each quiz to 5-6 questions (at least half application/scenario), and
+replaces the modeling exercise with a multi-step build (projected revenue →
+projected COGS → gross profit → net income) — same lesson/quiz/exercise ids,
+still graded by the unchanged `grade_modeling_submission` RPC.
 
 ### AI Interview Coach: `interview_questions`, `interview_sessions` (Phase 5)
 
