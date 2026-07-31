@@ -49,6 +49,48 @@ describe("pocket money planner: savings goals", () => {
     expect(data!.target_amount_cents).toBe(10000);
   });
 
+  it("rejects a deposit when the wallet has no funds", async () => {
+    const { error } = await studentA.client.rpc("deposit_to_savings_goal", {
+      p_goal_account_id: goalId,
+      p_amount_cents: 2500,
+    });
+    expect(error).not.toBeNull();
+    expect(error!.message).toMatch(/insufficient wallet balance/);
+  });
+
+  it("a parent can fund their linked student's wallet", async () => {
+    const { error: fundError } = await parentA.client.rpc("fund_student_wallet", {
+      p_student_profile_id: studentA.userId,
+      p_amount_cents: 5000,
+    });
+    expect(fundError).toBeNull();
+
+    const { data: wallet, error: walletError } = await studentA.client
+      .from("account_balances")
+      .select("balance_cents")
+      .eq("profile_id", studentA.userId)
+      .eq("type", "student_wallet")
+      .single();
+    expect(walletError).toBeNull();
+    expect(wallet!.balance_cents).toBe(5000);
+  });
+
+  it("prevents a parent from funding a student they are not linked to", async () => {
+    const { error } = await parentA.client.rpc("fund_student_wallet", {
+      p_student_profile_id: studentB.userId,
+      p_amount_cents: 100,
+    });
+    expect(error).not.toBeNull();
+  });
+
+  it("prevents a student from calling fund_student_wallet", async () => {
+    const { error } = await studentA.client.rpc("fund_student_wallet", {
+      p_student_profile_id: studentA.userId,
+      p_amount_cents: 100,
+    });
+    expect(error).not.toBeNull();
+  });
+
   it("deposit increases the goal balance and decreases the student wallet, netting to zero", async () => {
     const { error: depositError } = await studentA.client.rpc("deposit_to_savings_goal", {
       p_goal_account_id: goalId,
@@ -72,7 +114,16 @@ describe("pocket money planner: savings goals", () => {
       .eq("type", "student_wallet")
       .single();
     expect(walletError).toBeNull();
-    expect(wallet!.balance_cents).toBe(-2500);
+    expect(wallet!.balance_cents).toBe(2500);
+  });
+
+  it("rejects a deposit that would exceed the remaining wallet balance", async () => {
+    const { error } = await studentA.client.rpc("deposit_to_savings_goal", {
+      p_goal_account_id: goalId,
+      p_amount_cents: 999999,
+    });
+    expect(error).not.toBeNull();
+    expect(error!.message).toMatch(/insufficient wallet balance/);
   });
 
   it("withdrawal reverses a deposit", async () => {
@@ -97,7 +148,7 @@ describe("pocket money planner: savings goals", () => {
       .eq("type", "student_wallet")
       .single();
     expect(walletError).toBeNull();
-    expect(wallet!.balance_cents).toBe(-1500);
+    expect(wallet!.balance_cents).toBe(3500);
   });
 
   it("rejects a withdrawal that would overdraw the goal", async () => {

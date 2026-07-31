@@ -74,6 +74,14 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   spec directory covered by the same `vitest.config.component.ts` and
   `npm run test:component`), with its own `tests/components/setup.ts` adding an
   `IntersectionObserver` mock for framer-motion's `whileInView`.
+- A student's `student_wallet` is only ever funded by a parent calling `fund_student_wallet`
+  (`supabase/migrations/00000000000024_pocket_money_funding.sql`), which posts from the
+  parent's own lazily-created `parent_wallet` account — gated by checking the caller is the
+  target student's `parent_id`, not `is_own_or_linked_profile` (that helper also matches the
+  student themself, which would be wrong here). `deposit_to_savings_goal` now rejects a
+  deposit that would exceed the wallet balance, mirroring `withdraw_from_savings_goal`'s
+  goal-balance check. The parent-facing "add allowance" form lives in
+  `components/pocket-money/FundWalletForm.tsx`, used from `ParentGoalsView.tsx`.
 
 ## College-tier frontend (Phase 8)
 
