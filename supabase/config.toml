@@ -371,6 +371,12 @@ authorization_url_path = "/oauth/consent"
 # Allow dynamic client registration
 allow_dynamic_registration = false
 
+# student-login is called before the student has any session (that's the
+# point of the call), so it can't require a caller JWT like the other
+# functions -- it authenticates the PIN itself via the service-role client.
+[functions.student-login]
+verify_jwt = false
+
 [edge_runtime]
 enabled = true
 # Supported request policies: `oneshot`, `per_worker`.

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchLesson, fetchQuizzesForLesson } from "@/lib/school/queries";
+import { Skeleton } from "@/components/Skeleton";
 import type { Lesson, Quiz } from "@/lib/supabase/types";
 
 function LessonContent({ lesson }: { lesson: Lesson }) {
@@ -52,7 +53,14 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
   }, [lessonId]);
 
   if (error) return <p className="text-sm text-red-600">{error}</p>;
-  if (!lesson) return <p className="text-sm text-neutral-500">Loading lesson…</p>;
+  if (!lesson) {
+    return (
+      <div>
+        <Skeleton className="mb-4 h-6 w-1/3" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
 
   return (
     <div>

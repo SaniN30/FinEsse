@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/Button";
+import { Logo } from "@/components/Logo";
 
 const container = {
   hidden: {},
@@ -33,6 +34,10 @@ export function Hero() {
         animate="show"
         className="relative mx-auto flex max-w-3xl flex-col items-center text-center"
       >
+        <motion.div variants={item} className="mb-6">
+          <Logo size="lg" />
+        </motion.div>
+
         <motion.span
           variants={item}
           className="mb-6 inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1.5 text-xs font-medium text-neutral-500"

@@ -17,7 +17,9 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   over ad-hoc styling.
 - Routes: `/` (landing), `/school`, `/college`, `/job-ready` (tier landing pages;
   `/job-ready` now links to the Phase 9 AI Interview Coach, remaining Job-Ready
-  curriculum lands in a later phase), plus the Phase 6 auth flow below.
+  curriculum lands in a later phase), `/settings` (Account, Appearance,
+  Notifications, Help, Legal — `components/settings/`, theme state via
+  `lib/settings/theme.ts`), plus the Phase 6 auth flow below.
 - `tsconfig.json`'s `include` intentionally excludes `vitest.config.ts`/
   `vitest.config.component.ts` (see `tsconfig.vitest.json`) so a dev-tooling
   version drift in vitest/vite plugins can't break `npm run build` — don't

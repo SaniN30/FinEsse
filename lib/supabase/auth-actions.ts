@@ -131,16 +131,48 @@ export async function signInStudent(
   loginEmail: string,
   pin: string,
 ): Promise<ActionResult<{ userId: string }>> {
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: loginEmail,
-    password: pin,
+  // Routed through the student-login Edge Function (not
+  // supabase.auth.signInWithPassword directly) so failed attempts count
+  // against the per-account lockout in `profiles` -- see
+  // supabase/functions/student-login.
+  const { data, error } = await supabase.functions.invoke<{
+    user_id: string;
+    access_token: string;
+    refresh_token: string;
+    error?: string;
+    locked_until?: string;
+  }>("student-login", {
+    body: { login_email: loginEmail, pin },
   });
 
-  if (error || !data.user) {
-    return { data: null, error: error?.message ?? "Login failed." };
+  if (error || !data || data.error) {
+    // On non-2xx (e.g. 423 locked), supabase-js puts the response on
+    // error.context rather than data -- try to recover the server's
+    // message before falling back to the generic error.
+    const contextBody =
+      !data && error && "context" in error
+        ? await (error as { context: Response }).context
+            .clone()
+            .json()
+            .catch(() => null)
+        : null;
+
+    return {
+      data: null,
+      error: data?.error ?? contextBody?.error ?? error?.message ?? "Login failed.",
+    };
   }
 
-  return { data: { userId: data.user.id }, error: null };
+  const { error: sessionError } = await supabase.auth.setSession({
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+  });
+
+  if (sessionError) {
+    return { data: null, error: sessionError.message };
+  }
+
+  return { data: { userId: data.user_id }, error: null };
 }
 
 export async function fetchLinkedChildren(parentId: string): Promise<ActionResult<Profile[]>> {

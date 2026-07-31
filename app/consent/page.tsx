@@ -79,7 +79,7 @@ export default function ConsentPage() {
         </label>
 
         {error ? <p className="mb-4 text-sm font-medium text-red-500">{error}</p> : null}
-        <Button type="submit" size="lg" className="w-full" disabled={submitting}>
+        <Button type="submit" size="lg" className="w-full" disabled={submitting || !consentChecked}>
           {submitting ? "Recording consent…" : "Give consent & continue"}
         </Button>
       </form>

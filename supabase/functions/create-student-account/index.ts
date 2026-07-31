@@ -12,9 +12,11 @@
 // contact info collected) and a PIN as their password. There is no
 // independent student sign-up path.
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { corsHeaders } from "../_shared/cors.ts";
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -113,6 +115,7 @@ Deno.serve(async (req) => {
       display_name,
       date_of_birth: date_of_birth ?? null,
       consent_id,
+      login_email: syntheticEmail,
     });
 
     if (profileError) {

@@ -5,10 +5,58 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Nav } from "@/components/Nav";
 import { Button } from "@/components/Button";
+import { Skeleton } from "@/components/Skeleton";
 import { ChildRollupCard } from "@/components/parent-dashboard/ChildRollupCard";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { fetchParentDashboardChildren } from "@/lib/parent-dashboard/queries";
 import type { ParentDashboardChild } from "@/lib/supabase/types";
+
+function formatCents(cents: number): string {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
+/**
+ * Plan calls for a "combined stats strip — total saved across children,
+ * total XP this week — only if 2+ children linked". `parent_dashboard_children`
+ * has no week-scoped XP figure (xp_events isn't bucketed by week anywhere in
+ * the schema/views — see BACKEND.md), so only the total-saved figure, which
+ * is derivable from wallet_balance_cents + savings goal balances, is shown
+ * here; the weekly-XP stat is deliberately skipped rather than invented.
+ */
+function CombinedStatsStrip({ childProfiles }: { childProfiles: ParentDashboardChild[] }) {
+  if (childProfiles.length < 2) return null;
+
+  const totalSavedCents = childProfiles.reduce((sum, child) => {
+    const goalBalances = child.savings_goals.reduce((goalSum, goal) => goalSum + goal.balance_cents, 0);
+    return sum + child.wallet_balance_cents + goalBalances;
+  }, 0);
+
+  return (
+    <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-surface-border bg-surface px-5 py-3 shadow-soft">
+      <span className="text-sm font-medium text-neutral-500">Total saved across children</span>
+      <span className="text-lg font-semibold tabular-nums">{formatCents(totalSavedCents)}</span>
+    </div>
+  );
+}
+
+function ChildRollupSkeleton() {
+  return (
+    <div className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-6 shadow-soft">
+      <div className="mb-5 flex items-center gap-3">
+        <Skeleton className="h-11 w-11 rounded-full" />
+        <div className="flex-1 space-y-2">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-3 w-16" />
+        </div>
+      </div>
+      <Skeleton className="mb-5 h-2 w-full rounded-full" />
+      <div className="grid grid-cols-2 gap-3">
+        <Skeleton className="h-14 w-full" />
+        <Skeleton className="h-14 w-full" />
+      </div>
+    </div>
+  );
+}
 
 export default function ParentDashboardPage() {
   const router = useRouter();
@@ -68,7 +116,10 @@ export default function ParentDashboardPage() {
           {error ? (
             <p className="mt-8 text-sm text-red-600">{error}</p>
           ) : children === null ? (
-            <p className="mt-8 text-sm text-neutral-500">Loading your children…</p>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              <ChildRollupSkeleton />
+              <ChildRollupSkeleton />
+            </div>
           ) : children.length === 0 ? (
             <div className="mt-8 rounded-[var(--radius-card)] border border-surface-border bg-surface p-8 text-center shadow-soft">
               <p className="mb-4 text-sm text-neutral-500">
@@ -79,11 +130,14 @@ export default function ParentDashboardPage() {
               </Button>
             </div>
           ) : (
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {children.map((child, index) => (
-                <ChildRollupCard key={child.profile_id} child={child} index={index} />
-              ))}
-            </div>
+            <>
+              <CombinedStatsStrip childProfiles={children} />
+              <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                {children.map((child, index) => (
+                  <ChildRollupCard key={child.profile_id} child={child} index={index} />
+                ))}
+              </div>
+            </>
           )}
         </motion.div>
       </main>

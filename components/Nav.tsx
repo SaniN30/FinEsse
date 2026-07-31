@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
+import { Logo } from "@/components/Logo";
 import { useAuth } from "@/lib/supabase/auth-context";
 
 const links = [
@@ -26,9 +28,12 @@ export function Nav() {
       className="sticky top-0 z-40 border-b border-surface-border/70 bg-background/80 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <span className="font-display text-lg font-semibold tracking-tight">
-          FinEsse
-        </span>
+        <Link href="/" className="flex items-center gap-2">
+          <Logo size="sm" />
+          <span className="font-display text-lg font-semibold tracking-tight">
+            FinEsse
+          </span>
+        </Link>
         <nav className="hidden items-center gap-8 text-sm font-medium text-neutral-500 sm:flex">
           {links.map((link) => (
             <a
@@ -68,6 +73,9 @@ export function Nav() {
                   Dashboard
                 </a>
               ) : null}
+              <a href="/settings" className="text-sm font-medium text-neutral-500 hover:text-foreground">
+                Settings
+              </a>
               <Button
                 size="md"
                 variant="secondary"
@@ -109,6 +117,13 @@ export function Nav() {
                   Dashboard
                 </a>
               ) : null}
+              <a
+                href="/settings"
+                className="rounded-lg px-2 py-3 transition-colors hover:bg-surface hover:text-foreground"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Settings
+              </a>
               <Button
                 size="md"
                 variant="secondary"

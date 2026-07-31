@@ -8,6 +8,7 @@ import { SavingsGoalCard } from "@/components/pocket-money/SavingsGoalCard";
 import { CreateGoalForm } from "@/components/pocket-money/CreateGoalForm";
 import { WalletBalance } from "@/components/pocket-money/WalletBalance";
 import { ParentGoalsView } from "@/components/pocket-money/ParentGoalsView";
+import { Skeleton } from "@/components/Skeleton";
 import type { AccountBalance, SavingsGoalProgress } from "@/lib/supabase/types";
 
 function StudentPlanner({ profileId }: { profileId: string }) {
@@ -31,7 +32,17 @@ function StudentPlanner({ profileId }: { profileId: string }) {
   }, [load]);
 
   if (error) return <p className="text-sm text-red-600">{error}</p>;
-  if (!goals || !accounts) return <p className="text-sm text-neutral-500">Loading…</p>;
+  if (!goals || !accounts) {
+    return (
+      <div>
+        <Skeleton className="mb-8 h-24 w-full" />
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Skeleton className="h-40 w-full" />
+          <Skeleton className="h-40 w-full" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -64,7 +75,7 @@ export function PocketMoneyPlanner() {
           The Pocket Money Planner
         </h2>
         {isLoading ? (
-          <p className="text-sm text-neutral-500">Loading…</p>
+          <Skeleton className="h-24 w-full" />
         ) : profile ? (
           <StudentPlanner profileId={profile.id} />
         ) : null}

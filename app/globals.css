@@ -43,6 +43,14 @@
   --color-tier-college: #8a6bf2;
   --color-tier-jobready: #1fc491;
 
+  /* Lavish design-system pass: tier-visual-language accents (School pixel-art,
+     College transitional, Job-Ready minimal) — kept distinct from the Phase 0
+     tier accents above, which stay in place for existing LevelCard usage. */
+  --color-tier-school-lavish: #c98b7d;
+  --color-tier-college-lavish: #6e46ea;
+  --color-tier-jobready-ink: #1b1710;
+  --color-success: #1fc491;
+
   --background: var(--color-neutral-50);
   --foreground: var(--color-neutral-900);
   --surface: var(--color-neutral-0);
@@ -59,6 +67,11 @@
   --foreground: var(--color-neutral-100);
   --surface: var(--color-neutral-900);
   --surface-border: var(--color-neutral-800);
+
+  --color-tier-school-lavish: #d9a7a0;
+  --color-tier-college-lavish: #a98cf5;
+  --color-tier-jobready-ink: #f3f1ea;
+  --color-success: #4fdbae;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -67,6 +80,11 @@
     --foreground: var(--color-neutral-100);
     --surface: var(--color-neutral-900);
     --surface-border: var(--color-neutral-800);
+
+    --color-tier-school-lavish: #d9a7a0;
+    --color-tier-college-lavish: #a98cf5;
+    --color-tier-jobready-ink: #f3f1ea;
+    --color-success: #4fdbae;
   }
 }
 
@@ -100,6 +118,11 @@
   --color-tier-college: var(--color-tier-college);
   --color-tier-jobready: var(--color-tier-jobready);
 
+  --color-tier-school-lavish: var(--color-tier-school-lavish);
+  --color-tier-college-lavish: var(--color-tier-college-lavish);
+  --color-tier-jobready-ink: var(--color-tier-jobready-ink);
+  --color-success: var(--color-success);
+
   --color-neutral-0: var(--color-neutral-0);
   --color-neutral-50: var(--color-neutral-50);
   --color-neutral-100: var(--color-neutral-100);
@@ -128,4 +151,28 @@ body {
 
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Three-tier visual language (Lavish direction: pixel-art School ->
+   transitional College -> minimal Job-Ready/parent utility). Apply one of
+   these classes to a tier's page-level wrapper; they only set the accent,
+   border, and radius vocabulary for that tier and compose with existing
+   components/tokens rather than replacing them. */
+.theme-tier-school {
+  --tier-accent: var(--color-tier-school-lavish);
+  --tier-radius: 0.25rem;
+  --tier-border-width: 2px;
+  image-rendering: pixelated;
+}
+
+.theme-tier-college {
+  --tier-accent: var(--color-tier-college-lavish);
+  --tier-radius: 0.75rem;
+  --tier-border-width: 1.5px;
+}
+
+.theme-tier-jobready {
+  --tier-accent: var(--color-tier-jobready-ink);
+  --tier-radius: var(--radius-card);
+  --tier-border-width: 1px;
 }

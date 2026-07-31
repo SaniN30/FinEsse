@@ -37,12 +37,14 @@ describe("ConsentPage", () => {
     render(<ConsentPage />);
 
     await user.type(screen.getByLabelText("Child's display name"), "Robin");
-    await user.click(screen.getByRole("button", { name: /give consent/i }));
+    const submitButton = screen.getByRole("button", { name: /give consent/i });
+    expect(submitButton).toBeDisabled();
 
+    await user.click(submitButton);
     expect(recordConsentMock).not.toHaveBeenCalled();
-    expect(
-      await screen.findByText(/must explicitly confirm consent/i),
-    ).toBeInTheDocument();
+
+    await user.click(screen.getByRole("checkbox"));
+    expect(submitButton).toBeEnabled();
   });
 
   it("calls record-consent and navigates to create-student once checked", async () => {
