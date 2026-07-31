@@ -84,7 +84,7 @@ Located in `components/`, typed, and used on the landing page:
 - **`Button`** (`Button.tsx`) — `primary` / `secondary` / `ghost` variants,
   `md` / `lg` sizes, built-in hover/press motion.
 - **`LevelCard`** (`LevelCard.tsx`) — tier-aware card (school/college/jobready)
-  with badge, topic list, and embedded `ProgressBar`.
+  with badge, topic list, and a short status stat string (no fake progress bar).
 - **`ProgressBar`** (`ProgressBar.tsx`) — animated fill, optional label.
 
 ## Routes
