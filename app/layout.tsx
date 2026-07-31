@@ -33,6 +33,11 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("finesse-theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t);}}catch(e){}`,
+          }}
+        />
         <AuthProvider>
           {children}
           <Footer />

@@ -72,6 +72,9 @@ export function Nav() {
                   Dashboard
                 </a>
               ) : null}
+              <a href="/settings" className="text-sm font-medium text-neutral-500 hover:text-foreground">
+                Settings
+              </a>
               <Button
                 size="md"
                 variant="secondary"
@@ -113,6 +116,13 @@ export function Nav() {
                   Dashboard
                 </a>
               ) : null}
+              <a
+                href="/settings"
+                className="rounded-lg px-2 py-3 transition-colors hover:bg-surface hover:text-foreground"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Settings
+              </a>
               <Button
                 size="md"
                 variant="secondary"
