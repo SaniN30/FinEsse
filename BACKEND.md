@@ -64,6 +64,11 @@ creation.
   profile's last 10 attempts per skill; a skill "unlocks" the next one in the
   graph when `rolling_accuracy >= skills.mastery_threshold`. There is no
   stored "current level" — mastery state is always derived from the log.
+  Declared `with (security_invoker = true)` (fixed in migration 021 — it was
+  missing this on creation in migration 002 and so silently ran with the
+  `postgres` owner's `BYPASSRLS`, leaking every profile's mastery data; see
+  `account_balances`/`savings_goal_progress` below for the established
+  pattern this now matches).
 - `xp_events` is an append-only XP ledger (`xp_delta >= 0`, one row per
   scoring event). Total XP for a profile is `sum(xp_delta)`, computed on
   read, never stored.
@@ -480,6 +485,13 @@ operator-facing deletion tool itself is out of scope for this phase.
   (404 — RLS hides the row entirely, so there's nothing to compare
   ownership against). Requires `GEMINI_API_KEY` configured as a Supabase
   Edge Function secret on the linked project.
+- `parent-dashboard-aggregate.test.ts` (Phase 8) — a parent with one linked
+  child gets a single non-empty `parent_dashboard_children` row aggregating
+  tier/XP/mastery/wallet/savings-goal/interview data; a child with no
+  activity yet gets an empty-shaped row rather than a missing one; a parent
+  cannot see another parent's children through the view; a parent only ever
+  sees rows for their own linked children (see `AGENTS.md` for the view and
+  route this covers).
 
 All tests pass against a provisioned free-tier Supabase project (migrations
 applied with `supabase db push`, functions deployed with
