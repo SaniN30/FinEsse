@@ -12,7 +12,7 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   repo root — read it before adding any new UI so later phases stay visually
   consistent.
 - Reusable primitives live in `components/` (`Button`, `LevelCard`, `ProgressBar`,
-  `Nav`, `Hero`, `LevelSection`, `PocketMoneyPlanner`, `TierPlaceholder`) and
+  `Nav`, `Hero`, `LevelSection`, `PocketMoneyPlanner`, `TierPlaceholder`, `BackLink`) and
   `components/auth/` (`AuthCard`, `FormField`, `PinInput`) — prefer extending these
   over ad-hoc styling.
 - Routes: `/` (landing), `/school`, `/college`, `/job-ready` (tier landing pages;
