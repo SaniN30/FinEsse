@@ -143,6 +143,21 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   `app/job-ready/lessons` + `[skillId]` + `app/job-ready/quiz/[quizId]`, reusing the same
   tier-agnostic `components/lessons`/`components/quiz` components College uses — pass
   `tier="job_ready"` (the schema's tier value; the route segment is `job-ready`).
+- `00000000000030_seed_advanced_content.sql` adds 9 new (not expanded-in-place) skills —
+  School: compound interest, budgeting; College: statement analysis/ratios, credit risk,
+  portfolio construction; Job-Ready: technical interview prep, market-sizing case
+  interviews, ethics & compliance — each chained off that tier's most-advanced prior skill,
+  at the same lesson/quiz depth as migrations 27-29. It also adds two new case-style
+  `modeling_exercises` (DSCR credit assessment on College's `credit-risk-basics`, a
+  branch market-sizing case on Job-Ready's `market-sizing-case-interviews`), reusing
+  `grade_modeling_submission` unchanged. `components/lessons/LessonDetail.tsx` gained an
+  optional `modelingBasePath` prop that fetches/links `modeling_exercises_public` rows for
+  the current skill (College and Job-Ready lesson pages now pass it; School doesn't have
+  the concept). Job-Ready previously had no modeling route at all — added
+  `app/job-ready/modeling/[exerciseId]/page.tsx`, mirroring College's. Migration numbering:
+  before adding another seed migration, check the highest number in use on `main` *and* any
+  known in-flight branches (this repo has had numbering collisions before) — 30 was free as
+  of this migration.
 - Migration numbering: this repo has had numbering collisions across parallel branches
   (e.g. `00000000000022` and `00000000000023` each exist twice) — before adding a new seed
   migration, check the highest number in use on `main` *and* any known in-flight branches,
