@@ -154,10 +154,8 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   optional `modelingBasePath` prop that fetches/links `modeling_exercises_public` rows for
   the current skill (College and Job-Ready lesson pages now pass it; School doesn't have
   the concept). Job-Ready previously had no modeling route at all — added
-  `app/job-ready/modeling/[exerciseId]/page.tsx`, mirroring College's. Migration numbering:
-  before adding another seed migration, check the highest number in use on `main` *and* any
-  known in-flight branches (this repo has had numbering collisions before) — 30 was free as
-  of this migration.
+  `app/job-ready/modeling/[exerciseId]/page.tsx`, mirroring College's. 30 was free as of
+  this migration (see the migration numbering note below).
 - Migration numbering: this repo has had numbering collisions across parallel branches
   (e.g. `00000000000022` and `00000000000023` each exist twice) — before adding a new seed
   migration, check the highest number in use on `main` *and* any known in-flight branches,
