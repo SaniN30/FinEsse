@@ -42,7 +42,7 @@ export function LessonList({
 
       const { data: lessonRows, error: lessonError } = await supabase
         .from("lessons")
-        .select("id, skill_id, content_type, content_url, content_body, order_index")
+        .select("*")
         .in(
           "skill_id",
           skillRows.map((skill) => skill.id),

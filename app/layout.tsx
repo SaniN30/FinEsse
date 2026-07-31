@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { AuthProvider } from "@/lib/supabase/auth-context";
 import "./globals.css";
-import { AuthProvider } from "@/lib/supabase/auth-context";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",

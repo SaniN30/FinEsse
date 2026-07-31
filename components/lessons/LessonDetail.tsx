@@ -23,12 +23,12 @@ export function LessonDetail({ skillId, quizBasePath }: LessonDetailProps) {
       const [lessonResult, quizResult] = await Promise.all([
         supabase
           .from("lessons")
-          .select("id, skill_id, content_type, content_url, content_body, order_index")
+          .select("*")
           .eq("skill_id", skillId)
           .order("order_index", { ascending: true }),
         supabase
           .from("quizzes")
-          .select("id, skill_id, lesson_id, title, pass_threshold")
+          .select("*")
           .eq("skill_id", skillId),
       ]);
 
