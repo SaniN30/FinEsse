@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
+import { Logo } from "@/components/Logo";
 import { useAuth } from "@/lib/supabase/auth-context";
 
 const links = [
@@ -26,9 +27,12 @@ export function Nav() {
       className="sticky top-0 z-40 border-b border-surface-border/70 bg-background/80 backdrop-blur-md"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <span className="font-display text-lg font-semibold tracking-tight">
-          FinEsse
-        </span>
+        <a href="/" className="flex items-center gap-2">
+          <Logo size="sm" />
+          <span className="font-display text-lg font-semibold tracking-tight">
+            FinEsse
+          </span>
+        </a>
         <nav className="hidden items-center gap-8 text-sm font-medium text-neutral-500 sm:flex">
           {links.map((link) => (
             <a

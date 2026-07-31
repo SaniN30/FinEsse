@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Nav } from "@/components/Nav";
+import { Logo } from "@/components/Logo";
 
 interface AuthCardProps {
   eyebrow: string;
@@ -21,6 +22,9 @@ export function AuthCard({ eyebrow, title, description, children }: AuthCardProp
           transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] as const }}
           className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-8 shadow-soft"
         >
+          <div className="mb-6 flex justify-center">
+            <Logo size="md" />
+          </div>
           <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-primary-500">
             {eyebrow}
           </p>

@@ -21,7 +21,7 @@
 // policy for those (see migrations 005/020) -- this function is the only
 // place allowed to write them.
 import { createClient } from "jsr:@supabase/supabase-js@2";
-import { corsHeaders } from "../_shared/cors.ts";
+import { getCorsHeaders } from "../_shared/cors.ts";
 
 const GEMINI_MODEL = "gemini-flash-latest";
 
@@ -42,7 +42,11 @@ interface RubricScores {
   overall_feedback: string;
 }
 
-function jsonResponse(body: unknown, status: number): Response {
+function jsonResponse(
+  body: unknown,
+  status: number,
+  corsHeaders: Record<string, string>,
+): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -98,6 +102,8 @@ async function scoreTranscript(
 }
 
 Deno.serve(async (req) => {
+  const corsHeaders = getCorsHeaders(req.headers.get("origin"));
+
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
@@ -105,17 +111,17 @@ Deno.serve(async (req) => {
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      return jsonResponse({ error: "missing Authorization header" }, 401);
+      return jsonResponse({ error: "missing Authorization header" }, 401, corsHeaders);
     }
 
     const { session_id } = await req.json();
     if (typeof session_id !== "string") {
-      return jsonResponse({ error: "session_id is required" }, 400);
+      return jsonResponse({ error: "session_id is required" }, 400, corsHeaders);
     }
 
     const geminiApiKey = Deno.env.get("GEMINI_API_KEY");
     if (!geminiApiKey) {
-      return jsonResponse({ error: "GEMINI_API_KEY is not configured" }, 500);
+      return jsonResponse({ error: "GEMINI_API_KEY is not configured" }, 500, corsHeaders);
     }
 
     const callerClient = createClient(
@@ -130,7 +136,7 @@ Deno.serve(async (req) => {
     } = await callerClient.auth.getUser();
 
     if (userError || !user) {
-      return jsonResponse({ error: "invalid session" }, 401);
+      return jsonResponse({ error: "invalid session" }, 401, corsHeaders);
     }
 
     // Read the session as the caller so RLS confirms ownership (or linked
@@ -142,11 +148,11 @@ Deno.serve(async (req) => {
       .single();
 
     if (sessionError || !session) {
-      return jsonResponse({ error: "session not found" }, 404);
+      return jsonResponse({ error: "session not found" }, 404, corsHeaders);
     }
 
     if (session.profile_id !== user.id) {
-      return jsonResponse({ error: "only the student who submitted a session can score it" }, 403);
+      return jsonResponse({ error: "only the student who submitted a session can score it" }, 403, corsHeaders);
     }
 
     const { data: question, error: questionError } = await callerClient
@@ -156,7 +162,7 @@ Deno.serve(async (req) => {
       .single();
 
     if (questionError || !question) {
-      return jsonResponse({ error: "interview question not found" }, 404);
+      return jsonResponse({ error: "interview question not found" }, 404, corsHeaders);
     }
 
     const rubricScores = await scoreTranscript(geminiApiKey, question.question_text, session.transcript);
@@ -172,7 +178,7 @@ Deno.serve(async (req) => {
       .eq("id", session_id);
 
     if (updateError) {
-      return jsonResponse({ error: updateError.message }, 400);
+      return jsonResponse({ error: updateError.message }, 400, corsHeaders);
     }
 
     const { error: xpError } = await admin.from("xp_events").insert({
@@ -183,15 +189,15 @@ Deno.serve(async (req) => {
     });
 
     if (xpError) {
-      return jsonResponse({ error: xpError.message }, 400);
+      return jsonResponse({ error: xpError.message }, 400, corsHeaders);
     }
 
-    return jsonResponse({ session_id, rubric_scores: rubricScores }, 200);
+    return jsonResponse({ session_id, rubric_scores: rubricScores }, 200, corsHeaders);
   } catch (err) {
     if (err instanceof ScoringError) {
-      return jsonResponse({ error: err.message }, 502);
+      return jsonResponse({ error: err.message }, 502, corsHeaders);
     }
     console.error("Unexpected error scoring interview session", err);
-    return jsonResponse({ error: "internal server error" }, 500);
+    return jsonResponse({ error: "internal server error" }, 500, corsHeaders);
   }
 });
