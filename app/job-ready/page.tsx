@@ -11,14 +11,23 @@ export default function JobReadyPage() {
         </p>
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Job-Ready</h1>
         <p className="mt-4 text-lg text-neutral-500">
-          Case-method lessons land in a later phase — practice with the AI Interview Coach now.
+          Lessons on interview fundamentals, resumes, and case-method thinking, plus the AI
+          Interview Coach for live practice.
         </p>
-        <Link
-          href="/job-ready/interview"
-          className="mt-8 inline-flex text-sm font-medium text-primary-500 hover:text-primary-600"
-        >
-          Practice an interview question →
-        </Link>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <Link
+            href="/job-ready/lessons"
+            className="rounded-full bg-primary-500 px-6 py-3 text-sm font-medium text-white shadow-soft hover:bg-primary-600"
+          >
+            Start lessons
+          </Link>
+          <Link
+            href="/job-ready/interview"
+            className="text-sm font-medium text-primary-500 hover:text-primary-600"
+          >
+            Practice an interview question →
+          </Link>
+        </div>
       </main>
     </div>
   );

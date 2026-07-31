@@ -16,10 +16,10 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   `components/auth/` (`AuthCard`, `FormField`, `PinInput`) — prefer extending these
   over ad-hoc styling.
 - Routes: `/` (landing), `/school`, `/college`, `/job-ready` (tier landing pages;
-  `/job-ready` now links to the Phase 9 AI Interview Coach, remaining Job-Ready
-  curriculum lands in a later phase), `/settings` (Account, Appearance,
-  Notifications, Help, Legal — `components/settings/`, theme state via
-  `lib/settings/theme.ts`), plus the Phase 6 auth flow below.
+  `/job-ready` links to both its lesson track and the Phase 9 AI Interview Coach),
+  `/settings` (Account, Appearance, Notifications, Help, Legal —
+  `components/settings/`, theme state via `lib/settings/theme.ts`), plus the
+  Phase 6 auth flow below.
 - `tsconfig.json`'s `include` intentionally excludes `vitest.config.ts`/
   `vitest.config.component.ts` (see `tsconfig.vitest.json`) so a dev-tooling
   version drift in vitest/vite plugins can't break `npm run build` — don't
@@ -117,6 +117,28 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
 - The parent read-only view for this feature is the existing Interview Coach section inside
   `components/parent-dashboard/ChildRollupCard.tsx` (Phase 8) — no separate parent screen was
   added for Phase 9.
+
+## Content depth pass + Job-Ready lesson track (post-Phase 9)
+
+- The original Phase 2/3 seed migrations (`00000000000009`, `00000000000016`) were
+  explicitly schema-validation fixtures — one-paragraph lessons, 2-question quizzes.
+  `00000000000027_expand_school_content.sql` and `00000000000028_expand_college_content.sql`
+  expand those in place (same skill/lesson/quiz ids, longer `content_body` with a worked
+  example, 4-6 quiz questions with a recall/application mix) rather than replacing rows, so
+  historical `quiz_attempts`/`skill_attempts` referencing those ids stay valid.
+- `00000000000028` also replaces the College modeling exercise's rubric/instructions with a
+  multi-step build (revenue → COGS → gross profit → net income) matching its lesson's
+  3-statement description — still graded by the existing `grade_modeling_submission` RPC,
+  which already iterates an arbitrary jsonb-keyed rubric, so no RPC change was needed.
+- Job-Ready now has a real lesson track (`00000000000029_seed_jobready_content.sql`:
+  interview fundamentals, resume/behavioral basics, case-method basics) at
+  `app/job-ready/lessons` + `[skillId]` + `app/job-ready/quiz/[quizId]`, reusing the same
+  tier-agnostic `components/lessons`/`components/quiz` components College uses — pass
+  `tier="job_ready"` (the schema's tier value; the route segment is `job-ready`).
+- Migration numbering: this repo has had numbering collisions across parallel branches
+  (e.g. `00000000000022` and `00000000000023` each exist twice) — before adding a new seed
+  migration, check the highest number in use on `main` *and* any known in-flight branches,
+  not just `main` alone, and pick a clearly-past-the-end number to avoid a second collision.
 
 ## Maintaining this file
 

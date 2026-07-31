@@ -131,7 +131,12 @@ describe("college-tier content: modeling exercise grading", () => {
   it("scores a correct submission as a pass and awards XP + a skill_attempt", async () => {
     const { data, error } = await studentA.client.rpc("grade_modeling_submission", {
       p_exercise_id: MODELING_EXERCISE_ID,
-      p_submitted_values: { projected_revenue: 1100000, revenue_growth_pct: 10 },
+      p_submitted_values: {
+        projected_revenue: 2160000,
+        projected_cogs: 1296000,
+        gross_profit: 864000,
+        net_income: 423000,
+      },
     });
 
     expect(error).toBeNull();
@@ -170,7 +175,12 @@ describe("college-tier content: modeling exercise grading", () => {
 
     const { data, error } = await studentA.client.rpc("grade_modeling_submission", {
       p_exercise_id: MODELING_EXERCISE_ID,
-      p_submitted_values: { projected_revenue: 1100000, revenue_growth_pct: 10 },
+      p_submitted_values: {
+        projected_revenue: 2160000,
+        projected_cogs: 1296000,
+        gross_profit: 864000,
+        net_income: 423000,
+      },
     });
 
     expect(error).toBeNull();
@@ -195,7 +205,12 @@ describe("college-tier content: modeling exercise grading", () => {
   it("scores a wildly incorrect submission as a fail and awards nothing", async () => {
     const { data, error } = await studentB.client.rpc("grade_modeling_submission", {
       p_exercise_id: MODELING_EXERCISE_ID,
-      p_submitted_values: { projected_revenue: 1, revenue_growth_pct: -50 },
+      p_submitted_values: {
+        projected_revenue: 1,
+        projected_cogs: -50,
+        gross_profit: -50,
+        net_income: -50,
+      },
     });
 
     expect(error).toBeNull();
@@ -212,7 +227,14 @@ describe("college-tier content: modeling exercise grading", () => {
   it("never trusts a client-submitted score/passed field", async () => {
     const { data, error } = await studentB.client.rpc("grade_modeling_submission", {
       p_exercise_id: MODELING_EXERCISE_ID,
-      p_submitted_values: { projected_revenue: 1, revenue_growth_pct: -50, score: 1, passed: true },
+      p_submitted_values: {
+        projected_revenue: 1,
+        projected_cogs: -50,
+        gross_profit: -50,
+        net_income: -50,
+        score: 1,
+        passed: true,
+      },
     });
 
     expect(error).toBeNull();
@@ -223,7 +245,12 @@ describe("college-tier content: modeling exercise grading", () => {
   it("does not crash on malformed (non-numeric) submitted values", async () => {
     const { data, error } = await studentB.client.rpc("grade_modeling_submission", {
       p_exercise_id: MODELING_EXERCISE_ID,
-      p_submitted_values: { projected_revenue: "not a number", revenue_growth_pct: null },
+      p_submitted_values: {
+        projected_revenue: "not a number",
+        projected_cogs: null,
+        gross_profit: null,
+        net_income: null,
+      },
     });
 
     expect(error).toBeNull();
