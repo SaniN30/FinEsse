@@ -98,6 +98,23 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   `security_invoker = true`, which it had been missing — read the migration's
   comment before touching either view.
 
+## AI Interview Coach frontend (Phase 9)
+
+- Question picker (`/job-ready/interview`, `components/interview-coach/QuestionPicker.tsx`)
+  shows `interview_questions.category` values as plain-text tabs with recent attempts below —
+  note the real seeded categories are `behavioral` \| `technical` (see `BACKEND.md`), not the
+  `guesstimate`/`framework`/`behavioral` labels an earlier planning doc used; the UI derives
+  tabs from whatever categories exist in the data rather than hardcoding a fixed label set.
+- Transcript entry + single-reveal scoring live at `/job-ready/interview/[questionId]`
+  (`components/interview-coach/{TranscriptEntry,ScoreReveal,InterviewSession}.tsx`), calling
+  `submit_interview_session` then `score-interview-session` via
+  `lib/interview-coach/queries.ts#submitAndScoreInterviewSession` — one synchronous round
+  trip, so `ScoreReveal` renders the headline + all sub-scores (STAR structure, clarity,
+  filler-word count) together, never staggered.
+- The parent read-only view for this feature is the existing Interview Coach section inside
+  `components/parent-dashboard/ChildRollupCard.tsx` (Phase 8) — no separate parent screen was
+  added for Phase 9.
+
 ## Maintaining this file
 
 Keep this file short and durable — project structure, conventions, and

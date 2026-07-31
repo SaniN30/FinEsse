@@ -136,3 +136,41 @@ export interface ModelingGradeResult {
   breakdown: Record<string, { correct: boolean }>;
   alreadyCompleted: boolean;
 }
+
+export type InterviewQuestionCategory = "behavioral" | "technical";
+
+export interface InterviewQuestion {
+  id: string;
+  firm_style: string;
+  question_text: string;
+  category: InterviewQuestionCategory;
+  published: boolean;
+}
+
+export interface RubricScoreEntry {
+  score: number;
+  feedback: string;
+}
+
+/** Shape written by supabase/functions/score-interview-session; `{}` before scoring. */
+export interface InterviewRubricScores {
+  star_structure?: RubricScoreEntry;
+  clarity?: RubricScoreEntry;
+  filler_word_count?: number;
+  overall_feedback?: string;
+}
+
+export interface InterviewSession {
+  id: string;
+  profile_id: string;
+  question_id: string;
+  firm_style: string;
+  transcript: string;
+  rubric_scores: InterviewRubricScores;
+  created_at: string;
+}
+
+export interface ScoreInterviewSessionResult {
+  session_id: string;
+  rubric_scores: InterviewRubricScores;
+}
