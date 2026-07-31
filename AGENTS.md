@@ -15,8 +15,9 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   `Nav`, `Hero`, `LevelSection`, `PocketMoneyPlanner`, `TierPlaceholder`) and
   `components/auth/` (`AuthCard`, `FormField`, `PinInput`) — prefer extending these
   over ad-hoc styling.
-- Routes: `/` (landing), `/school`, `/college`, `/job-ready` (tier placeholders,
-  content lands in later phases), plus the Phase 6 auth flow below.
+- Routes: `/` (landing), `/school`, `/college`, `/job-ready` (tier landing pages;
+  `/job-ready` now links to the Phase 9 AI Interview Coach, remaining Job-Ready
+  curriculum lands in a later phase), plus the Phase 6 auth flow below.
 - `tsconfig.json`'s `include` intentionally excludes `vitest.config.ts`/
   `vitest.config.component.ts` (see `tsconfig.vitest.json`) so a dev-tooling
   version drift in vitest/vite plugins can't break `npm run build` — don't
@@ -97,6 +98,23 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   ChildRollupCard.tsx`. That migration also fixes `skill_mastery` (Phase 1) to
   `security_invoker = true`, which it had been missing — read the migration's
   comment before touching either view.
+
+## AI Interview Coach frontend (Phase 9)
+
+- Question picker (`/job-ready/interview`, `components/interview-coach/QuestionPicker.tsx`)
+  shows `interview_questions.category` values as plain-text tabs with recent attempts below —
+  note the real seeded categories are `behavioral` \| `technical` (see `BACKEND.md`), not the
+  `guesstimate`/`framework`/`behavioral` labels an earlier planning doc used; the UI derives
+  tabs from whatever categories exist in the data rather than hardcoding a fixed label set.
+- Transcript entry + single-reveal scoring live at `/job-ready/interview/[questionId]`
+  (`components/interview-coach/{TranscriptEntry,ScoreReveal,InterviewSession}.tsx`), calling
+  `submit_interview_session` then `score-interview-session` via
+  `lib/interview-coach/queries.ts#submitAndScoreInterviewSession` — one synchronous round
+  trip, so `ScoreReveal` renders the headline + all sub-scores (STAR structure, clarity,
+  filler-word count) together, never staggered.
+- The parent read-only view for this feature is the existing Interview Coach section inside
+  `components/parent-dashboard/ChildRollupCard.tsx` (Phase 8) — no separate parent screen was
+  added for Phase 9.
 
 ## Maintaining this file
 
