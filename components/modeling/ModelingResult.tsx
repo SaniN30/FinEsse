@@ -32,6 +32,11 @@ export function ModelingResult({ result, onRetry }: ModelingResultProps) {
           {result.passed ? "Passed" : "Not quite yet"}
         </p>
         <h3 className="text-2xl font-semibold">{Math.round(result.score * 100)}%</h3>
+        {result.passed && result.alreadyCompleted ? (
+          <p className="mt-2 text-xs text-neutral-500">
+            You&apos;d already passed this exercise, so no additional XP was awarded.
+          </p>
+        ) : null}
       </div>
 
       <ul className="space-y-3">
