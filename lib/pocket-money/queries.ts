@@ -64,6 +64,19 @@ export async function withdrawFromSavingsGoal(
   if (error) throw error;
 }
 
+export async function fundStudentWallet(
+  studentProfileId: string,
+  amountCents: number,
+): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.rpc("fund_student_wallet", {
+    p_student_profile_id: studentProfileId,
+    p_amount_cents: amountCents,
+  });
+
+  if (error) throw error;
+}
+
 export interface ChildProfile {
   id: string;
   display_name: string | null;
