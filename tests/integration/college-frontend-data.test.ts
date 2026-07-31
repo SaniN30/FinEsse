@@ -173,20 +173,27 @@ describe("Phase 8 College frontend: modeling exercise", () => {
       .maybeSingle();
 
     const keys = extractMetricKeys(data!.instructions as string);
-    expect(keys).toEqual(["projected_revenue", "revenue_growth_pct"]);
+    expect(keys).toEqual(["projected_revenue", "projected_cogs", "gross_profit", "net_income"]);
   });
 
   it("ModelingResult's per-metric breakdown reflects correct/incorrect submissions", async () => {
     const { data, error } = await student.client.rpc("grade_modeling_submission", {
       p_exercise_id: MODELING_EXERCISE_ID,
-      p_submitted_values: { projected_revenue: 1100000, revenue_growth_pct: 0 },
+      p_submitted_values: {
+        projected_revenue: 2160000,
+        projected_cogs: 1296000,
+        gross_profit: 864000,
+        net_income: 0,
+      },
     });
 
     expect(error).toBeNull();
     expect(data.passed).toBe(false);
     expect(data.metrics).toEqual({
       projected_revenue: true,
-      revenue_growth_pct: false,
+      projected_cogs: true,
+      gross_profit: true,
+      net_income: false,
     });
   });
 });
