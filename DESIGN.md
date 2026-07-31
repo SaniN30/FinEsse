@@ -30,10 +30,18 @@ via `@theme inline`, deliberately avoiding Tailwind's stock indigo/gray defaults
 | Accent | `accent-500` | `#1FC491` | Growth/money cues, Job-Ready tier, progress bars |
 | Neutral (warm ink, not gray) | `neutral-50`…`neutral-950` | `#F7F6F3` → `#0C0B08` | Backgrounds, text, borders |
 
-Tier accent mapping (used by `LevelCard`):
-- School → `secondary-400` `#5B8CFF`
-- College → `primary-400` `#8A6BF2`
-- Job-Ready → `accent-500` `#1FC491`
+Tier accent mapping (`--color-tier-school` / `--color-tier-college` /
+`--color-tier-jobready`, used by `LevelCard` and every `bg-tier-*`/`text-tier-*`/
+`border-tier-*` consumer — the single approved set, per the Lavish design pass):
+- School → `#C98B7D` (`#D9A7A0` in dark mode)
+- College → `#6E46EA` (`#A98CF5` in dark mode)
+- Job-Ready → `accent-500` `#1FC491` (constant across themes)
+
+Each tier root (`app/school`, `app/college`, `app/job-ready`) also wraps its
+pages in a `.theme-tier-*` class (`app/globals.css`) carrying the Lavish
+three-tier visual language: pixel-art School (chunky radius, pixelated
+image-rendering), transitional College (softer radius, gradient underline),
+minimal Job-Ready (ink-colored heading, default radius, no extra chrome).
 
 ### Dark mode
 
