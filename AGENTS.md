@@ -156,10 +156,17 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   the concept). Job-Ready previously had no modeling route at all — added
   `app/job-ready/modeling/[exerciseId]/page.tsx`, mirroring College's. 30 was free as of
   this migration (see the migration numbering note below).
+- `00000000000031_seed_capstone_content.sql` adds one more skill at the top of each tier's
+  chain, closing gaps 27-30 left: School `banking-and-inflation-basics` (real return vs.
+  nominal interest); College `capital-structure-and-wacc` (debt/equity mix, CAPM cost of
+  equity, WACC — plus a multi-step WACC `modeling_exercises` row); Job-Ready
+  `advanced-behavioral-interviews` (leadership/conflict/failure question categories, STARL
+  for failure stories). Same lesson/quiz depth pattern as 27-30; no schema/RPC changes.
 - Migration numbering: this repo has had numbering collisions across parallel branches
   (e.g. `00000000000022` and `00000000000023` each exist twice) — before adding a new seed
   migration, check the highest number in use on `main` *and* any known in-flight branches,
   not just `main` alone, and pick a clearly-past-the-end number to avoid a second collision.
+  31 was free as of this migration.
 
 ## Frontend redesign (optimalearn.com reference)
 
