@@ -30,7 +30,7 @@ export function AuthCard({ eyebrow, title, description, children }: AuthCardProp
           </p>
           <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
           {description ? (
-            <p className="mt-2 text-sm leading-relaxed text-neutral-500">{description}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{description}</p>
           ) : null}
           <div className="mt-6">{children}</div>
         </motion.div>

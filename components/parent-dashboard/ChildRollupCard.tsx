@@ -75,7 +75,7 @@ export function ChildRollupCard({ child, index = 0 }: ChildRollupCardProps) {
         </div>
         <div className="text-right">
           <p className="text-2xl font-semibold tabular-nums">{child.total_xp}</p>
-          <p className="text-xs uppercase tracking-wide text-neutral-500">Total XP</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Total XP</p>
         </div>
       </div>
 
@@ -88,13 +88,13 @@ export function ChildRollupCard({ child, index = 0 }: ChildRollupCardProps) {
 
       <div className="mb-5 grid grid-cols-2 gap-3">
         <div className="rounded-[calc(var(--radius-card)-0.5rem)] border border-surface-border bg-background/40 p-3">
-          <p className="text-xs uppercase tracking-wide text-neutral-500">Wallet</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Wallet</p>
           <p className="text-lg font-semibold tabular-nums">
             {formatCents(child.wallet_balance_cents)}
           </p>
         </div>
         <div className="rounded-[calc(var(--radius-card)-0.5rem)] border border-surface-border bg-background/40 p-3">
-          <p className="text-xs uppercase tracking-wide text-neutral-500">Savings goals</p>
+          <p className="text-xs uppercase tracking-wide text-muted-foreground">Savings goals</p>
           <p className="text-lg font-semibold tabular-nums">{child.savings_goals.length}</p>
         </div>
       </div>
@@ -116,11 +116,11 @@ export function ChildRollupCard({ child, index = 0 }: ChildRollupCardProps) {
       ) : null}
 
       <div>
-        <p className="mb-2 text-xs uppercase tracking-wide text-neutral-500">
+        <p className="mb-2 text-xs uppercase tracking-wide text-muted-foreground">
           Interview Coach
         </p>
         {child.interview_sessions.length === 0 ? (
-          <p className="text-sm text-neutral-500">No sessions taken yet.</p>
+          <p className="text-sm text-muted-foreground">No sessions taken yet.</p>
         ) : (
           <ul className="space-y-2">
             {child.interview_sessions.slice(0, 3).map((session) => {
@@ -128,7 +128,7 @@ export function ChildRollupCard({ child, index = 0 }: ChildRollupCardProps) {
               return (
                 <li
                   key={session.session_id}
-                  className="flex items-center justify-between text-sm text-neutral-600"
+                  className="flex items-center justify-between text-sm text-muted-foreground"
                 >
                   <span className="capitalize">{session.firm_style.replace(/_/g, " ")}</span>
                   <span className="font-medium text-foreground">

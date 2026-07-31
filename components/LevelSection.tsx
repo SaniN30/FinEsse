@@ -46,7 +46,7 @@ export function LevelSection() {
         <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
           Three levels, one growth path
         </h2>
-        <p className="mt-3 text-neutral-500">
+        <p className="mt-3 text-muted-foreground">
           Each stage of FinEsse is built around where you actually are with
           money — not a one-size-fits-all course.
         </p>

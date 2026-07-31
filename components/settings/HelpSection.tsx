@@ -20,7 +20,7 @@ export function HelpSection() {
       description="All systems normal. Tell us what's wrong and we'll follow up by email."
     >
       {sent ? (
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-muted-foreground">
           Thanks — we&apos;ve got your message and will follow up by email.
         </p>
       ) : (

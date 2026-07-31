@@ -68,7 +68,7 @@ export default function LoginPage() {
           {submitting ? "Logging in…" : "Log in"}
         </Button>
       </form>
-      <p className="mt-4 text-center text-sm text-neutral-500">
+      <p className="mt-4 text-center text-sm text-muted-foreground">
         New to FinEsse?{" "}
         <Link href="/signup" className="font-medium text-primary-500 hover:text-primary-600">
           Create a parent account

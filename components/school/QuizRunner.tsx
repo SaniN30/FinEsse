@@ -107,7 +107,7 @@ export function QuizRunner({ quizId }: { quizId: string }) {
         <BackLink href={backHref} label="Back to Lesson" className="mb-4 justify-center" />
         <p
           className={`mb-2 text-sm font-semibold uppercase tracking-wide ${
-            result.passed ? "text-accent-600" : "text-neutral-500"
+            result.passed ? "text-accent-600" : "text-muted-foreground"
           }`}
         >
           {result.passed ? "Passed 🎉" : "Not quite — try again"}
@@ -117,12 +117,12 @@ export function QuizRunner({ quizId }: { quizId: string }) {
         </h2>
         <ProgressBar value={scorePercent} colorClassName="bg-accent-500" label="Score" />
         {result.passed ? (
-          <p className="mt-6 text-sm text-neutral-600">
+          <p className="mt-6 text-sm text-muted-foreground">
             +10 XP earned.
             {skillUnlockedNow ? " A new skill just unlocked!" : ""}
           </p>
         ) : (
-          <p className="mt-6 text-sm text-neutral-600">
+          <p className="mt-6 text-sm text-muted-foreground">
             You need {Math.round(quiz.pass_threshold * 100)}% to pass. Review the lesson and try
             again.
           </p>

@@ -55,7 +55,7 @@ export default function StudentLoginPage() {
   if (loggedInAs) {
     return (
       <AuthCard eyebrow="You're in" title={`Hey ${loggedInAs}! 👋`}>
-        <p className="text-sm leading-relaxed text-neutral-500">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           Lessons and quizzes are coming in a later phase — for now, you&apos;re logged in
           and ready to go.
         </p>
@@ -71,7 +71,7 @@ export default function StudentLoginPage() {
         description="Pick your name to enter your PIN."
       >
         {students.length === 0 ? (
-          <p className="text-sm leading-relaxed text-neutral-500">
+          <p className="text-sm leading-relaxed text-muted-foreground">
             No student accounts found on this device yet. Ask your parent to create one from
             their dashboard.
           </p>

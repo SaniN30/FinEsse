@@ -53,7 +53,7 @@ export function InterviewSession({ questionId }: InterviewSessionProps) {
   }
 
   if (loadError) return <p className="text-sm text-red-500">{loadError}</p>;
-  if (!question) return <p className="text-sm text-neutral-500">Loading question…</p>;
+  if (!question) return <p className="text-sm text-muted-foreground">Loading question…</p>;
 
   if (rubricScores) {
     return (

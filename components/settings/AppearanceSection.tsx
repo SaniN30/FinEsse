@@ -35,7 +35,7 @@ export function AppearanceSection() {
               "rounded-xl border px-4 py-2 text-sm font-medium transition-colors",
               preference === option.value
                 ? "border-primary-500 bg-primary-50 text-primary-700"
-                : "border-surface-border text-neutral-500 hover:border-primary-400",
+                : "border-surface-border text-muted-foreground hover:border-primary-400",
             )}
           >
             {option.label}

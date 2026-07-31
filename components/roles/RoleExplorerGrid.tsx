@@ -68,7 +68,7 @@ export function RoleExplorerGrid() {
   }
 
   if (!roles) {
-    return <p className="text-sm text-neutral-500">Loading roles…</p>;
+    return <p className="text-sm text-muted-foreground">Loading roles…</p>;
   }
 
   return (

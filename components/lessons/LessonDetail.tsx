@@ -70,7 +70,7 @@ export function LessonDetail({ skillId, quizBasePath, modelingBasePath }: Lesson
   }
 
   if (!lessons) {
-    return <p className="text-sm text-neutral-500">Loading lesson…</p>;
+    return <p className="text-sm text-muted-foreground">Loading lesson…</p>;
   }
 
   return (
@@ -81,7 +81,7 @@ export function LessonDetail({ skillId, quizBasePath, modelingBasePath }: Lesson
           className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-6 shadow-soft"
         >
           {lesson.content_body ? (
-            <p className="text-sm leading-relaxed text-neutral-600">{lesson.content_body}</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">{lesson.content_body}</p>
           ) : null}
           {lesson.content_url ? (
             <a

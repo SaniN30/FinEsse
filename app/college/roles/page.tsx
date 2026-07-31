@@ -12,7 +12,7 @@ export default function CollegeRolesPage() {
           College
         </p>
         <h1 className="mb-2 text-3xl font-semibold tracking-tight">Role Explorer</h1>
-        <p className="mb-8 text-neutral-500">
+        <p className="mb-8 text-muted-foreground">
           Real finance roles, matched against the skills you&apos;ve mastered.
         </p>
         <RoleExplorerGrid />

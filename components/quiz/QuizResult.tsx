@@ -22,7 +22,7 @@ export function QuizResult({ result, onRetry }: QuizResultProps) {
         className={
           result.passed
             ? "mb-2 text-sm font-semibold text-accent-600"
-            : "mb-2 text-sm font-semibold text-neutral-500"
+            : "mb-2 text-sm font-semibold text-muted-foreground"
         }
       >
         {result.passed ? "Passed" : "Not quite yet"}

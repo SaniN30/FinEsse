@@ -30,7 +30,7 @@ export function ScoreReveal({ rubricScores, onPracticeAgain }: ScoreRevealProps)
           {overall !== null ? `${overall}/10` : "Scored"}
         </h2>
         {rubricScores.overall_feedback ? (
-          <p className="mt-4 text-sm text-neutral-500">{rubricScores.overall_feedback}</p>
+          <p className="mt-4 text-sm text-muted-foreground">{rubricScores.overall_feedback}</p>
         ) : null}
       </div>
 
@@ -45,7 +45,7 @@ export function ScoreReveal({ rubricScores, onPracticeAgain }: ScoreRevealProps)
               value={rubricScores.star_structure.score * 10}
               colorClassName="bg-primary-500"
             />
-            <p className="mt-3 text-sm text-neutral-500">{rubricScores.star_structure.feedback}</p>
+            <p className="mt-3 text-sm text-muted-foreground">{rubricScores.star_structure.feedback}</p>
           </div>
         ) : null}
 
@@ -56,7 +56,7 @@ export function ScoreReveal({ rubricScores, onPracticeAgain }: ScoreRevealProps)
               <span className="tabular-nums">{rubricScores.clarity.score}/10</span>
             </div>
             <ProgressBar value={rubricScores.clarity.score * 10} colorClassName="bg-secondary-500" />
-            <p className="mt-3 text-sm text-neutral-500">{rubricScores.clarity.feedback}</p>
+            <p className="mt-3 text-sm text-muted-foreground">{rubricScores.clarity.feedback}</p>
           </div>
         ) : null}
 

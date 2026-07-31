@@ -68,7 +68,7 @@ export function SkillDashboard() {
 
   if (!profile) {
     return (
-      <p className="text-sm text-neutral-500">
+      <p className="text-sm text-muted-foreground">
         Sign in to see your School skills and progress.
       </p>
     );
@@ -83,7 +83,7 @@ export function SkillDashboard() {
   }
 
   if (skills.length === 0) {
-    return <p className="text-sm text-neutral-500">No skills published for School yet.</p>;
+    return <p className="text-sm text-muted-foreground">No skills published for School yet.</p>;
   }
 
   const currentQuest = pickCurrentQuest(skills);
@@ -119,7 +119,7 @@ export function SkillDashboard() {
           ) : (
             <div className="rounded-[var(--radius-card)] border-2 border-surface-border bg-surface p-8 opacity-70 shadow-soft">
               <h2 className="mb-2 text-2xl font-semibold">{currentQuest.title}</h2>
-              <p className="text-sm text-neutral-500">Locked — finish the prerequisite skill first</p>
+              <p className="text-sm text-muted-foreground">Locked — finish the prerequisite skill first</p>
             </div>
           )}
         </motion.div>
@@ -129,7 +129,7 @@ export function SkillDashboard() {
           fold, lazy-revealed on scroll so first paint stays on the quest. */}
       {restOfPath.length > 0 ? (
         <div className="mt-10">
-          <p className="mb-3 text-xs font-medium uppercase tracking-wide text-neutral-500">
+          <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
             Skill path
           </p>
           <ul className="space-y-1.5">
@@ -147,7 +147,7 @@ export function SkillDashboard() {
                   }`}
                 >
                   <span className="font-medium">{skill.title}</span>
-                  <span className="text-xs uppercase tracking-wide text-neutral-500">{label}</span>
+                  <span className="text-xs uppercase tracking-wide text-muted-foreground">{label}</span>
                 </motion.div>
               );
               return skill.isUnlocked ? (
@@ -166,8 +166,8 @@ export function SkillDashboard() {
 
       {/* Level/XP: quiet corner readout, not a headline number. */}
       {totalXp !== null ? (
-        <p className="mt-10 text-right text-xs font-medium text-neutral-400">
-          Total XP <span className="text-neutral-600">{totalXp}</span>
+        <p className="mt-10 text-right text-xs font-medium text-muted-foreground">
+          Total XP <span className="font-semibold text-foreground">{totalXp}</span>
         </p>
       ) : null}
     </div>

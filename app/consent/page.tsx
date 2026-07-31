@@ -65,7 +65,7 @@ export default function ConsentPage() {
           autoComplete="off"
         />
 
-        <label className="mb-6 flex items-start gap-3 rounded-xl border border-surface-border bg-background p-4 text-sm leading-relaxed text-neutral-600">
+        <label className="mb-6 flex items-start gap-3 rounded-xl border border-surface-border bg-background p-4 text-sm leading-relaxed text-muted-foreground">
           <input
             type="checkbox"
             checked={consentChecked}

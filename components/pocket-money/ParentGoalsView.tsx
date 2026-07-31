@@ -62,9 +62,9 @@ export function ParentGoalsView({ parentId }: { parentId: string }) {
   }, [load]);
 
   if (error) return <p className="text-sm text-red-600">{error}</p>;
-  if (!childGoals) return <p className="text-sm text-neutral-500">Loading…</p>;
+  if (!childGoals) return <p className="text-sm text-muted-foreground">Loading…</p>;
   if (childGoals.length === 0) {
-    return <p className="text-sm text-neutral-500">No linked students yet.</p>;
+    return <p className="text-sm text-muted-foreground">No linked students yet.</p>;
   }
 
   return (
@@ -72,14 +72,14 @@ export function ParentGoalsView({ parentId }: { parentId: string }) {
       {childGoals.map(({ childId, displayName, walletBalanceCents, goals }) => (
         <section key={childId}>
           <h2 className="mb-1 text-lg font-semibold">{displayName ?? `Student ${childId.slice(0, 8)}`}</h2>
-          <p className="mb-4 text-sm text-neutral-500">
+          <p className="mb-4 text-sm text-muted-foreground">
             Wallet balance: {formatCents(walletBalanceCents)}
           </p>
 
           <FundWalletForm studentProfileId={childId} onComplete={load} />
 
           {goals.length === 0 ? (
-            <p className="mt-6 text-sm text-neutral-500">No savings goals yet.</p>
+            <p className="mt-6 text-sm text-muted-foreground">No savings goals yet.</p>
           ) : (
             <div className="mt-6 grid gap-5 sm:grid-cols-2">
               {goals.map((goal, index) => (

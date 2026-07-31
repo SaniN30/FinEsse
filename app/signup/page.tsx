@@ -42,7 +42,7 @@ export default function SignUpPage() {
   if (needsConfirmation) {
     return (
       <AuthCard eyebrow="Almost there" title="Confirm your email">
-        <p className="text-sm leading-relaxed text-neutral-500">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           We sent a confirmation link to <strong className="text-foreground">{email}</strong>.
           Once you confirm it, come back and{" "}
           <Link href="/login" className="font-medium text-primary-500 hover:text-primary-600">
@@ -93,7 +93,7 @@ export default function SignUpPage() {
           {submitting ? "Creating account…" : "Sign up"}
         </Button>
       </form>
-      <p className="mt-4 text-center text-sm text-neutral-500">
+      <p className="mt-4 text-center text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link href="/login" className="font-medium text-primary-500 hover:text-primary-600">
           Log in

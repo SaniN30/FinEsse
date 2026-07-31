@@ -54,7 +54,7 @@ export function CreateGoalForm({ onCreated }: { onCreated: () => void }) {
       className="max-w-sm space-y-3 rounded-[var(--radius-card)] border border-surface-border bg-surface p-5 shadow-soft"
     >
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-neutral-600">Goal name</span>
+        <span className="mb-1 block font-medium text-muted-foreground">Goal name</span>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -63,7 +63,7 @@ export function CreateGoalForm({ onCreated }: { onCreated: () => void }) {
         />
       </label>
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-neutral-600">Target amount (USD)</span>
+        <span className="mb-1 block font-medium text-muted-foreground">Target amount (USD)</span>
         <input
           type="number"
           min="0.01"

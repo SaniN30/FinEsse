@@ -73,7 +73,7 @@ export function LessonList({
   }
 
   if (!skills) {
-    return <p className="text-sm text-neutral-500">Loading lessons…</p>;
+    return <p className="text-sm text-muted-foreground">Loading lessons…</p>;
   }
 
   return (
@@ -93,7 +93,7 @@ export function LessonList({
         >
           <div className={cn("mb-3 h-1.5 w-10 rounded-full", accentClassName)} />
           <h3 className="mb-1 text-lg font-semibold">{skill.title}</h3>
-          <p className="mb-4 text-sm text-neutral-500">
+          <p className="mb-4 text-sm text-muted-foreground">
             {skill.lessons.length} lesson{skill.lessons.length === 1 ? "" : "s"}
           </p>
           <Link

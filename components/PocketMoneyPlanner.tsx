@@ -95,7 +95,7 @@ export function PocketMoneyPlanner() {
         <h2 className="mb-2 text-3xl font-semibold leading-tight sm:text-4xl">
           Pocket Money Planner
         </h2>
-        <p className="mb-6 max-w-xl text-neutral-500">
+        <p className="mb-6 max-w-xl text-muted-foreground">
           Fund your student&apos;s wallet and run savings projections together. Deposits and
           withdrawals on individual goals stay theirs to manage.
         </p>

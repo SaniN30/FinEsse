@@ -10,7 +10,7 @@ export default function JobReadyPage() {
           Job-Ready
         </p>
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Job-Ready</h1>
-        <p className="mt-4 text-lg text-neutral-500">
+        <p className="mt-4 text-lg text-muted-foreground">
           Lessons on interview fundamentals, resumes, and case-method thinking, plus the AI
           Interview Coach for live practice.
         </p>

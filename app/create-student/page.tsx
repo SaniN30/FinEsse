@@ -74,7 +74,7 @@ function CreateStudentForm() {
   if (success) {
     return (
       <AuthCard eyebrow="All set" title={`${success.displayName}'s account is ready`}>
-        <p className="mb-6 text-sm leading-relaxed text-neutral-500">
+        <p className="mb-6 text-sm leading-relaxed text-muted-foreground">
           They can log in any time with their PIN on this device.
         </p>
         <div className="flex flex-col gap-3">
