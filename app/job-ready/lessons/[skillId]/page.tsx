@@ -14,7 +14,7 @@ export default async function JobReadyLessonDetailPage({
     <div className="flex flex-1 flex-col">
       <Nav />
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
-        <LessonDetail skillId={skillId} quizBasePath="/job-ready/quiz" />
+        <LessonDetail skillId={skillId} quizBasePath="/job-ready/quiz" modelingBasePath="/job-ready/modeling" />
       </main>
     </div>
   );
