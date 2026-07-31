@@ -69,6 +69,18 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   `npm run test:component`), with its own `tests/components/setup.ts` adding an
   `IntersectionObserver` mock for framer-motion's `whileInView`.
 
+## Parent dashboard aggregate rollup (Phase 8)
+
+- `/parent/dashboard` shows, per linked child, tier, total XP, mastery %, pocket
+  money wallet/savings-goal progress, and Interview Coach scores — all read from
+  the single `parent_dashboard_children` view (one row per child, RLS-scoped via
+  `is_own_or_linked_profile`, `security_invoker = true`), defined in
+  `supabase/migrations/00000000000021_parent_dashboard_aggregate.sql`. Query
+  helper: `lib/parent-dashboard/queries.ts`; card UI: `components/parent-dashboard/
+  ChildRollupCard.tsx`. That migration also fixes `skill_mastery` (Phase 1) to
+  `security_invoker = true`, which it had been missing — read the migration's
+  comment before touching either view.
+
 ## Maintaining this file
 
 Keep this file short and durable — project structure, conventions, and
