@@ -134,4 +134,5 @@ export interface ModelingGradeResult {
   score: number;
   passed: boolean;
   breakdown: Record<string, { correct: boolean }>;
+  alreadyCompleted: boolean;
 }

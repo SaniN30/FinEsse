@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { useAuth } from "@/lib/supabase/auth-context";
 import { Button } from "@/components/Button";
 import { ModelingResult } from "@/components/modeling/ModelingResult";
 import { extractMetricKeys, humanizeMetricKey } from "@/lib/modeling";
@@ -12,9 +13,11 @@ interface ModelingExerciseFormProps {
 }
 
 export function ModelingExerciseForm({ exerciseId }: ModelingExerciseFormProps) {
+  const { session } = useAuth();
   const [exercise, setExercise] = useState<ModelingExercisePublic | null>(null);
   const [values, setValues] = useState<Record<string, string>>({});
   const [result, setResult] = useState<ModelingGradeResult | null>(null);
+  const [alreadyPassed, setAlreadyPassed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,6 +43,30 @@ export function ModelingExerciseForm({ exerciseId }: ModelingExerciseFormProps) 
       isMounted = false;
     };
   }, [exerciseId]);
+
+  useEffect(() => {
+    if (!session?.user.id) return;
+    let isMounted = true;
+    const supabase = getSupabaseClient();
+
+    supabase
+      .from("modeling_submissions")
+      .select("id")
+      .eq("exercise_id", exerciseId)
+      .eq("profile_id", session.user.id)
+      .eq("passed", true)
+      .limit(1)
+      .then(({ data }) => {
+        if (!isMounted) return;
+        if (data && data.length > 0) {
+          setAlreadyPassed(true);
+        }
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [exerciseId, session?.user.id]);
 
   async function handleSubmit() {
     if (!exercise) return;
@@ -72,7 +99,11 @@ export function ModelingExerciseForm({ exerciseId }: ModelingExerciseFormProps) 
           { correct },
         ]),
       ),
+      alreadyCompleted: Boolean(data.already_completed),
     });
+    if (data.passed) {
+      setAlreadyPassed(true);
+    }
   }
 
   if (error) {
@@ -104,6 +135,13 @@ export function ModelingExerciseForm({ exerciseId }: ModelingExerciseFormProps) 
         <h3 className="mb-2 text-lg font-semibold">{exercise.title}</h3>
         <p className="text-sm leading-relaxed text-neutral-600">{exercise.instructions}</p>
       </div>
+
+      {alreadyPassed ? (
+        <p className="rounded-[var(--radius-card)] border border-accent-400/40 bg-accent-400/10 px-4 py-3 text-sm font-medium text-accent-600">
+          You&apos;ve already passed this exercise. Resubmitting is fine for practice, but won&apos;t
+          award additional XP.
+        </p>
+      ) : null}
 
       <div className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-6 shadow-soft">
         <div className="space-y-4">

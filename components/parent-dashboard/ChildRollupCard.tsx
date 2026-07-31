@@ -132,7 +132,7 @@ export function ChildRollupCard({ child, index = 0 }: ChildRollupCardProps) {
                 >
                   <span className="capitalize">{session.firm_style.replace(/_/g, " ")}</span>
                   <span className="font-medium text-foreground">
-                    {overall !== null ? `${overall}/5` : "Scored"}
+                    {overall !== null ? `${overall}/10` : "Scored"}
                   </span>
                 </li>
               );

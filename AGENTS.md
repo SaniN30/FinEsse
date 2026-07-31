@@ -17,6 +17,10 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   over ad-hoc styling.
 - Routes: `/` (landing), `/school`, `/college`, `/job-ready` (tier placeholders,
   content lands in later phases), plus the Phase 6 auth flow below.
+- `tsconfig.json`'s `include` intentionally excludes `vitest.config.ts`/
+  `vitest.config.component.ts` (see `tsconfig.vitest.json`) so a dev-tooling
+  version drift in vitest/vite plugins can't break `npm run build` — don't
+  fold those files back into the main tsconfig's `include`.
 - Tailwind v4 theme tokens are defined as CSS variables in `app/globals.css` under
   `@theme inline` (no `tailwind.config` color overrides needed).
 - Backend (Phase 1-5): Supabase schema, RLS, auth/consent flow, the ledger/mastery-graph

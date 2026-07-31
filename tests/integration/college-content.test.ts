@@ -160,6 +160,38 @@ describe("college-tier content: modeling exercise grading", () => {
     expect(xpEvents![0].xp_delta).toBeGreaterThan(0);
   });
 
+  it("awards zero additional XP on a second passing submission of the same exercise", async () => {
+    const { data: firstXp } = await studentA.client
+      .from("xp_events")
+      .select("id")
+      .eq("profile_id", studentA.userId)
+      .eq("source", "modeling_submission");
+    const xpEventsBefore = firstXp!.length;
+
+    const { data, error } = await studentA.client.rpc("grade_modeling_submission", {
+      p_exercise_id: MODELING_EXERCISE_ID,
+      p_submitted_values: { projected_revenue: 1100000, revenue_growth_pct: 10 },
+    });
+
+    expect(error).toBeNull();
+    expect(data.passed).toBe(true);
+    expect(data.already_completed).toBe(true);
+
+    const { data: submissions } = await studentA.client
+      .from("modeling_submissions")
+      .select("id")
+      .eq("profile_id", studentA.userId)
+      .eq("exercise_id", MODELING_EXERCISE_ID);
+    expect(submissions!.length).toBeGreaterThanOrEqual(2);
+
+    const { data: xpEvents } = await studentA.client
+      .from("xp_events")
+      .select("id")
+      .eq("profile_id", studentA.userId)
+      .eq("source", "modeling_submission");
+    expect(xpEvents!.length).toBe(xpEventsBefore);
+  });
+
   it("scores a wildly incorrect submission as a fail and awards nothing", async () => {
     const { data, error } = await studentB.client.rpc("grade_modeling_submission", {
       p_exercise_id: MODELING_EXERCISE_ID,
