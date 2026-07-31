@@ -143,7 +143,7 @@ Deno.serve(async (req) => {
     // parenthood) before anything is scored.
     const { data: session, error: sessionError } = await callerClient
       .from("interview_sessions")
-      .select("id, profile_id, transcript, question_id")
+      .select("id, profile_id, transcript, question_id, rubric_scores")
       .eq("id", session_id)
       .single();
 
@@ -153,6 +153,12 @@ Deno.serve(async (req) => {
 
     if (session.profile_id !== user.id) {
       return jsonResponse({ error: "only the student who submitted a session can score it" }, 403, corsHeaders);
+    }
+
+    // Idempotency guard (security audit Finding 2): a session already scored
+    // shouldn't be re-sent to Gemini or awarded xp_events a second time.
+    if (session.rubric_scores) {
+      return jsonResponse({ session_id, rubric_scores: session.rubric_scores }, 200, corsHeaders);
     }
 
     const { data: question, error: questionError } = await callerClient

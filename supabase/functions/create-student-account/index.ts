@@ -115,6 +115,7 @@ Deno.serve(async (req) => {
       display_name,
       date_of_birth: date_of_birth ?? null,
       consent_id,
+      login_email: syntheticEmail,
     });
 
     if (profileError) {
