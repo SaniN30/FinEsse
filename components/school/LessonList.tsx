@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchLessonsForSkill } from "@/lib/school/queries";
+import { Skeleton } from "@/components/Skeleton";
 import type { Lesson } from "@/lib/supabase/types";
 
 const contentTypeLabel: Record<Lesson["content_type"], string> = {
@@ -31,7 +32,15 @@ export function LessonList({ skillId }: { skillId: string }) {
   }, [skillId]);
 
   if (error) return <p className="text-sm text-red-600">{error}</p>;
-  if (!lessons) return <p className="text-sm text-neutral-500">Loading lessons…</p>;
+  if (!lessons) {
+    return (
+      <div className="space-y-3">
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-16 w-full" />
+        <Skeleton className="h-16 w-full" />
+      </div>
+    );
+  }
   if (lessons.length === 0) {
     return <p className="text-sm text-neutral-500">No lessons published for this skill yet.</p>;
   }

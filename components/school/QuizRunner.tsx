@@ -12,6 +12,7 @@ import {
 import type { GradeQuizAttemptResult, Quiz, QuizQuestionPublic } from "@/lib/supabase/types";
 import { ProgressBar } from "@/components/ProgressBar";
 import { Button } from "@/components/Button";
+import { Skeleton } from "@/components/Skeleton";
 
 function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : "Something went wrong.";
@@ -79,7 +80,14 @@ export function QuizRunner({ quizId }: { quizId: string }) {
   }
 
   if (error) return <p className="text-sm text-red-600">{error}</p>;
-  if (!quiz || !questions) return <p className="text-sm text-neutral-500">Loading quiz…</p>;
+  if (!quiz || !questions) {
+    return (
+      <div>
+        <Skeleton className="mb-6 h-8 w-1/2" />
+        <Skeleton className="h-24 w-full" />
+      </div>
+    );
+  }
 
   if (result) {
     const scorePercent = Math.round(result.score * 100);
