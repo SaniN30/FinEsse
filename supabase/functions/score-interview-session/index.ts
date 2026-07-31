@@ -178,13 +178,33 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
-    const { error: updateError } = await admin
+    // Conditional on rubric_scores still being null so this update itself is
+    // the idempotency gate, not the earlier read above: if a concurrent call
+    // already scored this session, this update affects zero rows and we
+    // return its result instead of double-awarding xp_events.
+    const { data: updatedRows, error: updateError } = await admin
       .from("interview_sessions")
       .update({ rubric_scores: rubricScores, updated_at: new Date().toISOString() })
-      .eq("id", session_id);
+      .eq("id", session_id)
+      .is("rubric_scores", null)
+      .select("rubric_scores");
 
     if (updateError) {
       return jsonResponse({ error: updateError.message }, 400, corsHeaders);
+    }
+
+    if (!updatedRows || updatedRows.length === 0) {
+      const { data: existing, error: existingError } = await admin
+        .from("interview_sessions")
+        .select("rubric_scores")
+        .eq("id", session_id)
+        .single();
+
+      if (existingError || !existing) {
+        return jsonResponse({ error: "session not found" }, 404, corsHeaders);
+      }
+
+      return jsonResponse({ session_id, rubric_scores: existing.rubric_scores }, 200, corsHeaders);
     }
 
     const { error: xpError } = await admin.from("xp_events").insert({

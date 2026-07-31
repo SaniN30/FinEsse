@@ -19,7 +19,6 @@ declare
   v_score numeric;
   v_passed boolean;
   v_attempt_id uuid;
-  v_already_passed boolean;
 begin
   if v_profile_id is null then
     raise exception 'not authenticated';
@@ -41,10 +40,10 @@ begin
     raise exception 'quiz % has no questions', p_quiz_id;
   end if;
 
-  select exists(
-    select 1 from quiz_attempts
-    where profile_id = v_profile_id and quiz_id = p_quiz_id and passed
-  ) into v_already_passed;
+  -- Serialize concurrent attempts for the same profile+quiz so the
+  -- already-passed check below can't race: two simultaneous calls would
+  -- otherwise both read "not yet passed" before either commits its insert.
+  perform pg_advisory_xact_lock(hashtextextended(v_profile_id::text || ':' || p_quiz_id::text, 0));
 
   select count(*) into v_correct
   from quiz_questions qq
@@ -71,10 +70,15 @@ begin
       values (v_profile_id, v_skill_id, true);
     end if;
 
-    if not v_already_passed then
-      insert into xp_events (profile_id, source, source_id, xp_delta)
-      values (v_profile_id, 'quiz_attempt', v_attempt_id, 10);
-    end if;
+    insert into xp_events (profile_id, source, source_id, xp_delta)
+    select v_profile_id, 'quiz_attempt', v_attempt_id, 10
+    where not exists (
+      select 1 from quiz_attempts
+      where profile_id = v_profile_id
+        and quiz_id = p_quiz_id
+        and passed
+        and id <> v_attempt_id
+    );
   end if;
 
   return jsonb_build_object(
