@@ -37,9 +37,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    if (typeof pin !== "string" || !/^[0-9]{4,6}$/.test(pin)) {
+    if (typeof pin !== "string" || !/^[0-9]{6}$/.test(pin)) {
       return new Response(
-        JSON.stringify({ error: "pin must be 4-6 digits" }),
+        JSON.stringify({ error: "pin must be 6 digits" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }

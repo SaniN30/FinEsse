@@ -39,8 +39,8 @@ function CreateStudentForm() {
       return;
     }
 
-    if (!/^[0-9]{4,6}$/.test(pin)) {
-      setError("PIN must be 4-6 digits.");
+    if (!/^[0-9]{6}$/.test(pin)) {
+      setError("PIN must be 6 digits.");
       return;
     }
 
@@ -97,7 +97,7 @@ function CreateStudentForm() {
     <AuthCard
       eyebrow="Step 2 of 2"
       title="Create your child's account"
-      description="Choose a 4-6 digit PIN together — this is how they'll log in."
+      description="Choose a 6-digit PIN together — this is how they'll log in."
     >
       <form onSubmit={handleSubmit}>
         <FormField
