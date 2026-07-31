@@ -12,6 +12,7 @@ import {
 import type { GradeQuizAttemptResult, Quiz, QuizQuestionPublic } from "@/lib/supabase/types";
 import { ProgressBar } from "@/components/ProgressBar";
 import { Button } from "@/components/Button";
+import { BackLink } from "@/components/BackLink";
 import { Skeleton } from "@/components/Skeleton";
 
 function getErrorMessage(error: unknown): string {
@@ -79,20 +80,31 @@ export function QuizRunner({ quizId }: { quizId: string }) {
     }
   }
 
-  if (error) return <p className="text-sm text-red-600">{error}</p>;
+  if (error) {
+    return (
+      <div>
+        <BackLink href="/school" label="Back to School" />
+        <p className="text-sm text-red-600">{error}</p>
+      </div>
+    );
+  }
   if (!quiz || !questions) {
     return (
       <div>
+        <BackLink href="/school" label="Back to School" />
         <Skeleton className="mb-6 h-8 w-1/2" />
         <Skeleton className="h-24 w-full" />
       </div>
     );
   }
 
+  const backHref = quiz.skill_id ? `/school/skills/${quiz.skill_id}` : "/school";
+
   if (result) {
     const scorePercent = Math.round(result.score * 100);
     return (
       <div className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-8 text-center shadow-soft">
+        <BackLink href={backHref} label="Back to Lesson" className="mb-4 justify-center" />
         <p
           className={`mb-2 text-sm font-semibold uppercase tracking-wide ${
             result.passed ? "text-accent-600" : "text-neutral-500"
@@ -121,6 +133,7 @@ export function QuizRunner({ quizId }: { quizId: string }) {
 
   return (
     <div>
+      <BackLink href={backHref} label="Back to Lesson" />
       <h1 className="mb-6 text-2xl font-semibold">{quiz.title}</h1>
       <div className="space-y-6">
         {questions.map((question, index) => (

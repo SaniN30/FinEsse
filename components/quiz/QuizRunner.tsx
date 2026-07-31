@@ -3,16 +3,21 @@
 import { useEffect, useState } from "react";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Button } from "@/components/Button";
+import { BackLink } from "@/components/BackLink";
 import { QuizResult } from "@/components/quiz/QuizResult";
 import type { QuizGradeResult, QuizQuestionPublic } from "@/lib/supabase/types";
 import { cn } from "@/lib/cn";
 
+type QuizRunnerTier = "college" | "job_ready";
+
 interface QuizRunnerProps {
   quizId: string;
+  tier?: QuizRunnerTier;
 }
 
-export function QuizRunner({ quizId }: QuizRunnerProps) {
+export function QuizRunner({ quizId, tier = "college" }: QuizRunnerProps) {
   const [questions, setQuestions] = useState<QuizQuestionPublic[] | null>(null);
+  const [skillId, setSkillId] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [result, setResult] = useState<QuizGradeResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -36,10 +41,23 @@ export function QuizRunner({ quizId }: QuizRunnerProps) {
         setQuestions(data ?? []);
       });
 
+    supabase
+      .from("quizzes")
+      .select("skill_id")
+      .eq("id", quizId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!isMounted) return;
+        setSkillId(data?.skill_id ?? null);
+      });
+
     return () => {
       isMounted = false;
     };
   }, [quizId]);
+
+  const tierRoot = tier === "job_ready" ? "/job-ready" : "/college";
+  const backHref = skillId ? `${tierRoot}/lessons/${skillId}` : tierRoot;
 
   async function handleSubmit() {
     if (!questions) return;
@@ -68,29 +86,43 @@ export function QuizRunner({ quizId }: QuizRunnerProps) {
   }
 
   if (error) {
-    return <p className="text-sm text-red-500">Couldn&apos;t load quiz: {error}</p>;
+    return (
+      <div>
+        <BackLink href={backHref} label="Back to Lesson" />
+        <p className="text-sm text-red-500">Couldn&apos;t load quiz: {error}</p>
+      </div>
+    );
   }
 
   if (result) {
     return (
-      <QuizResult
-        result={result}
-        onRetry={() => {
-          setResult(null);
-          setAnswers({});
-        }}
-      />
+      <div>
+        <BackLink href={backHref} label="Back to Lesson" />
+        <QuizResult
+          result={result}
+          onRetry={() => {
+            setResult(null);
+            setAnswers({});
+          }}
+        />
+      </div>
     );
   }
 
   if (!questions) {
-    return <p className="text-sm text-neutral-500">Loading quiz…</p>;
+    return (
+      <div>
+        <BackLink href={backHref} label="Back to Lesson" />
+        <p className="text-sm text-neutral-500">Loading quiz…</p>
+      </div>
+    );
   }
 
   const allAnswered = questions.every((question) => answers[question.id]);
 
   return (
     <div className="space-y-6">
+      <BackLink href={backHref} label="Back to Lesson" />
       {questions.map((question, index) => (
         <div
           key={question.id}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchLesson, fetchQuizzesForLesson } from "@/lib/school/queries";
+import { BackLink } from "@/components/BackLink";
 import { Skeleton } from "@/components/Skeleton";
 import type { Lesson, Quiz } from "@/lib/supabase/types";
 
@@ -52,7 +53,14 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
     };
   }, [lessonId]);
 
-  if (error) return <p className="text-sm text-red-600">{error}</p>;
+  if (error) {
+    return (
+      <div>
+        <BackLink href="/school" label="Back to School" />
+        <p className="text-sm text-red-600">{error}</p>
+      </div>
+    );
+  }
   if (!lesson) {
     return (
       <div>
@@ -64,6 +72,7 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
 
   return (
     <div>
+      <BackLink href={`/school/skills/${lesson.skill_id}`} label="Back to Lessons" />
       <LessonContent lesson={lesson} />
 
       {quizzes && quizzes.length > 0 ? (
