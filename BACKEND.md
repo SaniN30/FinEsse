@@ -401,7 +401,12 @@ There is no independent student sign-up. The flow is:
    not client input). Consent is versioned (`consent_version`) so a future
    copy change can be tracked per-record.
 3. **Student account creation** — the parent calls `create-student-account`
-   with the `consent_id` from step 2, a display name, and a 4–6 digit PIN.
+   with the `consent_id` from step 2, a display name, and a 6-digit PIN
+   (raised from 4–6 digits per a security audit finding: the PIN is the
+   literal Auth password, and 6 digits gives 1,000,000 combinations vs.
+   10,000 at 4 digits). Existing accounts created before this change may
+   still have 4–5 digit PINs and continue to work — `/student-login` still
+   accepts `/^[0-9]{4,6}$/` for login, only account creation was tightened.
    The function:
    - re-verifies the consent record belongs to the caller and was
      affirmatively given (defense in depth — the DB trigger enforces this
