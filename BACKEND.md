@@ -103,7 +103,9 @@ account referenced actually belongs to that caller before touching it:
   — posts a balanced `transaction` moving funds from the student's own
   `student_wallet` into their own `savings_goal` account. Lazily creates the
   wallet (`get_or_create_student_wallet`) if the student doesn't have one
-  yet, since no other path provisions one.
+  yet, since no other path provisions one. Rejects a deposit that would
+  exceed the wallet's current balance, mirroring the balance check below on
+  `withdraw_from_savings_goal`.
 - `withdraw_from_savings_goal(p_goal_account_id, p_amount_cents, p_description)`
   — posts a balanced `transaction` moving funds back out, rejecting an
   amount greater than the goal's current balance. This is the student's own
@@ -118,6 +120,18 @@ All amounts are integer cents, matching `postings.amount_cents`. Both
 `pg_advisory_xact_lock` on the wallet/goal account before reading its
 balance, to prevent a race between two concurrent calls overdrawing the
 same account.
+
+#### Wallet funding: `fund_student_wallet` (Phase 7)
+
+`fund_student_wallet(p_student_id, p_amount_cents, p_description)`
+(`supabase/migrations/00000000000024_pocket_money_funding.sql`) — a parent's
+`SECURITY DEFINER` RPC that posts a balanced `transaction` moving funds from
+the calling parent's own lazily-created `parent_wallet` account into the
+target student's `student_wallet` (also lazily created via
+`get_or_create_student_wallet`). Gated by checking the caller is the target
+student's `profiles.parent_id` directly — not the broader
+`is_own_or_linked_profile` helper, which also matches the student
+themself and would let a student fund their own wallet.
 
 #### Progress calculation
 
