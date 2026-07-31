@@ -38,7 +38,7 @@ export function PinInput({ length = 6, value, onChange, label, autoFocus }: PinI
       {label ? (
         <p className="mb-2 text-sm font-medium text-foreground">{label}</p>
       ) : null}
-      <div className="flex gap-2" role="group" aria-label={label ?? "PIN"}>
+      <div className="flex gap-1.5 sm:gap-2" role="group" aria-label={label ?? "PIN"}>
         {Array.from({ length }).map((_, index) => (
           <motion.input
             key={index}
@@ -55,7 +55,7 @@ export function PinInput({ length = 6, value, onChange, label, autoFocus }: PinI
             whileFocus={{ scale: 1.05 }}
             aria-label={`PIN digit ${index + 1}`}
             className={cn(
-              "h-14 w-12 rounded-xl border border-surface-border bg-background text-center text-2xl font-semibold text-foreground focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 sm:h-16 sm:w-14",
+              "h-12 w-full min-w-0 flex-1 rounded-xl border border-surface-border bg-background text-center text-xl font-semibold text-foreground focus:border-primary-400 focus:outline-none focus:ring-2 focus:ring-primary-400/30 sm:h-16 sm:w-14 sm:flex-none sm:text-2xl",
             )}
           />
         ))}
