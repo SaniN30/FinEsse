@@ -243,6 +243,11 @@ no free-form AI grading.
   (`source = 'modeling_submission'`) — same derived-XP pattern as quiz
   grading.
 - Execute is granted to `authenticated` only (revoked from `public`).
+- Returns `{submission_id, score, passed, correct, total, metrics}`, where
+  `metrics` is a `{key: boolean}` breakdown of per-metric correctness (added
+  additively in `supabase/migrations/00000000000021_grade_modeling_submission_metric_breakdown.sql`,
+  Phase 8) — it never exposes the rubric's hidden `expected`/`tolerance`
+  values, only pass/fail per key.
 
 #### Seed content (Phase 4)
 

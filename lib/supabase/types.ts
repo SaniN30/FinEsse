@@ -62,6 +62,11 @@ export interface GradeQuizAttemptResult {
   total: number;
 }
 
+export interface QuizGradeResult {
+  score: number;
+  passed: boolean;
+}
+
 export interface AccountBalance {
   account_id: string;
   profile_id: string;
@@ -106,4 +111,27 @@ export interface ParentDashboardChild {
   wallet_balance_cents: number;
   savings_goals: DashboardSavingsGoal[];
   interview_sessions: DashboardInterviewSession[];
+}
+
+export interface Role {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  typical_pay_range: string;
+  required_skill_ids: string[];
+}
+
+export interface ModelingExercisePublic {
+  id: string;
+  skill_id: string;
+  title: string;
+  instructions: string;
+  pass_threshold: number;
+}
+
+export interface ModelingGradeResult {
+  score: number;
+  passed: boolean;
+  breakdown: Record<string, { correct: boolean }>;
 }
