@@ -82,7 +82,7 @@ export function LevelCard({
         ))}
       </ul>
 
-      <div className="flex items-center gap-2 text-xs font-medium text-neutral-500">
+      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
         <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", styles.accent)} />
         {stat}
       </div>

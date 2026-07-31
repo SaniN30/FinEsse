@@ -46,7 +46,7 @@ export function FundWalletForm({ studentProfileId, onComplete }: FundWalletFormP
     <form onSubmit={handleSubmit} className="mt-3 space-y-2">
       <div className="flex items-end gap-2">
         <label className="block flex-1 text-sm">
-          <span className="mb-1 block font-medium text-neutral-600">Add allowance (USD)</span>
+          <span className="mb-1 block font-medium text-muted-foreground">Add allowance (USD)</span>
           <input
             type="number"
             min="0.01"
