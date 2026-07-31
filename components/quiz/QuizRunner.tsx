@@ -8,11 +8,14 @@ import { QuizResult } from "@/components/quiz/QuizResult";
 import type { QuizGradeResult, QuizQuestionPublic } from "@/lib/supabase/types";
 import { cn } from "@/lib/cn";
 
+type QuizRunnerTier = "college" | "job_ready";
+
 interface QuizRunnerProps {
   quizId: string;
+  tier?: QuizRunnerTier;
 }
 
-export function QuizRunner({ quizId }: QuizRunnerProps) {
+export function QuizRunner({ quizId, tier = "college" }: QuizRunnerProps) {
   const [questions, setQuestions] = useState<QuizQuestionPublic[] | null>(null);
   const [skillId, setSkillId] = useState<string | null>(null);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -53,7 +56,8 @@ export function QuizRunner({ quizId }: QuizRunnerProps) {
     };
   }, [quizId]);
 
-  const backHref = skillId ? `/college/lessons/${skillId}` : "/college";
+  const tierRoot = tier === "job_ready" ? "/job-ready" : "/college";
+  const backHref = skillId ? `${tierRoot}/lessons/${skillId}` : tierRoot;
 
   async function handleSubmit() {
     if (!questions) return;
