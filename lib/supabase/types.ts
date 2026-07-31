@@ -79,3 +79,31 @@ export interface SavingsGoalProgress {
   balance_cents: number;
   percent_complete: number | null;
 }
+
+export interface DashboardSavingsGoal {
+  account_id: string;
+  name: string;
+  balance_cents: number;
+  target_amount_cents: number | null;
+  percent_complete: number | null;
+}
+
+export interface DashboardInterviewSession {
+  session_id: string;
+  firm_style: string;
+  rubric_scores: Record<string, unknown>;
+  created_at: string;
+}
+
+/** One row per linked child, from the `parent_dashboard_children` view. */
+export interface ParentDashboardChild {
+  profile_id: string;
+  parent_id: string | null;
+  display_name: string | null;
+  tier: Tier | null;
+  total_xp: number;
+  avg_mastery_pct: number | null;
+  wallet_balance_cents: number;
+  savings_goals: DashboardSavingsGoal[];
+  interview_sessions: DashboardInterviewSession[];
+}
