@@ -1,4 +1,5 @@
 import { Nav } from "@/components/Nav";
+import { BackLink } from "@/components/BackLink";
 import { InterviewSession } from "@/components/interview-coach/InterviewSession";
 
 interface InterviewSessionPageProps {
@@ -12,6 +13,7 @@ export default async function InterviewSessionPage({ params }: InterviewSessionP
     <div className="flex flex-1 flex-col">
       <Nav />
       <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-16">
+        <BackLink href="/job-ready/interview" label="Back to Interview Coach" />
         <InterviewSession questionId={questionId} />
       </main>
     </div>
