@@ -238,16 +238,24 @@ no free-form AI grading.
   malformed/non-numeric submitted value degrades to "wrong for that metric"
   rather than raising, same defensive posture as the duplicate-`question_id`
   fix already applied to `grade_quiz_attempt`.
-- Always inserts one `modeling_submissions` row. If `score >= pass_threshold`,
-  also inserts a `skill_attempts` row and an `xp_events` row
-  (`source = 'modeling_submission'`) — same derived-XP pattern as quiz
-  grading.
+- Always inserts one `modeling_submissions` row (append-only log, every
+  attempt is recorded). If `score >= pass_threshold`, it only inserts the
+  `skill_attempts` row and `xp_events` row (`source = 'modeling_submission'`)
+  on the student's *first* passing submission for that exercise — idempotency
+  guard added in
+  `supabase/migrations/00000000000023_grade_modeling_submission_idempotent.sql`
+  (Phase 8 audit fix) after a benign resubmission of an already-passed
+  exercise was found to accumulate duplicate XP/mastery credit. `grade_quiz_attempt`
+  has no equivalent guard yet — a matching fix is owned by a separate
+  in-flight task and should be mirrored once merged, not duplicated here.
 - Execute is granted to `authenticated` only (revoked from `public`).
-- Returns `{submission_id, score, passed, correct, total, metrics}`, where
-  `metrics` is a `{key: boolean}` breakdown of per-metric correctness (added
-  additively in `supabase/migrations/00000000000021_grade_modeling_submission_metric_breakdown.sql`,
+- Returns `{submission_id, score, passed, correct, total, metrics, already_completed}`,
+  where `metrics` is a `{key: boolean}` breakdown of per-metric correctness
+  (added additively in
+  `supabase/migrations/00000000000021_grade_modeling_submission_metric_breakdown.sql`,
   Phase 8) — it never exposes the rubric's hidden `expected`/`tolerance`
-  values, only pass/fail per key.
+  values, only pass/fail per key — and `already_completed` is `true` when this
+  pass was not the first (so XP/mastery were not re-awarded).
 
 #### Seed content (Phase 4)
 
