@@ -36,8 +36,8 @@ export function RoleCard({ role, masteredSkillIds, index = 0 }: RoleCardProps) {
       </div>
 
       <h3 className="mb-2 text-xl font-semibold">{role.title}</h3>
-      <p className="mb-4 text-sm leading-relaxed text-neutral-500">{role.description}</p>
-      <p className="text-sm font-medium text-neutral-700">{role.typical_pay_range}</p>
+      <p className="mb-4 text-sm leading-relaxed text-muted-foreground">{role.description}</p>
+      <p className="text-sm font-medium text-foreground">{role.typical_pay_range}</p>
     </motion.article>
   );
 }

@@ -34,7 +34,7 @@ export function Nav() {
             FinEsse
           </span>
         </Link>
-        <nav className="hidden items-center gap-8 text-sm font-medium text-neutral-600 sm:flex">
+        <nav className="hidden items-center gap-8 text-sm font-medium text-muted-foreground sm:flex">
           {links.map((link) => (
             <a
               key={link.href}
@@ -69,11 +69,11 @@ export function Nav() {
           {session ? (
             <div className="flex items-center gap-3">
               {isParent ? (
-                <a href="/dashboard" className="text-sm font-medium text-neutral-500 hover:text-foreground">
+                <a href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground">
                   Dashboard
                 </a>
               ) : null}
-              <a href="/settings" className="text-sm font-medium text-neutral-500 hover:text-foreground">
+              <a href="/settings" className="text-sm font-medium text-muted-foreground hover:text-foreground">
                 Settings
               </a>
               <Button
@@ -95,7 +95,7 @@ export function Nav() {
         </div>
       </div>
       {isMenuOpen ? (
-        <nav className="mx-auto mt-2 flex max-w-6xl flex-col gap-1 rounded-2xl border-2 border-foreground bg-surface px-4 py-3 text-sm font-medium text-neutral-600 shadow-[var(--shadow-offset)] sm:hidden">
+        <nav className="mx-auto mt-2 flex max-w-6xl flex-col gap-1 rounded-2xl border-2 border-foreground bg-surface px-4 py-3 text-sm font-medium text-muted-foreground shadow-[var(--shadow-offset)] sm:hidden">
           {links.map((link) => (
             <a
               key={link.href}

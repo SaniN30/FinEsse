@@ -44,13 +44,13 @@ export function GoalProjectionCalculator({
 
   return (
     <div className="mt-5 rounded-[var(--radius-card)] border border-dashed border-surface-border bg-background/60 p-4">
-      <p className="mb-3 text-sm font-medium text-neutral-600">
+      <p className="mb-3 text-sm font-medium text-muted-foreground">
         Projection calculator: if I save toward &ldquo;{goalName}&rdquo;&hellip;
       </p>
 
       <div className="grid grid-cols-2 gap-3">
         <label className="block text-sm">
-          <span className="mb-1 block text-xs font-medium text-neutral-500">Amount (USD)</span>
+          <span className="mb-1 block text-xs font-medium text-muted-foreground">Amount (USD)</span>
           <input
             type="number"
             min="0"
@@ -61,7 +61,7 @@ export function GoalProjectionCalculator({
           />
         </label>
         <label className="block text-sm">
-          <span className="mb-1 block text-xs font-medium text-neutral-500">Every N weeks</span>
+          <span className="mb-1 block text-xs font-medium text-muted-foreground">Every N weeks</span>
           <input
             type="number"
             min="1"
@@ -75,11 +75,11 @@ export function GoalProjectionCalculator({
 
       <div className="mt-3 text-sm">
         {result === null ? (
-          <p className="text-neutral-500">Enter an amount to see a projection.</p>
+          <p className="text-muted-foreground">Enter an amount to see a projection.</p>
         ) : result.weeksToGoal === 0 ? (
           <p className="font-medium text-accent-600">You&apos;ve already reached this goal.</p>
         ) : result.weeksToGoal === null ? (
-          <p className="text-neutral-500">Enter a contribution greater than $0 to project a date.</p>
+          <p className="text-muted-foreground">Enter a contribution greater than $0 to project a date.</p>
         ) : (
           <p>
             You&apos;ll hit{" "}

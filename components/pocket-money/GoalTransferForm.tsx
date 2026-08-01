@@ -88,7 +88,7 @@ export function GoalTransferForm({ goalAccountId, balanceCents, onComplete }: Go
       </div>
 
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-neutral-600">Amount (USD)</span>
+        <span className="mb-1 block font-medium text-muted-foreground">Amount (USD)</span>
         <input
           type="number"
           min="0.01"

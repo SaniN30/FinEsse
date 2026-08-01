@@ -26,6 +26,12 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   fold those files back into the main tsconfig's `include`.
 - Tailwind v4 theme tokens are defined as CSS variables in `app/globals.css` under
   `@theme inline` (no `tailwind.config` color overrides needed).
+- Secondary/muted body text must use `text-muted-foreground` (backed by
+  `--muted-foreground`, flips `neutral-500`→`neutral-400` in dark mode), not the raw
+  `text-neutral-500`/`text-neutral-600` scale steps — those are fixed values that drop
+  below WCAG contrast on dark surfaces. Prominent body copy (lesson content, key data
+  values) should use `text-foreground` instead of a raw `neutral-700`, which is nearly
+  invisible on dark surfaces since it doesn't flip either.
 - Backend (Phase 1-5): Supabase schema, RLS, auth/consent flow, the ledger/mastery-graph
   model, the School-tier lesson/quiz content schema + auto-grading RPC, the College-tier
   content (roles reference table, modeling exercises + rubric-graded submissions), and the

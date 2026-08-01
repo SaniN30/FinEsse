@@ -26,14 +26,14 @@ export function ModelingResult({ result, onRetry }: ModelingResultProps) {
           className={
             result.passed
               ? "mb-2 text-sm font-semibold text-accent-600"
-              : "mb-2 text-sm font-semibold text-neutral-500"
+              : "mb-2 text-sm font-semibold text-muted-foreground"
           }
         >
           {result.passed ? "Passed" : "Not quite yet"}
         </p>
         <h3 className="text-2xl font-semibold">{Math.round(result.score * 100)}%</h3>
         {result.passed && result.alreadyCompleted ? (
-          <p className="mt-2 text-xs text-neutral-500">
+          <p className="mt-2 text-xs text-muted-foreground">
             You&apos;d already passed this exercise, so no additional XP was awarded.
           </p>
         ) : null}
@@ -54,7 +54,7 @@ export function ModelingResult({ result, onRetry }: ModelingResultProps) {
             <span
               className={cn(
                 "font-semibold",
-                metric.correct ? "text-accent-600" : "text-neutral-500",
+                metric.correct ? "text-accent-600" : "text-muted-foreground",
               )}
             >
               {metric.correct ? "Correct" : "Off target"}

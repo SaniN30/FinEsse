@@ -71,18 +71,18 @@ export function LevelCard({
       </div>
 
       <h3 className="mb-2 text-2xl font-semibold">{title}</h3>
-      <p className="mb-5 text-sm leading-relaxed text-neutral-500">{tagline}</p>
+      <p className="mb-5 text-sm leading-relaxed text-muted-foreground">{tagline}</p>
 
       <ul className="mb-6 space-y-2">
         {topics.map((topic) => (
-          <li key={topic} className="flex items-center gap-2 text-sm text-neutral-600">
+          <li key={topic} className="flex items-center gap-2 text-sm text-muted-foreground">
             <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", styles.accent)} />
             {topic}
           </li>
         ))}
       </ul>
 
-      <div className="flex items-center gap-2 text-xs font-medium text-neutral-500">
+      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
         <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", styles.accent)} />
         {stat}
       </div>

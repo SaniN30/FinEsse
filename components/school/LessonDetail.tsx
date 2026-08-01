@@ -25,7 +25,7 @@ function LessonContent({ lesson }: { lesson: Lesson }) {
   }
 
   return (
-    <div className="prose prose-neutral max-w-none whitespace-pre-wrap text-neutral-700">
+    <div className="prose prose-neutral max-w-none whitespace-pre-wrap text-foreground">
       {lesson.content_body ?? "This lesson has no content yet."}
     </div>
   );

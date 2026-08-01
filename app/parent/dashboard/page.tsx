@@ -33,7 +33,7 @@ function CombinedStatsStrip({ childProfiles }: { childProfiles: ParentDashboardC
 
   return (
     <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-surface-border bg-surface px-5 py-3 shadow-soft">
-      <span className="text-sm font-medium text-neutral-500">Total saved across children</span>
+      <span className="text-sm font-medium text-muted-foreground">Total saved across children</span>
       <span className="text-lg font-semibold tabular-nums">{formatCents(totalSavedCents)}</span>
     </div>
   );
@@ -108,7 +108,7 @@ export default function ParentDashboardPage() {
           <h1 className="text-3xl font-semibold tracking-tight">
             Everything, at a glance
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-neutral-500">
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
             Tier, XP, mastery, pocket money, and Interview Coach progress for every
             linked child, in one view.
           </p>
@@ -122,7 +122,7 @@ export default function ParentDashboardPage() {
             </div>
           ) : children.length === 0 ? (
             <div className="mt-8 rounded-[var(--radius-card)] border border-surface-border bg-surface p-8 text-center shadow-soft">
-              <p className="mb-4 text-sm text-neutral-500">
+              <p className="mb-4 text-sm text-muted-foreground">
                 You haven&apos;t created a child account yet.
               </p>
               <Button size="lg" onClick={() => router.push("/consent")}>

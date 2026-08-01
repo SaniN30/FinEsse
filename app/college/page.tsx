@@ -12,7 +12,7 @@ export default function CollegePage() {
         <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">
           Build the finance skills that get you hired
         </h1>
-        <p className="text-lg text-neutral-500">
+        <p className="text-lg text-muted-foreground">
           Lessons and quizzes on markets, valuation, and modeling — plus a
           Role Explorer that matches what you&apos;ve mastered to real
           finance jobs.

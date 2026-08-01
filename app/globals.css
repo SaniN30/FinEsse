@@ -52,6 +52,10 @@
   --foreground: var(--color-neutral-900);
   --surface: var(--color-neutral-0);
   --surface-border: var(--color-neutral-200);
+  /* Secondary/muted text — flips scale step per theme so it stays >= 4.5:1
+     against --background/--surface in both light and dark (neutral-500/600
+     fixed-value text used to drop to ~2.3-3.5:1 on dark surfaces). */
+  --muted-foreground: var(--color-neutral-500);
 
   --radius-card: 1.5rem;
   --shadow-soft: 0 1px 2px rgba(20, 25, 43, 0.04), 0 12px 32px -12px rgba(20, 25, 43, 0.12);
@@ -73,6 +77,7 @@
   --color-tier-jobready-ink: #f3f1ea;
   --color-success: #4fdbae;
   --shadow-offset: 3px 3px 0 var(--foreground);
+  --muted-foreground: var(--color-neutral-400);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -87,6 +92,7 @@
     --color-tier-jobready-ink: #f3f1ea;
     --color-success: #4fdbae;
     --shadow-offset: 3px 3px 0 var(--foreground);
+    --muted-foreground: var(--color-neutral-400);
   }
 }
 
@@ -95,6 +101,7 @@
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-surface-border: var(--surface-border);
+  --color-muted-foreground: var(--muted-foreground);
 
   --color-primary-50: var(--color-primary-50);
   --color-primary-100: var(--color-primary-100);

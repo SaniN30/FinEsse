@@ -30,7 +30,7 @@ export function SavingsGoalCard({ goal, readOnly = false, onChanged, index = 0 }
       className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-6 shadow-soft"
     >
       <h3 className="mb-1 text-xl font-semibold">{goal.name}</h3>
-      <p className="mb-4 text-sm text-neutral-500">
+      <p className="mb-4 text-sm text-muted-foreground">
         {formatCents(goal.balance_cents)}
         {goal.target_amount_cents ? ` of ${formatCents(goal.target_amount_cents)}` : ""}
       </p>

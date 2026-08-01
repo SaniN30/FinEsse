@@ -42,7 +42,7 @@ export function LessonList({ skillId }: { skillId: string }) {
     );
   }
   if (lessons.length === 0) {
-    return <p className="text-sm text-neutral-500">No lessons published for this skill yet.</p>;
+    return <p className="text-sm text-muted-foreground">No lessons published for this skill yet.</p>;
   }
 
   return (

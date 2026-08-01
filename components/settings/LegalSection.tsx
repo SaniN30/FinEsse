@@ -32,9 +32,9 @@ export function LegalSection() {
       <div>
         <p className="mb-2 text-sm font-medium text-foreground">Consent records</p>
         {records === null ? (
-          <p className="text-sm text-neutral-500">Loading…</p>
+          <p className="text-sm text-muted-foreground">Loading…</p>
         ) : records.length === 0 ? (
-          <p className="text-sm text-neutral-500">No consent records yet.</p>
+          <p className="text-sm text-muted-foreground">No consent records yet.</p>
         ) : (
           <ul className="space-y-2">
             {records.map((record) => (
@@ -43,7 +43,7 @@ export function LegalSection() {
                 className="rounded-xl border border-surface-border px-4 py-2.5 text-sm"
               >
                 <span className="font-medium">{record.child_display_name}</span>
-                <span className="text-neutral-500">
+                <span className="text-muted-foreground">
                   {" "}
                   — {record.consent_given ? "consent given" : "not given"}, v
                   {record.consent_version}, recorded{" "}
@@ -57,7 +57,7 @@ export function LegalSection() {
 
       <div>
         {deleteRequested ? (
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted-foreground">
             Request received. Email us at{" "}
             <a href="mailto:privacy@finesse.app" className="text-primary-500 hover:underline">
               privacy@finesse.app

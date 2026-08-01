@@ -48,7 +48,7 @@ export function AccountSection({ email, linkedChildren, onChildRenamed }: Accoun
     <SettingsSection title="Account" description="Your email, password, and linked children.">
       <div>
         <p className="text-sm font-medium text-foreground">Email</p>
-        <p className="text-sm text-neutral-500">{email ?? "—"}</p>
+        <p className="text-sm text-muted-foreground">{email ?? "—"}</p>
       </div>
 
       <form onSubmit={handlePasswordChange} className="max-w-sm">
@@ -65,14 +65,14 @@ export function AccountSection({ email, linkedChildren, onChildRenamed }: Accoun
           Change password
         </Button>
         {passwordStatus ? (
-          <p className="mt-2 text-xs text-neutral-500">{passwordStatus}</p>
+          <p className="mt-2 text-xs text-muted-foreground">{passwordStatus}</p>
         ) : null}
       </form>
 
       <div>
         <p className="mb-2 text-sm font-medium text-foreground">Linked children</p>
         {linkedChildren.length === 0 ? (
-          <p className="text-sm text-neutral-500">No children linked yet.</p>
+          <p className="text-sm text-muted-foreground">No children linked yet.</p>
         ) : (
           <ul className="space-y-2">
             {linkedChildren.map((child) => (
@@ -113,7 +113,7 @@ export function AccountSection({ email, linkedChildren, onChildRenamed }: Accoun
             ))}
           </ul>
         )}
-        {childStatus ? <p className="mt-2 text-xs text-neutral-500">{childStatus}</p> : null}
+        {childStatus ? <p className="mt-2 text-xs text-muted-foreground">{childStatus}</p> : null}
       </div>
     </SettingsSection>
   );

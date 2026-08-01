@@ -40,7 +40,7 @@ export function Hero() {
 
         <motion.span
           variants={item}
-          className="mb-6 inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1.5 text-xs font-medium text-neutral-500"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1.5 text-xs font-medium text-muted-foreground"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
           Financial literacy, staged for real life
@@ -59,7 +59,7 @@ export function Hero() {
 
         <motion.p
           variants={item}
-          className="mt-6 max-w-xl text-lg leading-relaxed text-neutral-500"
+          className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground"
         >
           FinEsse teaches personal finance in three stages — School, College,
           and Job-Ready — so every lesson meets you exactly where your money

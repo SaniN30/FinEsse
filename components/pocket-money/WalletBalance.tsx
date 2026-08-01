@@ -21,7 +21,7 @@ export function WalletBalance({ accounts }: { accounts: AccountBalance[] }) {
 
   return (
     <div className="mb-8 rounded-[var(--radius-card)] border border-surface-border bg-surface px-6 py-5 shadow-soft">
-      <p className="text-sm font-medium text-neutral-500">Wallet balance</p>
+      <p className="text-sm font-medium text-muted-foreground">Wallet balance</p>
       <p
         className={`mt-1 text-5xl font-semibold tabular-nums tracking-tight sm:text-6xl ${
           isNegative ? "text-red-600" : ""

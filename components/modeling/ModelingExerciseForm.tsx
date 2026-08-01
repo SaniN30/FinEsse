@@ -123,7 +123,7 @@ export function ModelingExerciseForm({ exerciseId }: ModelingExerciseFormProps) 
   }
 
   if (!exercise) {
-    return <p className="text-sm text-neutral-500">Loading exercise…</p>;
+    return <p className="text-sm text-muted-foreground">Loading exercise…</p>;
   }
 
   const metricKeys = extractMetricKeys(exercise.instructions);
@@ -133,7 +133,7 @@ export function ModelingExerciseForm({ exerciseId }: ModelingExerciseFormProps) 
     <div className="space-y-6">
       <div className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-6 shadow-soft">
         <h3 className="mb-2 text-lg font-semibold">{exercise.title}</h3>
-        <p className="text-sm leading-relaxed text-neutral-600">{exercise.instructions}</p>
+        <p className="text-sm leading-relaxed text-muted-foreground">{exercise.instructions}</p>
       </div>
 
       {alreadyPassed ? (
@@ -147,7 +147,7 @@ export function ModelingExerciseForm({ exerciseId }: ModelingExerciseFormProps) 
         <div className="space-y-4">
           {metricKeys.map((key) => (
             <label key={key} className="block">
-              <span className="mb-1.5 block text-sm font-medium text-neutral-600">
+              <span className="mb-1.5 block text-sm font-medium text-muted-foreground">
                 {humanizeMetricKey(key)}
               </span>
               <input

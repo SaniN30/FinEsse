@@ -113,7 +113,7 @@ export function QuizRunner({ quizId, tier = "college" }: QuizRunnerProps) {
     return (
       <div>
         <BackLink href={backHref} label="Back to Lesson" />
-        <p className="text-sm text-neutral-500">Loading quiz…</p>
+        <p className="text-sm text-muted-foreground">Loading quiz…</p>
       </div>
     );
   }

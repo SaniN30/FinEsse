@@ -47,7 +47,7 @@ export function QuestionPicker() {
 
   if (error) return <p className="text-sm text-red-600">{error}</p>;
   if (isAuthLoading || !questions || !sessions) {
-    return <p className="text-sm text-neutral-500">Loading questions…</p>;
+    return <p className="text-sm text-muted-foreground">Loading questions…</p>;
   }
 
   const categories = Array.from(new Set(questions.map((question) => question.category)));
@@ -65,7 +65,7 @@ export function QuestionPicker() {
               "-mb-px border-b-2 pb-3 transition-colors",
               activeCategory === category
                 ? "border-primary-500 text-foreground"
-                : "border-transparent text-neutral-500 hover:text-foreground",
+                : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             {categoryLabel[category]}
@@ -87,16 +87,16 @@ export function QuestionPicker() {
           </Link>
         ))}
         {visibleQuestions.length === 0 ? (
-          <p className="text-sm text-neutral-500">No questions in this category yet.</p>
+          <p className="text-sm text-muted-foreground">No questions in this category yet.</p>
         ) : null}
       </div>
 
       <div className="mt-12">
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-500">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Recent attempts
         </h2>
         {sessions.length === 0 ? (
-          <p className="text-sm text-neutral-500">No practice sessions yet.</p>
+          <p className="text-sm text-muted-foreground">No practice sessions yet.</p>
         ) : (
           <ul className="space-y-2">
             {sessions.slice(0, 5).map((session) => {
@@ -106,7 +106,7 @@ export function QuestionPicker() {
                   key={session.id}
                   className="flex items-center justify-between rounded-xl border border-surface-border bg-background/40 px-4 py-2.5 text-sm"
                 >
-                  <span className="text-neutral-600">{session.firm_style}</span>
+                  <span className="text-muted-foreground">{session.firm_style}</span>
                   <span className="font-medium text-foreground">
                     {overall !== null ? `${overall}/10` : "Scoring…"}
                   </span>
