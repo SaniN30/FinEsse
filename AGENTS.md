@@ -207,6 +207,67 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   be pushed to the live project from here — same constraint noted above for
   migrations 27-31.
 
+## Job-Ready quality/depth pass: difficulty, 10-question quizzes, case studies, badges
+
+- `00000000000034_seed_jobready_workplace_readiness.sql` (15 workplace-readiness skills:
+  negotiating an offer through workplace communication) and
+  `00000000000035_expand_interview_questions.sql` (95 more interview questions, 104 total
+  in that migration) were already merged to `main` via PR #26 before this pass started —
+  don't re-author that content; it's live (see the "Lessons empty" root-cause section
+  above, which also fixed a JSON-escaping bug in migration 34).
+- `00000000000043_quiz_case_study_badges_schema.sql` adds the schema every other
+  migration in this pass builds on: `difficulty` (`easy`/`medium`/`hard`) on
+  `quiz_questions`; `question_type` (`multiple_choice` default | `free_response`) +
+  `keywords` (jsonb, free_response only, hidden from `quiz_questions_public` same as
+  `correct_answer`) on `quiz_questions`, with `options`/`correct_answer` now nullable
+  and a `quiz_questions_type_shape` check enforcing the right columns per type;
+  `scenario_body`/`context_tag`/`quiz_type` (`standard` default | `case_study`) on
+  `quizzes`; and `badges`/`profile_badges` (reference content + append-only per-profile
+  award log, same "visibility not control" RLS as `quiz_attempts`) with an
+  `award_badge(profile_id, slug)` security-definer function (idempotent, silently
+  no-ops on an unknown slug). `grade_quiz_attempt` is recreated to grade
+  `free_response` answers by keyword match (>=50% of a question's `keywords` found as
+  substrings, case-insensitive) and to award the three Job-Ready lesson/quiz/tier
+  badges; the fourth (first mock interview) is awarded from the
+  `score-interview-session` Edge Function instead, since that's where interview
+  scoring actually happens.
+- `00000000000044_expand_jobready_quizzes_to_ten.sql` brings all 22 Job-Ready quizzes
+  (201-207 from migrations 29/30/31, 208-222 from migration 34) from 4-6 questions up
+  to 10, continuing each quiz's existing `order_index` and grounded in the same lesson
+  content those quizzes already test — no new lessons.
+- `00000000000045_seed_jobready_case_studies.sql` adds one new skill (223,
+  `case-study-practice`, chaining off 222) holding a short intro lesson plus four
+  `quiz_type = 'case_study'` quizzes attached to that same skill (the existing
+  `LessonDetail` component already renders one button per quiz for a given skill, so
+  multiple quizzes under one skill needed no frontend change) — 20 questions total
+  across the four, mixing `multiple_choice` and `free_response`, easy/medium/hard.
+  `pass_threshold` is 0.7 for these (vs. 0.8 standard) since keyword-match grading is
+  coarser than exact multiple-choice matching.
+- `00000000000046_interview_questions_difficulty_and_guides.sql` adds `difficulty` and
+  `improvement_guide` (post-answer coaching: what a strong answer includes + one
+  concrete common pitfall, written per-question, not boilerplate) to all 115 existing
+  `interview_questions` rows from migrations 19/35. Those rows have no deterministic
+  `id` (seeded without explicit ids), so the backfill matches on
+  `(firm_style, question_text)` instead — the migration ends with a `do` block that
+  raises an exception listing any row still missing `improvement_guide`, so a text
+  mismatch fails loudly at apply time rather than shipping silently incomplete.
+- Frontend: `components/quiz/QuizRunner.tsx` (College/Job-Ready shared) now renders a
+  quiz's `scenario_body`/`context_tag` as a banner when present, renders
+  `free_response` questions as a textarea instead of MCQ buttons, and shows each
+  question's difficulty; `components/school/QuizRunner.tsx` needed only a null-safe
+  tweak to its `options.map` since School has no free_response questions yet.
+  `components/interview-coach/ScoreReveal.tsx` takes an optional `improvementGuide`
+  prop, rendered by `InterviewSession.tsx` from the already-loaded question. New
+  `components/badges/BadgeShelf.tsx` + `lib/badges/queries.ts` show a student's earned
+  badges on `/job-ready`; not yet added to the parent dashboard.
+- This worktree (like the ones documented above) has no live Supabase credentials, so
+  these four migrations could not be applied/verified against the live project from
+  here — verified statically instead (a Python quote/JSON tokenizer confirmed all four
+  files' SQL string literals and jsonb literals are well-formed, and confirmed all 115
+  `00000000000046` UPDATE targets match a real `(firm_style, question_text)` pair in
+  migrations 19/35 with none missed or duplicated); `npm run build`, `tsc --noEmit`,
+  `eslint`, and `npm run test:component` all pass.
+
 ## Frontend redesign (optimalearn.com reference)
 
 - `DESIGN.md` was reworked to reference https://www.optimalearn.com (cream ground,

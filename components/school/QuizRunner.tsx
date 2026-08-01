@@ -145,7 +145,7 @@ export function QuizRunner({ quizId }: { quizId: string }) {
               {index + 1}. {question.question}
             </legend>
             <div className="space-y-2">
-              {question.options.map((option) => (
+              {(question.options ?? []).map((option) => (
                 <label key={option} className="flex items-center gap-2 text-sm">
                   <input
                     type="radio"

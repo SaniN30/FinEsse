@@ -178,9 +178,21 @@ not per-student rows; `quiz_attempts` is the per-student append-only log.
   `quiz_questions` has RLS enabled with zero select policies (default deny
   to every non-service-role caller), so the only readable surface is the
   `quiz_questions_public` view (`id`, `quiz_id`, `question`, `options`,
-  `order_index`), which is owned by the migration role and therefore reads
-  through as that owner, bypassing the base table's RLS for just those
-  columns. Only the grading function below reads `correct_answer` directly.
+  `order_index`, `difficulty`, `question_type`), which is owned by the
+  migration role and therefore reads through as that owner, bypassing the
+  base table's RLS for just those columns. Only the grading function below
+  reads `correct_answer` directly.
+- Job-Ready content-depth pass (`00000000000043`) added `difficulty`
+  (`easy` \| `medium` \| `hard`, not null) to every `quiz_questions` row, and
+  `question_type` (`multiple_choice` default | `free_response`) + `keywords`
+  (jsonb array, free_response only, hidden from `quiz_questions_public` same
+  as `correct_answer`) to support case-study quizzes with typed answers.
+  `options`/`correct_answer` are now nullable, enforced by a
+  `quiz_questions_type_shape` check requiring `options`+`correct_answer` for
+  `multiple_choice` and a non-empty `keywords` for `free_response`. The same
+  migration added `scenario_body`/`context_tag` (a shown-once scenario +
+  its source tag) and `quiz_type` (`standard` default | `case_study`) to
+  `quizzes`.
 - `quiz_attempts` (`profile_id`, `quiz_id`, `score`, `passed`, `answers`,
   `attempted_at`) is append-only, same pattern as `skill_attempts`/`xp_events`.
 - `xp_events.source` gained a `'quiz_attempt'` value alongside Phase 1's
@@ -215,6 +227,28 @@ grading only needs `auth.uid()`, not the Auth Admin API.
 - `SECURITY DEFINER` is required specifically so this function can read
   `quiz_questions.correct_answer`, which regular callers cannot. Execute is
   granted to `authenticated` only (revoked from `public`).
+- Since `00000000000043`, correctness for a `free_response` question is a
+  keyword match instead of exact equality: at least half of the question's
+  `keywords` array must appear (case-insensitive substring match) in the
+  submitted answer text. The same migration also awards Job-Ready milestone
+  badges (see "Milestone badges" below) from inside this function on a
+  passing attempt.
+
+### Milestone badges: `badges`, `profile_badges`, `award_badge` (post-Phase 9)
+
+- `badges` is reference content (like `skills`/`roles`): `slug`, `title`,
+  `description`, `icon`, readable by any authenticated user. `profile_badges`
+  is an append-only per-profile award log (`profile_id`, `badge_id`,
+  `earned_at`, unique per pair), RLS-readable via `is_own_or_linked_profile`
+  — same "visibility, not control" posture as `quiz_attempts`.
+- `award_badge(p_profile_id, p_slug)` is the only way a row is ever written:
+  `SECURITY DEFINER`, idempotent (`on conflict (profile_id, badge_id) do
+  nothing`), and silently no-ops if `p_slug` doesn't match any `badges` row
+  — seeding order between badge definitions and their award sites never
+  matters. Called from `grade_quiz_attempt` (lesson completed / quiz passed
+  / tier completed, Job-Ready only so far) and from the
+  `score-interview-session` Edge Function (first mock interview completed),
+  since interview scoring happens there, not in Postgres.
 
 ### College-tier content: `roles`, `modeling_exercises`, `modeling_submissions` (Phase 4)
 
@@ -364,9 +398,18 @@ not tier-gated: `firm_style` (e.g. `JPMorgan Chase`, `Goldman Sachs`,
 naming one of the Phase 4 roles), `question_text`, `category` (`behavioral`
 \| `technical`), `published`. Seeded with 9 real early-career finance
 interview questions across 3 firm styles
-(`00000000000019_seed_interview_questions.sql`), then expanded to 104 with
-broader behavioral/situational, technical/case, and role-specific questions
-(`00000000000035_expand_interview_questions.sql`).
+(`00000000000019_seed_interview_questions.sql`), then expanded to 115 total
+with broader behavioral/situational, technical/case, and role-specific
+questions (`00000000000035_expand_interview_questions.sql`).
+`00000000000046_interview_questions_difficulty_and_guides.sql` added
+`difficulty` (`easy` \| `medium` \| `hard`, not null) and `improvement_guide`
+(not null, non-blank) to every one of those 115 rows — since they were
+seeded without explicit `id`s, that migration's backfill matches rows by
+`(firm_style, question_text)` rather than id, with a `do` block at the end
+that raises if any row is still missing a guide, so a text-match miss fails
+loudly at apply time. `improvement_guide` is shown in the frontend's
+`ScoreReveal` after a session is scored (see Phase 9 above) — it's static
+per-question coaching, not generated per-answer.
 
 `interview_sessions` (table declared in Phase 1, migration 004) — `profile_id`,
 `question_id` (added in migration 020, FK to `interview_questions`),

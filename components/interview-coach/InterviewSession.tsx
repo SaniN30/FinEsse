@@ -59,6 +59,7 @@ export function InterviewSession({ questionId }: InterviewSessionProps) {
     return (
       <ScoreReveal
         rubricScores={rubricScores}
+        improvementGuide={question.improvement_guide}
         onPracticeAgain={() => {
           setRubricScores(null);
           setSubmitError(null);

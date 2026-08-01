@@ -218,6 +218,17 @@ Deno.serve(async (req) => {
       return jsonResponse({ error: xpError.message }, 400, corsHeaders);
     }
 
+    // Best-effort: a badge-award failure shouldn't fail a scoring request
+    // that already succeeded and already recorded xp_events.
+    const { error: badgeError } = await admin.rpc("award_badge", {
+      p_profile_id: session.profile_id,
+      p_slug: "jobready_first_mock_interview_completed",
+    });
+
+    if (badgeError) {
+      console.error("Failed to award first-mock-interview badge", badgeError);
+    }
+
     return jsonResponse({ session_id, rubric_scores: rubricScores }, 200, corsHeaders);
   } catch (err) {
     if (err instanceof ScoringError) {

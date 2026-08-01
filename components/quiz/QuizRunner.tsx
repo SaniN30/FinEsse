@@ -5,7 +5,7 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import { Button } from "@/components/Button";
 import { BackLink } from "@/components/BackLink";
 import { QuizResult } from "@/components/quiz/QuizResult";
-import type { QuizGradeResult, QuizQuestionPublic } from "@/lib/supabase/types";
+import type { Quiz, QuizGradeResult, QuizQuestionPublic } from "@/lib/supabase/types";
 import { cn } from "@/lib/cn";
 
 type QuizRunnerTier = "college" | "job_ready";
@@ -17,7 +17,9 @@ interface QuizRunnerProps {
 
 export function QuizRunner({ quizId, tier = "college" }: QuizRunnerProps) {
   const [questions, setQuestions] = useState<QuizQuestionPublic[] | null>(null);
-  const [skillId, setSkillId] = useState<string | null>(null);
+  const [quiz, setQuiz] = useState<Pick<Quiz, "skill_id" | "quiz_type" | "scenario_body" | "context_tag"> | null>(
+    null,
+  );
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [result, setResult] = useState<QuizGradeResult | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -43,18 +45,20 @@ export function QuizRunner({ quizId, tier = "college" }: QuizRunnerProps) {
 
     supabase
       .from("quizzes")
-      .select("skill_id")
+      .select("skill_id, quiz_type, scenario_body, context_tag")
       .eq("id", quizId)
       .maybeSingle()
       .then(({ data }) => {
         if (!isMounted) return;
-        setSkillId(data?.skill_id ?? null);
+        setQuiz(data ?? null);
       });
 
     return () => {
       isMounted = false;
     };
   }, [quizId]);
+
+  const skillId = quiz?.skill_id ?? null;
 
   const tierRoot = tier === "job_ready" ? "/job-ready" : "/college";
   const backHref = skillId ? `${tierRoot}/lessons/${skillId}` : tierRoot;
@@ -118,11 +122,23 @@ export function QuizRunner({ quizId, tier = "college" }: QuizRunnerProps) {
     );
   }
 
-  const allAnswered = questions.every((question) => answers[question.id]);
+  const allAnswered = questions.every((question) => answers[question.id]?.trim());
 
   return (
     <div className="space-y-6">
       <BackLink href={backHref} label="Back to Lesson" />
+
+      {quiz?.quiz_type === "case_study" && quiz.scenario_body ? (
+        <div className="rounded-[var(--radius-card)] border border-primary-300 bg-primary-500/5 p-6 shadow-soft">
+          {quiz.context_tag ? (
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-primary-500">
+              {quiz.context_tag}
+            </p>
+          ) : null}
+          <p className="text-sm leading-relaxed text-foreground">{quiz.scenario_body}</p>
+        </div>
+      ) : null}
+
       {questions.map((question, index) => (
         <div
           key={question.id}
@@ -160,7 +176,7 @@ export function QuizRunner({ quizId, tier = "college" }: QuizRunnerProps) {
             />
           ) : (
             <div className="space-y-2">
-              {question.options.map((option) => (
+              {question.options?.map((option) => (
                 <button
                   key={option}
                   type="button"
