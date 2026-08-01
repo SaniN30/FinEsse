@@ -90,7 +90,11 @@ in dark mode so `--foreground` text stays legible on them.
 ## Motion Conventions
 
 Unchanged from prior phases — Framer Motion, `[0.25, 1, 0.5, 1]` ease-out-quart,
-`whileInView` scroll reveals, spring hover/press on buttons and cards.
+`whileInView` scroll reveals, spring hover/press on buttons and cards. All motion is
+wrapped app-wide in `MotionProvider` (`app/layout.tsx`) via framer-motion's
+`MotionConfig reducedMotion="user"`, so every animation degrades to instant
+transitions when the OS `prefers-reduced-motion` setting is on — components don't
+need to opt in individually.
 
 ## Components
 
@@ -107,7 +111,9 @@ Located in `components/`:
   with badge, topic list, and a short status stat string; flat pastel tier panel
   (`bg-[#FBEAE0]` / `bg-primary-50` / `bg-accent-300/20`) with the
   `border-2 border-foreground` + `shadow-[var(--shadow-offset)]` chrome instead of
-  a soft-shadow generic card.
+  a soft-shadow generic card. The whole card is a click-through `Link` to its tier
+  route (`/school` / `/college` / `/job-ready`), with a hover-revealed "Explore →"
+  affordance.
 - **`Hero`** (`Hero.tsx`) — split two-column layout: copy + CTAs on the left,
   floating offset-shadow stat cards (lesson progress, XP, pocket money) on the
   right, each with its own idle float animation.
