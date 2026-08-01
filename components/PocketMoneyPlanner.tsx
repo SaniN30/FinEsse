@@ -96,8 +96,8 @@ export function PocketMoneyPlanner() {
           Pocket Money Planner
         </h2>
         <p className="mb-6 max-w-xl text-neutral-500">
-          A read-only view of your student&apos;s savings goals. Deposits and withdrawals are
-          theirs to manage.
+          Fund your student&apos;s wallet and run savings projections together. Deposits and
+          withdrawals on individual goals stay theirs to manage.
         </p>
         <ParentGoalsView parentId={profile.id} />
       </motion.section>

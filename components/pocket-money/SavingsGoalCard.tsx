@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ProgressBar } from "@/components/ProgressBar";
 import { GoalTransferForm } from "@/components/pocket-money/GoalTransferForm";
+import { GoalProjectionCalculator } from "@/components/pocket-money/GoalProjectionCalculator";
 import type { SavingsGoalProgress } from "@/lib/supabase/types";
 
 function formatCents(cents: number): string {
@@ -61,6 +62,12 @@ export function SavingsGoalCard({ goal, readOnly = false, onChanged, index = 0 }
           )}
         </div>
       )}
+
+      <GoalProjectionCalculator
+        goalName={goal.name}
+        balanceCents={goal.balance_cents}
+        targetAmountCents={goal.target_amount_cents}
+      />
     </motion.article>
   );
 }
