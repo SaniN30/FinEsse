@@ -112,15 +112,11 @@ export function PocketMoneyPlanner() {
       transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] as const }}
       className="mx-auto max-w-6xl px-6 pb-28"
     >
-      <div className="relative overflow-hidden rounded-[var(--radius-card)] border border-surface-border bg-gradient-to-br from-primary-500 via-secondary-500 to-primary-700 p-10 text-white shadow-soft sm:p-14">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full bg-white/10 blur-3xl"
-        />
-        <h2 className="max-w-lg text-3xl font-semibold leading-tight sm:text-4xl">
+      <div className="relative overflow-hidden rounded-[var(--radius-card)] border-2 border-foreground bg-primary-500 p-10 text-white shadow-[var(--shadow-offset)] sm:p-14">
+        <h2 className="max-w-lg font-display text-3xl font-bold leading-tight sm:text-4xl">
           The Pocket Money Planner
         </h2>
-        <p className="mt-4 max-w-xl text-white/80">
+        <p className="mt-4 max-w-xl text-primary-50">
           A hands-on budgeting tool built for the School tier — set a savings goal, deposit and
           withdraw on your own terms, and watch progress grow. Sign in to get started.
         </p>

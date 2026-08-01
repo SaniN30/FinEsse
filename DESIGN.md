@@ -91,15 +91,25 @@ Located in `components/`:
   + `shadow-[var(--shadow-offset)]`) instead of a full-bleed bottom-border bar,
   matching optimalearn's white pill navbar floating on the cream page.
 - **`LevelCard`** (`LevelCard.tsx`) — tier-aware card (school/college/jobready)
-  with badge, topic list, and a short status stat string.
+  with badge, topic list, and a short status stat string; flat pastel tier panel
+  (`bg-[#FBEAE0]` / `bg-primary-50` / `bg-accent-300/20`) with the
+  `border-2 border-foreground` + `shadow-[var(--shadow-offset)]` chrome instead of
+  a soft-shadow generic card.
+- **`Hero`** (`Hero.tsx`) — split two-column layout: copy + CTAs on the left,
+  floating offset-shadow stat cards (lesson progress, XP, pocket money) on the
+  right, each with its own idle float animation.
 - **`ProgressBar`** (`ProgressBar.tsx`) — animated fill, optional label.
 
-Extending this palette/shadow language to remaining screens (dashboards, settings,
-Interview Coach, per-tier lesson chrome) is follow-up work — see `AGENTS.md`'s
-"Frontend redesign (optimalearn reference)" note for scope split.
+The home page (`app/page.tsx`) — `Hero`, `LevelCard`, `LevelSection`'s heading, and
+the signed-out `PocketMoneyPlanner` CTA — now carries this offset-shadow language
+too. Extending it to the remaining screens (dashboards, settings, Interview Coach,
+per-tier lesson chrome) is follow-up work — see `AGENTS.md`'s "Frontend redesign
+(optimalearn reference)" note for scope split.
 
 ## Not in this phase
 
 A full per-page redesign (every dashboard/settings/lesson screen individually
-restyled) was explicitly split into follow-up work by the captain; this pass
-covers the shared token layer + `Button` + `Nav`, which every route inherits.
+restyled) was explicitly split into follow-up work by the captain; the shared
+token layer + `Button` + `Nav` landed first, and the home page (`Hero`,
+`LevelCard`, `LevelSection`, `PocketMoneyPlanner` CTA) followed — dashboards,
+settings, and Interview Coach are still pending.

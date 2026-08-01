@@ -16,24 +16,24 @@ interface LevelCardProps {
 
 const tierStyles: Record<
   LevelTier,
-  { accent: string; badge: string; glow: string; label: string }
+  { accent: string; badge: string; panel: string; label: string }
 > = {
   school: {
     accent: "bg-tier-school",
     badge: "bg-secondary-400/15 text-secondary-600",
-    glow: "from-secondary-400/25",
+    panel: "bg-[#FBEAE0]",
     label: "Level 01",
   },
   college: {
     accent: "bg-tier-college",
     badge: "bg-primary-400/15 text-primary-600",
-    glow: "from-primary-400/25",
+    panel: "bg-primary-50",
     label: "Level 02",
   },
   jobready: {
     accent: "bg-tier-jobready",
     badge: "bg-accent-400/15 text-accent-600",
-    glow: "from-accent-400/25",
+    panel: "bg-accent-300/20",
     label: "Level 03",
   },
 };
@@ -54,19 +54,13 @@ export function LevelCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] as const, delay: index * 0.12 }}
-      whileHover={{ y: -6 }}
+      whileHover={{ y: -4 }}
       className={cn(
-        "group relative overflow-hidden rounded-[var(--radius-card)] border border-surface-border bg-surface p-6 shadow-soft transition-shadow duration-300 hover:shadow-lg",
+        "group relative overflow-hidden rounded-[var(--radius-card)] border-2 border-foreground p-6 shadow-[var(--shadow-offset)] transition-transform duration-300",
+        styles.panel,
       )}
     >
-      <div
-        className={cn(
-          "pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-gradient-to-br opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100",
-          styles.glow,
-        )}
-      />
-
-      <div className={cn("mb-4 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold", styles.badge)}>
+      <div className={cn("mb-4 inline-flex items-center rounded-full border-2 border-foreground bg-surface px-3 py-1 text-xs font-semibold", styles.badge)}>
         {styles.label}
       </div>
 

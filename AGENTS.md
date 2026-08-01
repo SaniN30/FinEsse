@@ -183,6 +183,20 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   layer (`app/globals.css`, `Button`, `Nav`) — every route inherits it, but a
   per-page pass (dashboards, settings sections, Interview Coach, per-tier lesson
   chrome individually restyled) was explicitly deferred to follow-up work.
+- The home page (`app/page.tsx`) got that per-page pass next: `Hero.tsx` is now a
+  split two-column layout with floating offset-shadow cards (was a centered
+  generic-gradient hero), `LevelCard.tsx` uses flat pastel tier panels with the
+  ink-offset border/shadow chrome instead of soft-shadow generic cards, and the
+  signed-out `PocketMoneyPlanner` CTA dropped its gradient-plus-blur treatment for
+  the same flat offset-shadow language — verified live against optimalearn.com
+  reference screenshots via chrome-devtools-axi. Dashboards (parent/student),
+  settings, and Interview Coach still need this same per-page pass and live
+  verification — a mechanical design-detector pass over those components found no
+  violations of the shared tokens, but nobody has looked at them rendered. Signing
+  in to check them live was blocked mid-session by Supabase's built-in auth
+  mailer's rate limit ("email rate limit exceeded" on `signUp()`, a shared
+  per-project cap unrelated to code) — retry once that resets, or configure custom
+  SMTP on the Supabase project, before attempting live verification again.
 - This repo's dev environment has no live Supabase access (`.env.local` holds
   placeholder credentials, no `supabase` CLI, no linked project ref, no CI/CD
   migration deploy step) — verifying whether migrations `00000000000027`-`00000000000031`

@@ -41,10 +41,10 @@ export function LevelSection() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] as const }}
-        className="mb-12 max-w-xl"
+        className="mx-auto mb-12 max-w-xl text-center"
       >
-        <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
-          Three levels, one growth path
+        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          Three levels, <span className="text-primary-500">one growth path</span>
         </h2>
         <p className="mt-3 text-muted-foreground">
           Each stage of FinEsse is built around where you actually are with
