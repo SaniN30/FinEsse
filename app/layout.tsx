@@ -3,6 +3,7 @@ import { Inter, Baloo_2 } from "next/font/google";
 import { AuthProvider } from "@/lib/supabase/auth-context";
 import "./globals.css";
 import { Footer } from "@/components/Footer";
+import { MotionProvider } from "@/components/MotionProvider";
 
 const baloo2 = Baloo_2({
   variable: "--font-baloo-2",
@@ -38,10 +39,12 @@ export default function RootLayout({
             __html: `try{var t=localStorage.getItem("finesse-theme");if(t==="light"||t==="dark"){document.documentElement.setAttribute("data-theme",t);}}catch(e){}`,
           }}
         />
-        <AuthProvider>
-          {children}
-          <Footer />
-        </AuthProvider>
+        <MotionProvider>
+          <AuthProvider>
+            {children}
+            <Footer />
+          </AuthProvider>
+        </MotionProvider>
       </body>
     </html>
   );
