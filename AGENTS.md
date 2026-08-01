@@ -221,6 +221,55 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   capstone skills) are actually applied to the live project requires real project credentials
   from whoever operates it; that gap, not missing code, is the likely cause of a
   "no coursework" report against the live site.
+  **Correction (2026-08-01):** `.env.local` in fact holds a real, working anon key
+  for `https://lanfhdsfqfzekodynqai.supabase.co` (confirmed live via unauthenticated
+  REST calls) — it is not a placeholder. There is still no `supabase` CLI link/access
+  token/service-role key here, so pushing migrations from a plain dev checkout isn't
+  possible, but reading the schema/RLS shape via the anon key is.
+
+## "Lessons empty" / "calculator not visible" root-cause findings (2026-08-01)
+
+- **Primary, and sufficient on its own to explain the whole symptom:** every
+  `*.vercel.app` URL for this project — the current production alias
+  (`fin-esse-nautiyalsanidhya30-4240s-projects.vercel.app`), the git-branch alias
+  (`fin-esse-git-main-...`), the project's short alias (`fin-esse.vercel.app`), and
+  individual commit-deployment URLs — redirects an anonymous visitor to
+  `vercel.com/login` (Vercel Deployment Protection / "Vercel Authentication" is on
+  for the project). A real end user never reaches the Next.js app at all, so no page
+  content — lessons, Pocket Money Planner, anything — can render. This is a Vercel
+  project-settings issue, not a missing-migration or RLS or frontend bug, and no
+  Supabase credential can fix it; it needs Vercel dashboard access to turn
+  Deployment Protection off (or add a bypass) for whichever domain is meant to be
+  public. Check this first before re-diagnosing "empty content" as a data problem.
+- **Real, separate bug found while checking migration history:** `main` currently
+  ships two migration files with the identical numeric prefix
+  `00000000000031` — `00000000000031_seed_capstone_content.sql` and
+  `00000000000031_student_login_lockout.sql` — introduced by PR #24 ("renumber
+  colliding migration timestamps 22/23 to 31-33"), which ironically reintroduced the
+  same class of collision it was fixing. Not yet resolved; depending on how
+  `supabase db push`/CLI migration-history tracking keys on the numeric prefix vs.
+  full filename, this could cause one of the two to be skipped or the push to error.
+  Renaming either file post-hoc is risky without knowing what's already recorded as
+  applied on the live project's migration history table — check live state before
+  touching either filename.
+- `lessons`/`quizzes`/`skills` RLS (`00000000000005_rls_policies.sql`,
+  `00000000000007_content_rls.sql`) all require `auth.role() = 'authenticated'` (or a
+  matching tier via `profiles`) — an anon-key REST read against any of them returns
+  `[]` by RLS design, not because the tables are empty. Don't take an anon-key empty
+  read as evidence of missing seed data; it proves nothing either way. Confirming
+  whether seed data actually reached the live project needs an authenticated
+  end-user session or direct DB/service-role access.
+- Of the three sibling branches with pending content work: `fm/finesse-school-
+  content-depth-followup` (migration `00000000000040`) and `fm/finesse-jobready-
+  content-depth-followup` (migrations `00000000000034`/`00000000000035`, uncommitted
+  in that branch's worktree) are real and exist only as local branches in this
+  machine's shared git dir — never pushed to `origin`. No
+  `fm/finesse-college-content-depth-followup` branch exists anywhere (local or
+  `origin`) — there was nothing to bring forward for College.
+- `components/lessons/LessonList.tsx` doesn't distinguish "zero rows because RLS/tier
+  filtered them out" from "genuinely no content" — an empty result renders an empty
+  grid with no messaging. Minor, secondary to the Vercel wall above, but worth fixing
+  once real content is confirmed reaching the live project.
 
 ## Maintaining this file
 
