@@ -5,10 +5,10 @@
 --
 -- 1. Difficulty labels on quiz_questions and interview_questions -- a plain
 --    enum column, defaulted so existing rows don't need an immediate
---    backfill at schema-creation time (backfilled for real in migration 046).
+--    backfill at schema-creation time (backfilled for real in migration 049).
 -- 2. Typed free-response questions on quiz_questions, graded by keyword
 --    match rather than exact string equality -- needed for the case-study
---    quizzes (migration 044), which mix multiple-choice with short typed
+--    quizzes (migration 048), which mix multiple-choice with short typed
 --    answers. `grading_keywords`/`min_keyword_matches` are the free-response
 --    equivalent of `correct_answer`: never exposed to clients (same
 --    hide-the-answer-key posture quiz_questions already has for

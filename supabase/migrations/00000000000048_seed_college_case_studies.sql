@@ -6,7 +6,7 @@
 -- skill as its own "Take quiz" button, so no frontend change was needed to
 -- surface a second quiz per skill. Each mixes multiple_choice and
 -- free_response questions (graded by keyword match via the
--- `grade_quiz_attempt` extension in migration 042), spans easy/medium/hard
+-- `grade_quiz_attempt` extension in migration 046), spans easy/medium/hard
 -- difficulty, and every question carries the same `scenario_context` for
 -- its case so the frontend can display "what this case study is modeled
 -- on" alongside the question. 24 questions total across the three cases.

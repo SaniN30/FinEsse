@@ -11,17 +11,17 @@
 --
 -- Every quiz has 10 questions (per the captain's added scope), difficulty
 -- roughly tiered by order_index (1-3 easy, 4-7 medium, 8-10 hard) -- the
--- same recall-first/application-later shape migration 045's backfill notes
+-- same recall-first/application-later shape migration 049's backfill notes
 -- describe for existing content, just authored directly this time. Skill/
 -- lesson/quiz ids follow the existing X09-X18 suffix convention shared
 -- across the three uuid namespaces (skills/lessons/quizzes), and this
--- migration's quiz ids (109-118) are exactly the ones migration 045
+-- migration's quiz ids (109-118) are exactly the ones migration 049
 -- excludes from its difficulty backfill.
 --
--- Migration 044 (case-study quizzes, already written) attaches its three
+-- Migration 048 (case-study quizzes, already written) attaches its three
 -- quizzes to skills 109, 110, and 118 seeded here -- this migration must
--- run before 044 for that migration's foreign keys to resolve, hence the
--- 043 timestamp slotting between 042 and 044.
+-- run before 048 for that migration's foreign keys to resolve, hence the
+-- 047 timestamp slotting between 046 and 048.
 --
 -- Content is written originally for this project; topics and reasoning
 -- patterns are grounded in how undergraduate personal-finance electives and
@@ -29,7 +29,7 @@
 -- any publisher's text. Dollar figures and rates are illustrative teaching
 -- examples, not sourced from any real employer/lender/tax-year data -- US
 -- personal-finance concepts (federal loans, 401(k)/IRA, FICA) are used
--- throughout to match the US-specific framing migrations 016/028/030/031/044
+-- throughout to match the US-specific framing migrations 016/028/030/031/048
 -- already established for College tier.
 
 -- ===================== 109: Budgeting on a Student Income =====================

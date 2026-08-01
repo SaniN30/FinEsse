@@ -1,8 +1,8 @@
 -- College content-depth followup: backfill `difficulty` for content that
--- existed before migration 042 added the column (everything got the
+-- existed before migration 046 added the column (everything got the
 -- column's 'medium' default at add-time; this assigns a real spread
 -- instead of leaving every legacy row at the same value). New content added
--- in migrations 043/044 already has deliberately-authored difficulty values
+-- in migrations 047/048 already has deliberately-authored difficulty values
 -- per question and is explicitly excluded here so this backfill can't
 -- clobber it.
 --
