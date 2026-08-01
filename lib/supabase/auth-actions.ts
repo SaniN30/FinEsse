@@ -1,41 +1,130 @@
 import { supabase } from "@/lib/supabase/client";
-import type { Profile } from "@/lib/supabase/types";
+import type { EducationLevel, Profile } from "@/lib/supabase/types";
 
 export interface ActionResult<T> {
   data: T | null;
   error: string | null;
 }
 
+export interface ParentSignUpDetails {
+  email: string;
+  password: string;
+  displayName: string;
+  dateOfBirth: string;
+  educationLevel: EducationLevel;
+  institutionName: string | null;
+  phoneNumber: string;
+}
+
+interface ParentProfileFields {
+  displayName: string;
+  dateOfBirth?: string | null;
+  educationLevel?: string | null;
+  institutionName?: string | null;
+  phoneNumber?: string | null;
+}
+
+const PROFILE_SELECT = "id, role, parent_id, tier, display_name" as const;
+
+/** Postgres unique_violation -- see idx_profiles_phone_number_unique. */
+const UNIQUE_VIOLATION = "23505";
+
+async function insertParentProfile(
+  userId: string,
+  fields: ParentProfileFields,
+): Promise<ActionResult<Profile>> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .insert({
+      id: userId,
+      role: "parent",
+      display_name: fields.displayName,
+      date_of_birth: fields.dateOfBirth ?? null,
+      education_level: fields.educationLevel ?? null,
+      institution_name: fields.institutionName ?? null,
+      phone_number: fields.phoneNumber ?? null,
+    })
+    .select(PROFILE_SELECT)
+    .single();
+
+  if (error) {
+    const message =
+      error.code === UNIQUE_VIOLATION
+        ? "An account with this phone number already exists."
+        : error.message;
+    return { data: null, error: message };
+  }
+
+  return { data: data as Profile, error: null };
+}
+
 export async function signUpParent(
-  email: string,
-  password: string,
-  displayName: string,
+  details: ParentSignUpDetails,
 ): Promise<ActionResult<{ userId: string; needsEmailConfirmation: boolean }>> {
+  const { email, password, displayName, dateOfBirth, educationLevel, institutionName, phoneNumber } =
+    details;
+
+  // Checked before creating the auth user so a duplicate phone number
+  // doesn't leave behind an orphaned auth account with no profile.
+  const { data: phoneTaken, error: phoneCheckError } = await supabase.rpc(
+    "is_phone_number_taken",
+    { candidate: phoneNumber },
+  );
+
+  if (phoneCheckError) {
+    return { data: null, error: phoneCheckError.message };
+  }
+
+  if (phoneTaken) {
+    return { data: null, error: "An account with this phone number already exists." };
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { display_name: displayName } },
+    options: {
+      data: {
+        display_name: displayName,
+        date_of_birth: dateOfBirth,
+        education_level: educationLevel,
+        institution_name: institutionName,
+        phone_number: phoneNumber,
+      },
+    },
   });
 
   if (error || !data.user) {
     return { data: null, error: error?.message ?? "Sign-up failed." };
   }
 
+  // With email confirmation + enumeration protection enabled, signing up
+  // with an already-registered, already-confirmed email succeeds but
+  // returns an empty `identities` array instead of an error -- the
+  // documented way to detect this case client-side.
+  if (data.user.identities && data.user.identities.length === 0) {
+    return {
+      data: null,
+      error: "An account with this email already exists. Try logging in instead.",
+    };
+  }
+
   if (!data.session) {
     // Project has email confirmation enabled: no session yet, so RLS won't
     // let us insert the profile row until the parent confirms and signs in.
-    // display_name is preserved in user_metadata for ensureParentProfile.
+    // All the new fields are preserved in user_metadata for ensureParentProfile.
     return { data: { userId: data.user.id, needsEmailConfirmation: true }, error: null };
   }
 
-  const { error: profileError } = await supabase.from("profiles").insert({
-    id: data.user.id,
-    role: "parent",
-    display_name: displayName,
+  const { error: profileError } = await insertParentProfile(data.user.id, {
+    displayName,
+    dateOfBirth,
+    educationLevel,
+    institutionName,
+    phoneNumber,
   });
 
   if (profileError) {
-    return { data: null, error: profileError.message };
+    return { data: null, error: profileError };
   }
 
   return { data: { userId: data.user.id, needsEmailConfirmation: false }, error: null };
@@ -67,7 +156,7 @@ export async function ensureParentProfile(): Promise<ActionResult<Profile>> {
 
   const { data: existing } = await supabase
     .from("profiles")
-    .select("id, role, parent_id, tier, display_name")
+    .select(PROFILE_SELECT)
     .eq("id", user.id)
     .maybeSingle();
 
@@ -75,19 +164,15 @@ export async function ensureParentProfile(): Promise<ActionResult<Profile>> {
     return { data: existing as Profile, error: null };
   }
 
-  const displayName = (user.user_metadata?.display_name as string | undefined) ?? "Parent";
+  const metadata = user.user_metadata ?? {};
 
-  const { data: inserted, error } = await supabase
-    .from("profiles")
-    .insert({ id: user.id, role: "parent", display_name: displayName })
-    .select("id, role, parent_id, tier, display_name")
-    .single();
-
-  if (error) {
-    return { data: null, error: error.message };
-  }
-
-  return { data: inserted as Profile, error: null };
+  return insertParentProfile(user.id, {
+    displayName: (metadata.display_name as string | undefined) ?? "Parent",
+    dateOfBirth: metadata.date_of_birth as string | undefined,
+    educationLevel: metadata.education_level as string | undefined,
+    institutionName: metadata.institution_name as string | undefined,
+    phoneNumber: metadata.phone_number as string | undefined,
+  });
 }
 
 async function callEdgeFunction<T>(

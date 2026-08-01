@@ -5,14 +5,32 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { FormField } from "@/components/auth/FormField";
+import { SelectField } from "@/components/auth/SelectField";
 import { Button } from "@/components/Button";
 import { signUpParent } from "@/lib/supabase/auth-actions";
+import type { EducationLevel } from "@/lib/supabase/types";
+
+const EDUCATION_LEVEL_OPTIONS: { value: EducationLevel; label: string }[] = [
+  { value: "school", label: "School" },
+  { value: "college", label: "College" },
+  { value: "working_professional", label: "Working professional" },
+];
+
+const PHONE_PATTERN = /^\+?[0-9]{7,15}$/;
+
+function todayISODate(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 export default function SignUpPage() {
   const router = useRouter();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [educationLevel, setEducationLevel] = useState<EducationLevel | "">("");
+  const [institutionName, setInstitutionName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
@@ -20,9 +38,33 @@ export default function SignUpPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (!educationLevel) {
+      setError("Please select your education level.");
+      return;
+    }
+
+    if (educationLevel !== "working_professional" && !institutionName.trim()) {
+      setError("Please enter the name of your school or university.");
+      return;
+    }
+
+    if (!PHONE_PATTERN.test(phoneNumber.trim())) {
+      setError("Please enter a valid phone number (digits only, optionally starting with +).");
+      return;
+    }
+
     setSubmitting(true);
 
-    const result = await signUpParent(email, password, displayName);
+    const result = await signUpParent({
+      email,
+      password,
+      displayName,
+      dateOfBirth,
+      educationLevel,
+      institutionName: institutionName.trim() || null,
+      phoneNumber: phoneNumber.trim(),
+    });
 
     setSubmitting(false);
 
@@ -87,6 +129,46 @@ export default function SignUpPage() {
           required
           minLength={8}
           autoComplete="new-password"
+        />
+        <FormField
+          label="Date of birth"
+          name="dateOfBirth"
+          type="date"
+          value={dateOfBirth}
+          onChange={(e) => setDateOfBirth(e.target.value)}
+          required
+          max={todayISODate()}
+          autoComplete="bday"
+        />
+        <SelectField
+          label="Education level"
+          name="educationLevel"
+          value={educationLevel}
+          onChange={(e) => setEducationLevel(e.target.value as EducationLevel)}
+          options={EDUCATION_LEVEL_OPTIONS}
+          placeholder="Select your education level"
+          required
+        />
+        <FormField
+          label={
+            educationLevel === "working_professional"
+              ? "School or university (optional)"
+              : "School or university"
+          }
+          name="institutionName"
+          value={institutionName}
+          onChange={(e) => setInstitutionName(e.target.value)}
+          required={educationLevel !== "working_professional"}
+          autoComplete="organization"
+        />
+        <FormField
+          label="Phone number"
+          name="phoneNumber"
+          type="tel"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          required
+          autoComplete="tel"
         />
         {error ? <p className="mb-4 text-sm font-medium text-red-500">{error}</p> : null}
         <Button type="submit" size="lg" className="w-full" disabled={submitting}>

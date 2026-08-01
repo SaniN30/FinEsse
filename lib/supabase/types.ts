@@ -2,6 +2,7 @@ export type Tier = "school" | "college" | "job_ready";
 export type ContentType = "article" | "video" | "interactive";
 export type ProfileRole = "parent" | "student";
 export type AccountType = "student_wallet" | "parent_wallet" | "savings_goal";
+export type EducationLevel = "school" | "college" | "working_professional";
 
 export interface Profile {
   id: string;
@@ -9,6 +10,10 @@ export interface Profile {
   parent_id: string | null;
   tier: Tier | null;
   display_name: string | null;
+  date_of_birth?: string | null;
+  education_level?: EducationLevel | null;
+  institution_name?: string | null;
+  phone_number?: string | null;
 }
 
 export interface Skill {

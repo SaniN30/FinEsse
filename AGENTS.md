@@ -13,8 +13,8 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   consistent.
 - Reusable primitives live in `components/` (`Button`, `LevelCard`, `ProgressBar`,
   `Nav`, `Hero`, `LevelSection`, `PocketMoneyPlanner`, `TierPlaceholder`, `BackLink`) and
-  `components/auth/` (`AuthCard`, `FormField`, `PinInput`) — prefer extending these
-  over ad-hoc styling.
+  `components/auth/` (`AuthCard`, `FormField`, `SelectField`, `PinInput`) — prefer extending
+  these over ad-hoc styling.
 - Routes: `/` (landing), `/school`, `/college`, `/job-ready` (tier landing pages;
   `/job-ready` links to both its lesson track and the Phase 9 AI Interview Coach),
   `/settings` (Account, Appearance, Notifications, Help, Legal —
@@ -68,6 +68,44 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   `tests/integration/` suite (vitest against the live/local Supabase project,
   run via `npm run test:integration`), which already covers the backend
   consent gate end-to-end.
+
+### Parent signup fields expansion (post-Phase 9)
+
+- `00000000000042_profile_signup_fields.sql` added `education_level` (check
+  constrained to `school`/`college`/`working_professional` — distinct from the
+  existing `tier` enum, since a parent isn't a student), `institution_name`,
+  and `phone_number` to `profiles`, plus a unique index on `phone_number`
+  (partial, `where phone_number is not null`). `date_of_birth` already existed
+  (added in migration 1 for student COPPA record-keeping) and is reused here
+  for the parent's own row rather than duplicated under a new column name.
+  These fields are collected on `/signup` only, not `/create-student` —
+  `create-student-account`'s data-minimization design (synthetic email, no
+  real contact info for students) meant extending phone/email collection to
+  the student flow would work against a documented design decision, and
+  `/signup` is the only flow that already collects an email/phone-shaped
+  identity. No RLS changes were needed: the existing `profiles_select`/
+  `profiles_update` policies already scope every column row-wise.
+- Duplicate-phone rejection is two-layered: `is_phone_number_taken(text)` (a
+  `security definer` RPC, same migration) lets the signup form reject a taken
+  phone number before creating an auth user — plain client-side `select`
+  against `profiles` can't do this, since RLS hides other users' rows
+  entirely including existence. The unique index is still the real
+  authority for the race case; `lib/supabase/auth-actions.ts#insertParentProfile`
+  maps a `23505` (unique_violation) from the insert itself to the same
+  friendly message. Duplicate-email rejection relies entirely on Supabase
+  Auth's own `auth.users.email` uniqueness — `signUpParent()` additionally
+  checks for `data.user.identities.length === 0` on a successful-looking
+  `signUp()` response, which is how a duplicate, already-confirmed email
+  presents when the project has email-enumeration protection on (no error,
+  but no new identity either).
+- This project's shared-SMTP mailer rate limit (see the "Lessons empty" /
+  root-cause section below) makes repeatedly calling the real `signUp()`
+  end-to-end impractical for verification — both this migration's live
+  verification and `tests/integration/helpers.ts`'s `signUpParent()` helper
+  work around it by creating the parent via the Admin API
+  (`admin.auth.admin.createUser`) instead and driving the rest of the flow
+  (profile insert, RLS, RPC, unique-constraint dedup) through a real
+  anon-authenticated client from there.
 
 ## School lesson→quiz→XP loop and Pocket Money Planner (Phase 7)
 
