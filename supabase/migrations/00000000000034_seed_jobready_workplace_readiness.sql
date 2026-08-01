@@ -215,7 +215,7 @@ insert into quiz_questions (quiz_id, question, options, correct_answer, order_in
     '["Nothing else is ever negotiable", "Signing bonus, start date, vacation days, and remote-work flexibility", "Only the job title", "Only the company''s stock price"]'::jsonb,
     'Signing bonus, start date, vacation days, and remote-work flexibility', 3),
   ('00000000-0000-0000-0003-000000000208', 'What is a weak negotiating approach, per the lesson?',
-    '["Naming a specific number grounded in research", "Accepting immediately or asking for "as much as possible" with no anchor", "Staying polite and enthusiastic while countering", "Leaving room for the employer to respond"]'::jsonb,
+    '["Naming a specific number grounded in research", "Accepting immediately or asking for \"as much as possible\" with no anchor", "Staying polite and enthusiastic while countering", "Leaving room for the employer to respond"]'::jsonb,
     'Accepting immediately or asking for "as much as possible" with no anchor', 4),
 
   -- Understanding Your Compensation Package
@@ -363,7 +363,7 @@ insert into quiz_questions (quiz_id, question, options, correct_answer, order_in
     '["A one-time signup available only to new hires", "A defined annual window to choose or change benefit elections, generally locked in outside a qualifying life event", "A window for negotiating salary", "An ongoing process available at any time"]'::jsonb,
     'A defined annual window to choose or change benefit elections, generally locked in outside a qualifying life event', 1),
   ('00000000-0000-0000-0003-000000000219', 'What is the key difference between an HSA and a standard FSA, per the lesson?',
-    '["They are functionally identical", "An HSA balance rolls over indefinitely and is permanently yours; a standard FSA is typically "use it or lose it" within the plan year", "An FSA rolls over indefinitely while an HSA does not", "Only an FSA offers pre-tax contributions"]'::jsonb,
+    '["They are functionally identical", "An HSA balance rolls over indefinitely and is permanently yours; a standard FSA is typically \"use it or lose it\" within the plan year", "An FSA rolls over indefinitely while an HSA does not", "Only an FSA offers pre-tax contributions"]'::jsonb,
     'An HSA balance rolls over indefinitely and is permanently yours; a standard FSA is typically "use it or lose it" within the plan year', 2),
   ('00000000-0000-0000-0003-000000000219', 'In the worked example, someone contributes $2,000 to an FSA but only uses $600. What generally happens to the remaining $1,400 under typical FSA rules?',
     '["It rolls over indefinitely, like an HSA", "Most or all of it is forfeited at year-end", "It is automatically refunded in cash", "It is converted into an HSA"]'::jsonb,
