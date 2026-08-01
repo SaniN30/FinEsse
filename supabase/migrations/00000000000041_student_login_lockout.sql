@@ -8,11 +8,11 @@
 -- student's profile without an Auth Admin API call before every login.
 
 alter table profiles
-  add column login_email text,
-  add column failed_login_attempts int not null default 0,
-  add column locked_until timestamptz;
+  add column if not exists login_email text,
+  add column if not exists failed_login_attempts int not null default 0,
+  add column if not exists locked_until timestamptz;
 
-create unique index idx_profiles_login_email_unique
+create unique index if not exists idx_profiles_login_email_unique
   on profiles (login_email)
   where login_email is not null;
 
