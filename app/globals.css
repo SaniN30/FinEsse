@@ -1,60 +1,63 @@
 @import "tailwindcss";
 
 :root {
-  /* Neutral scale — warm ink, not stock gray */
+  /* Neutral scale — warm cream ground + navy ink (optimalearn.com reference:
+     cream page background, near-navy headings/body, no stock gray). */
   --color-neutral-0: #ffffff;
-  --color-neutral-50: #f7f6f3;
-  --color-neutral-100: #efece5;
-  --color-neutral-200: #ddd7cc;
-  --color-neutral-300: #bcb3a2;
-  --color-neutral-400: #948a78;
-  --color-neutral-500: #6f6656;
-  --color-neutral-600: #514a3d;
-  --color-neutral-700: #37322a;
-  --color-neutral-800: #24211b;
-  --color-neutral-900: #171510;
-  --color-neutral-950: #0c0b08;
+  --color-neutral-50: #faf6ec;
+  --color-neutral-100: #f3ecd9;
+  --color-neutral-200: #e6dcbf;
+  --color-neutral-300: #d3c599;
+  --color-neutral-400: #a89a72;
+  --color-neutral-500: #7d7256;
+  --color-neutral-600: #574f3d;
+  --color-neutral-700: #3a3527;
+  --color-neutral-800: #262316;
+  --color-neutral-900: #14192b;
+  --color-neutral-950: #0a0d18;
 
-  /* Primary — Amethyst (brand core) */
-  --color-primary-50: #f2effe;
-  --color-primary-100: #e4defd;
-  --color-primary-200: #c9bdfb;
-  --color-primary-300: #a993f7;
-  --color-primary-400: #8a6bf2;
-  --color-primary-500: #6e46ea;
-  --color-primary-600: #5a30d6;
-  --color-primary-700: #4824ab;
-  --color-primary-800: #351c7d;
-  --color-primary-900: #221452;
+  /* Primary — Optimalearn Blue (brand core, replaces prior Amethyst) */
+  --color-primary-50: #eaf0ff;
+  --color-primary-100: #d3e0ff;
+  --color-primary-200: #a8c0ff;
+  --color-primary-300: #749bff;
+  --color-primary-400: #3f70ff;
+  --color-primary-500: #1a56ff;
+  --color-primary-600: #1443d6;
+  --color-primary-700: #1034a8;
+  --color-primary-800: #0c277d;
+  --color-primary-900: #081a52;
 
-  /* Secondary — Signal Blue */
-  --color-secondary-400: #5b8cff;
-  --color-secondary-500: #3d6bef;
-  --color-secondary-600: #2a4fd1;
+  /* Secondary — Sky (chat/coach surfaces) */
+  --color-secondary-400: #5b9dff;
+  --color-secondary-500: #3d84ef;
+  --color-secondary-600: #2a63d1;
 
-  /* Accent — Mint (growth / money) */
+  /* Accent — Mint (growth / money), unchanged hue family */
   --color-accent-300: #7cf2cd;
   --color-accent-400: #3fe0ac;
   --color-accent-500: #1fc491;
   --color-accent-600: #14a377;
 
-  /* Tier accents — Lavish design-system values (approved final palette from
-     PR #15's "ship Lavish design system"), used both by LevelCard/tier
-     components and by the .theme-tier-* wrapper classes below. */
-  --color-tier-school: #c98b7d;
-  --color-tier-college: #6e46ea;
+  /* Tier accents — kept as distinct hues per tier, retuned to sit on the
+     cream ground instead of the old cool-neutral one. */
+  --color-tier-school: #e0855f;
+  --color-tier-college: #1a56ff;
   --color-tier-jobready: #1fc491;
   /* Job-Ready's minimal treatment intentionally uses ink, not an accent hue. */
-  --color-tier-jobready-ink: #1b1710;
+  --color-tier-jobready-ink: #14192b;
   --color-success: #1fc491;
 
   --background: var(--color-neutral-50);
   --foreground: var(--color-neutral-900);
   --surface: var(--color-neutral-0);
-  --surface-border: var(--color-neutral-200);
+  --surface-border: var(--color-neutral-800);
 
-  --radius-card: 1.25rem;
-  --shadow-soft: 0 1px 2px rgba(23, 21, 16, 0.04), 0 12px 32px -12px rgba(23, 21, 16, 0.12);
+  --radius-card: 1.5rem;
+  --shadow-soft: 0 1px 2px rgba(20, 25, 43, 0.04), 0 12px 32px -12px rgba(20, 25, 43, 0.12);
+  /* Hard offset shadow — the optimalearn signature on buttons/pill chrome:
+     a solid ink-colored offset, not a blur. */
+  --shadow-offset: 3px 3px 0 var(--foreground);
 
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -65,10 +68,11 @@
   --surface: var(--color-neutral-900);
   --surface-border: var(--color-neutral-800);
 
-  --color-tier-school: #d9a7a0;
-  --color-tier-college: #a98cf5;
+  --color-tier-school: #f0a37e;
+  --color-tier-college: #6f96ff;
   --color-tier-jobready-ink: #f3f1ea;
   --color-success: #4fdbae;
+  --shadow-offset: 3px 3px 0 var(--foreground);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -78,10 +82,11 @@
     --surface: var(--color-neutral-900);
     --surface-border: var(--color-neutral-800);
 
-    --color-tier-school: #d9a7a0;
-    --color-tier-college: #a98cf5;
+    --color-tier-school: #f0a37e;
+    --color-tier-college: #6f96ff;
     --color-tier-jobready-ink: #f3f1ea;
     --color-success: #4fdbae;
+    --shadow-offset: 3px 3px 0 var(--foreground);
   }
 }
 
@@ -130,11 +135,12 @@
   --color-neutral-900: var(--color-neutral-900);
   --color-neutral-950: var(--color-neutral-950);
 
-  --font-display: var(--font-space-grotesk);
+  --font-display: var(--font-baloo-2);
   --font-sans: var(--font-inter);
 
   --radius-card: var(--radius-card);
   --shadow-soft: var(--shadow-soft);
+  --shadow-offset: var(--shadow-offset);
 }
 
 body {

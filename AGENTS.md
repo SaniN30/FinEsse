@@ -161,6 +161,23 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   migration, check the highest number in use on `main` *and* any known in-flight branches,
   not just `main` alone, and pick a clearly-past-the-end number to avoid a second collision.
 
+## Frontend redesign (optimalearn.com reference)
+
+- `DESIGN.md` was reworked to reference https://www.optimalearn.com (cream ground,
+  navy ink, a single bright blue brand color, rounded Baloo 2 display type, and a
+  hard ink-colored `--shadow-offset` on outlined chrome like `Nav` and the
+  `secondary` `Button` variant). This landed only at the shared token/component
+  layer (`app/globals.css`, `Button`, `Nav`) — every route inherits it, but a
+  per-page pass (dashboards, settings sections, Interview Coach, per-tier lesson
+  chrome individually restyled) was explicitly deferred to follow-up work.
+- This repo's dev environment has no live Supabase access (`.env.local` holds
+  placeholder credentials, no `supabase` CLI, no linked project ref, no CI/CD
+  migration deploy step) — verifying whether migrations `00000000000027`-`00000000000030`
+  (School/College content depth + Job-Ready lesson track + advanced-tier skills)
+  are actually applied to the live project requires real project credentials
+  from whoever operates it; that gap, not missing code, is the likely cause of a
+  "no coursework" report against the live site.
+
 ## Maintaining this file
 
 Keep this file short and durable — project structure, conventions, and

@@ -25,16 +25,16 @@ export function Nav() {
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] as const }}
-      className="sticky top-0 z-40 border-b border-surface-border/70 bg-background/80 backdrop-blur-md"
+      className="sticky top-0 z-40 bg-background/0 px-4 pt-4"
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-6xl items-center justify-between rounded-full border-2 border-foreground bg-surface px-5 py-3 shadow-[var(--shadow-offset)]">
         <Link href="/" className="flex items-center gap-2">
           <Logo size="sm" />
           <span className="font-display text-lg font-semibold tracking-tight">
             FinEsse
           </span>
         </Link>
-        <nav className="hidden items-center gap-8 text-sm font-medium text-neutral-500 sm:flex">
+        <nav className="hidden items-center gap-8 text-sm font-medium text-neutral-600 sm:flex">
           {links.map((link) => (
             <a
               key={link.href}
@@ -95,7 +95,7 @@ export function Nav() {
         </div>
       </div>
       {isMenuOpen ? (
-        <nav className="flex flex-col gap-1 border-t border-surface-border/70 px-6 py-4 text-sm font-medium text-neutral-500 sm:hidden">
+        <nav className="mx-auto mt-2 flex max-w-6xl flex-col gap-1 rounded-2xl border-2 border-foreground bg-surface px-4 py-3 text-sm font-medium text-neutral-600 shadow-[var(--shadow-offset)] sm:hidden">
           {links.map((link) => (
             <a
               key={link.href}
