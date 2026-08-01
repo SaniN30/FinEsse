@@ -174,6 +174,23 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   not just `main` alone, and pick a clearly-past-the-end number to avoid a second collision.
   31 was free as of this migration.
 
+## School-tier content depth pass 2 (post-capstone)
+
+- School had only 7 skills after migrations 09/27/30/31 versus College/Job-Ready's
+  deeper chains. `00000000000040_seed_school_content_depth_pass2.sql` adds 8 more
+  (008-015: digital payments & online safety, simple investing basics, taxes basics,
+  entrepreneurship basics, credit & debt basics, insurance basics, comparison shopping
+  & consumer skills, financial goal setting), chaining off `banking-and-inflation-basics`
+  (007), bringing School to 15 total skills. Same lesson/quiz depth pattern as
+  migrations 27-31 (one article lesson with a worked example + recap, one 5-6 question
+  quiz per skill); School still has no `modeling_exercises` concept, so none were added.
+  40 was picked per the existing migration-numbering-collision note below (highest
+  in use on `main` at write time was 33).
+- This worktree has no linked Supabase CLI session and only the anon key in
+  `.env.local` (no DB password/service role/access token), so this migration could not
+  be pushed to the live project from here — same constraint noted above for
+  migrations 27-31.
+
 ## Frontend redesign (optimalearn.com reference)
 
 - `DESIGN.md` was reworked to reference https://www.optimalearn.com (cream ground,
@@ -204,6 +221,83 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   capstone skills) are actually applied to the live project requires real project credentials
   from whoever operates it; that gap, not missing code, is the likely cause of a
   "no coursework" report against the live site.
+  **Correction (2026-08-01):** `.env.local` in fact holds a real, working anon key
+  for `https://lanfhdsfqfzekodynqai.supabase.co` (confirmed live via unauthenticated
+  REST calls) — it is not a placeholder. There is still no `supabase` CLI link/access
+  token/service-role key here, so pushing migrations from a plain dev checkout isn't
+  possible, but reading the schema/RLS shape via the anon key is.
+
+## "Lessons empty" / "calculator not visible" — root causes and fix (2026-08-01, resolved)
+
+This was not one bug but five compounding ones, found and fixed in order while live-verifying
+against the deployed app with real Supabase project credentials. Each was independently
+sufficient to make the app look broken to an end user, which is why "check the migrations"
+alone wouldn't have fully explained the report:
+
+1. **Vercel Deployment Protection** was blocking every `*.vercel.app` URL for the project
+   (prod alias, git-branch alias, individual commit deployments) behind a `vercel.com/login`
+   wall — no anonymous visitor could reach the Next.js app at all. Resolved separately by the
+   captain (Vercel project setting) partway through this session; confirmed cleared by the
+   production alias returning 200 instead of a login redirect.
+2. **`main` had a real migration-timestamp collision**: `00000000000031_seed_capstone_content.sql`
+   and `00000000000031_student_login_lockout.sql` both shipped at prefix `00000000000031`
+   (PR #24's "fix" for a different 22/23 collision missed this one). `supabase db push`
+   errored on it directly. Fixed by renumbering `student_login_lockout` to
+   `00000000000041` (next free slot past 40).
+3. **`00000000000031_seed_capstone_content.sql` was recorded as applied in the live
+   project's migration history table without its data actually being present** — `supabase
+   migration list` showed it applied, but the capstone skills weren't in `skills` (checked via
+   service-role REST, which bypasses RLS). Likely a prior `migration repair --status applied`
+   used to unblock 32/33 past the same collision, without the SQL ever actually running.
+   Fixed via `migration repair --status reverted 00000000000031` then a real `db push`, which
+   re-ran it and inserted the missing rows for real this time.
+4. **Two migrations had genuine SQL bugs never caught locally**: `00000000000034_seed_
+   jobready_workplace_readiness.sql` had two `quiz_questions.options` jsonb array literals
+   with unescaped embedded double quotes (invalid JSON — `supabase db push` caught it at
+   apply time with SQLSTATE 22P02); `00000000000031/41_student_login_lockout.sql`'s plain
+   `alter table add column` failed because `profiles.login_email`/`failed_login_attempts`/
+   `locked_until` already existed live (added by someone manually, outside migration
+   history) while its backfill UPDATE (needed for all 148 existing students' `login_email`,
+   which was null for every one of them) had never run. Fixed by escaping the JSON and
+   making the alter/index statements `if not exists`, respectively; both are now applied and
+   verified (0 students with null `login_email` after re-running).
+5. **The `student-login` Supabase Edge Function had never been deployed to the live
+   project at all** (`supabase functions list` showed only `record-consent`,
+   `create-student-account`, `score-interview-session`) — every student PIN-login attempt
+   failed browser-side with a CORS preflight 404 before even reaching application logic, so
+   no student, old or new, could ever log in. Separately, **the live `create-student-account`
+   function predated `login_email` being added to its `profiles` insert**, so newly created
+   students got a null `login_email` and couldn't log in either even after (5) was fixed.
+   Fixed by `supabase functions deploy student-login --no-verify-jwt` and redeploying
+   `create-student-account` from current source.
+6. **Frontend bug, unrelated to any of the above**: `app/student-login/page.tsx` dead-ended
+   on a static "Lessons and quizzes are coming in a later phase" message after a successful
+   login — leftover Phase-6 copy that was never updated when Phase 7's real lesson/quiz/XP UI
+   landed at `/school`/`/college`/`/job-ready`. A student had no in-app way to reach their
+   lessons post-login except manually clicking the tier link in the top nav. Fixed by
+   redirecting to the student's own tier path once their profile loads.
+
+All six were verified live end-to-end: created a real parent + student account through the
+actual deployed signup/consent/create-student/student-login flow (via the Auth Admin API for
+the parent, to skip email-confirmation friction — not a bypass of any app logic, just of the
+mailer), confirmed the student lands on a populated 15-skill School list, opened a real lesson,
+and confirmed the Pocket Money Planner renders and its "New savings goal" form is interactive.
+Test accounts were deleted afterward. Live data as of this session: 45 skills (15 School / 8
+College / 22 Job-Ready), 45 lessons, 45 quizzes, 115 interview questions, all migrations
+through `00000000000041` applied.
+
+Of the three sibling branches the original task brief named: `fm/finesse-school-content-
+depth-followup` (migration `00000000000040`) and `fm/finesse-jobready-content-depth-
+followup` (migrations `00000000000034`/`00000000000035`, uncommitted in that branch's
+worktree) were real and existed only as local branches in this machine's shared git dir,
+never pushed to `origin` — brought forward and pushed as part of this fix. No
+`fm/finesse-college-content-depth-followup` branch exists anywhere (local or `origin`) —
+there was nothing to bring forward for College.
+
+`components/lessons/LessonList.tsx` still doesn't distinguish "zero rows because RLS/tier
+filtered them out" from "genuinely no content" (an empty result renders an empty grid with no
+messaging) — not a live bug right now since content is populated, but worth tightening if this
+class of report recurs.
 
 ## Maintaining this file
 

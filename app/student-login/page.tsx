@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { PinInput } from "@/components/auth/PinInput";
@@ -8,9 +9,19 @@ import { Button } from "@/components/Button";
 import { signInStudent } from "@/lib/supabase/auth-actions";
 import { listKnownStudents, type KnownStudent } from "@/lib/supabase/student-registry";
 import { useAuth } from "@/lib/supabase/auth-context";
+import type { Tier } from "@/lib/supabase/types";
+
+// A student profile always has a tier set at creation (create-student-account
+// defaults it to "school"), but the column is nullable at the type level, so
+// this falls back to School rather than producing an invalid "/null" route.
+function tierBasePath(tier: Tier | null): string {
+  if (tier === "job_ready") return "/job-ready";
+  return `/${tier ?? "school"}`;
+}
 
 export default function StudentLoginPage() {
-  const { refreshProfile } = useAuth();
+  const router = useRouter();
+  const { profile, refreshProfile } = useAuth();
   // Starts empty and loads in an effect (not a lazy useState initializer)
   // because localStorage isn't available during SSR - a lazy initializer
   // would render [] on the server and the real list on the client, causing a
@@ -26,6 +37,16 @@ export default function StudentLoginPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of this device's localStorage, not derivable from props/state.
     setStudents(listKnownStudents());
   }, []);
+
+  // Redirects once the freshly-signed-in student's profile (with tier) has
+  // loaded, rather than inside handleSubmit, since refreshProfile() updates
+  // context state asynchronously and the tier isn't available synchronously
+  // right after signInStudent() resolves.
+  useEffect(() => {
+    if (loggedInAs && profile?.role === "student") {
+      router.replace(tierBasePath(profile.tier));
+    }
+  }, [loggedInAs, profile, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,8 +77,7 @@ export default function StudentLoginPage() {
     return (
       <AuthCard eyebrow="You're in" title={`Hey ${loggedInAs}! 👋`}>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          Lessons and quizzes are coming in a later phase — for now, you&apos;re logged in
-          and ready to go.
+          Taking you to your lessons…
         </p>
       </AuthCard>
     );
