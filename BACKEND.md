@@ -204,7 +204,7 @@ grading only needs `auth.uid()`, not the Auth Admin API.
   passing attempt for that quiz; a `pg_advisory_xact_lock` on
   `profile_id:quiz_id` serializes concurrent attempts so the already-passed
   check can't race. Idempotency guard added in
-  `supabase/migrations/00000000000023_grade_quiz_attempt_idempotent_xp.sql`
+  `supabase/migrations/00000000000033_grade_quiz_attempt_idempotent_xp.sql`
   (security audit Finding 2) after repeated retakes of an already-passed quiz
   were found to farm unlimited XP.
 - `SECURITY DEFINER` is required specifically so this function can read
@@ -264,7 +264,7 @@ no free-form AI grading.
   `skill_attempts` row and `xp_events` row (`source = 'modeling_submission'`)
   on the student's *first* passing submission for that exercise — idempotency
   guard added in
-  `supabase/migrations/00000000000023_grade_modeling_submission_idempotent.sql`
+  `supabase/migrations/00000000000032_grade_modeling_submission_idempotent.sql`
   (Phase 8 audit fix) after a benign resubmission of an already-passed
   exercise was found to accumulate duplicate XP/mastery credit.
   `grade_quiz_attempt` has the equivalent guard (see above).
@@ -468,7 +468,7 @@ There is no independent student sign-up. The flow is:
    hook, so this function is the only supported path for student sign-in,
    tracking failures against `profiles.failed_login_attempts` and locking the
    account (`profiles.locked_until`) for 15 minutes after 5 failed attempts
-   (migration `00000000000022_student_login_lockout.sql`, security audit
+   (migration `00000000000031_student_login_lockout.sql`, security audit
    Finding 1b). On success it returns a session (`access_token`/
    `refresh_token`) that the client applies via `supabase.auth.setSession`.
 
