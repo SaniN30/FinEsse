@@ -284,7 +284,7 @@ no free-form AI grading.
 
 #### Content-depth pass 2, free-response quizzes, and milestone badges
 
-`supabase/migrations/00000000000042_college_depth_schema_extensions.sql` adds
+`supabase/migrations/00000000000046_college_depth_schema_extensions.sql` adds
 three additive concepts (no existing column dropped/retyped):
 
 - `difficulty` (`easy` \| `medium` \| `hard`, default `medium`) on both
@@ -316,7 +316,7 @@ three additive concepts (no existing column dropped/retyped):
   awards `first_lesson_completed` on the student's first-ever call.
   `LessonDetail.tsx` calls it best-effort on lesson view.
 
-`supabase/migrations/00000000000043_seed_college_depth_content.sql` adds 10
+`supabase/migrations/00000000000047_seed_college_depth_content.sql` adds 10
 more College skills (109-118: budgeting on a student income, student loans
 & interest, credit scores & credit cards, investing basics, taxes for a
 first job, retirement accounts, insurance, negotiating salary, side
@@ -325,10 +325,10 @@ topic), bringing College to 18 skills — each with a 10-question quiz (vs.
 the 5-6 questions Phase 4/8's expansion used); 3 skills (student loans,
 investing, retirement) also get a modeling exercise, same case-style pattern
 as `grade_modeling_submission` already supports.
-`supabase/migrations/00000000000044_seed_college_case_studies.sql` adds 3
+`supabase/migrations/00000000000048_seed_college_case_studies.sql` adds 3
 case-study quizzes (mixed multiple-choice + free-response, 8 questions each)
 as a *second* quiz on skills 109/110/118.
-`supabase/migrations/00000000000045_backfill_difficulty_labels.sql`
+`supabase/migrations/00000000000049_backfill_difficulty_labels.sql`
 backfills `difficulty` on pre-existing quiz/interview questions (the new
 quiz ids 109-121 already have authored values).
 
