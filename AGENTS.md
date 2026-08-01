@@ -230,6 +230,10 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   mailer's rate limit ("email rate limit exceeded" on `signUp()`, a shared
   per-project cap unrelated to code) — retry once that resets, or configure custom
   SMTP on the Supabase project, before attempting live verification again.
+- A later pass added a purple brand-accent token scale and reworked the dark
+  theme to a deliberate deep-violet register (rather than an inverted light
+  theme), plus theme-aware `LevelCard` panel tokens — see `DESIGN.md`'s
+  "Colors" and "Dark mode" sections for the current token set.
 - This repo's dev environment has no live Supabase access (`.env.local` holds
   placeholder credentials, no `supabase` CLI, no linked project ref, no CI/CD
   migration deploy step) — verifying whether migrations `00000000000027`-`00000000000031`
