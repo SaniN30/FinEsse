@@ -488,8 +488,11 @@ class of report recurs.
   every authenticated page regardless of whether that page includes `Nav`. It
   renders nothing when there's no session. `lib/sticky-notes/queries.ts` wraps
   CRUD against the `sticky_notes` table (migration
-  `00000000000050_sticky_notes.sql`; RLS contract documented in `BACKEND.md`'s
-  Row Level Security section). The "All Notes" page (`app/notes`, linked from `Nav`) lists the same rows
+  `00000000000050_sticky_notes.sql`; RLS is a plain `profile_id = auth.uid()`
+  self-only check (not `is_own_or_linked_profile`) since notes are a personal
+  scratchpad a parent has no reason to read on a linked child's behalf — full
+  contract documented in `BACKEND.md`'s Row Level Security section). The
+  "All Notes" page (`app/notes`, linked from `Nav`) lists the same rows
   newest-first and shares the same query module, so edits/deletes from either
   surface are consistent (not live-synced — each surface re-fetches on its
   own mount). Drag/resize is implemented with plain pointer events (no drag
