@@ -13,8 +13,8 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   consistent.
 - Reusable primitives live in `components/` (`Button`, `LevelCard`, `ProgressBar`,
   `Nav`, `Hero`, `LevelSection`, `PocketMoneyPlanner`, `TierPlaceholder`, `BackLink`) and
-  `components/auth/` (`AuthCard`, `FormField`, `PinInput`) — prefer extending these
-  over ad-hoc styling.
+  `components/auth/` (`AuthCard`, `FormField`, `SelectField`, `PinInput`) — prefer extending
+  these over ad-hoc styling.
 - Routes: `/` (landing), `/school`, `/college`, `/job-ready` (tier landing pages;
   `/job-ready` links to both its lesson track and the Phase 9 AI Interview Coach),
   `/settings` (Account, Appearance, Notifications, Help, Legal —
@@ -68,6 +68,22 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   `tests/integration/` suite (vitest against the live/local Supabase project,
   run via `npm run test:integration`), which already covers the backend
   consent gate end-to-end.
+
+### Parent signup fields expansion (post-Phase 9)
+
+- `00000000000042_profile_signup_fields.sql` added `education_level`,
+  `institution_name`, and `phone_number` to `profiles`, collected on `/signup`
+  only (not `/create-student`, by data-minimization design) with duplicate-
+  phone/email rejection at signup time — see `BACKEND.md`'s `profiles` schema
+  section for the column contract and dedup mechanism.
+- This project's shared-SMTP mailer rate limit (see the "Lessons empty" /
+  root-cause section below) makes repeatedly calling the real `signUp()`
+  end-to-end impractical for verification — both this migration's live
+  verification and `tests/integration/helpers.ts`'s `signUpParent()` helper
+  work around it by creating the parent via the Admin API
+  (`admin.auth.admin.createUser`) instead and driving the rest of the flow
+  (profile insert, RLS, RPC, unique-constraint dedup) through a real
+  anon-authenticated client from there.
 
 ## School lesson→quiz→XP loop and Pocket Money Planner (Phase 7)
 

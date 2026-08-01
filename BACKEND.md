@@ -42,9 +42,14 @@ One row per person (parent or student), `id` = `auth.users.id`.
 | `role` | `parent` \| `student` |
 | `parent_id` | self-FK, null for parents, required for students |
 | `tier` | `school` \| `college` \| `job_ready` |
-| `date_of_birth` | collected only for COPPA age/consent record-keeping (data minimization — no other demographic fields) |
+| `date_of_birth` | for students, COPPA age/consent record-keeping; for parents, reused as their own date of birth (collected at `/signup`) rather than a duplicate column |
+| `education_level` | `school` \| `college` \| `working_professional` — parent-only, distinct from `tier` (a parent isn't a student); collected at `/signup` |
+| `institution_name` | parent's school/university name, collected at `/signup` |
+| `phone_number` | parent's phone number, collected at `/signup`; unique partial index (`where phone_number is not null`) plus the `is_phone_number_taken(text)` security-definer RPC reject duplicates pre-signup, with a `23505` unique_violation on insert as the race-case fallback |
 | `consent_id` | FK to `parental_consents`, required for students; a unique partial index (`idx_profiles_consent_id_unique`) prevents the same consent record from being reused for more than one student login |
 | `data_retention_requested_at` | set when a deletion/retention request is recorded, for GDPR-K/COPPA compliance |
+
+`education_level`/`institution_name`/`phone_number` are collected only on the parent `/signup` flow, not `/create-student` — student accounts intentionally collect no real contact info (data minimization). No RLS changes were needed: the existing `profiles_select`/`profiles_update` policies already scope every column row-wise.
 
 A DB trigger (`enforce_student_consent`) makes "student row requires a valid,
 matching, affirmatively-given consent record" a hard invariant — it fires on

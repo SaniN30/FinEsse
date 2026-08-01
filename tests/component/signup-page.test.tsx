@@ -25,6 +25,16 @@ vi.mock("@/lib/supabase/auth-actions", () => ({
 
 import SignUpPage from "@/app/signup/page";
 
+async function fillCommonFields(user: ReturnType<typeof userEvent.setup>) {
+  await user.type(screen.getByLabelText("Your name"), "Jamie Parent");
+  await user.type(screen.getByLabelText("Email"), "jamie@example.com");
+  await user.type(screen.getByLabelText("Password"), "hunter2pass");
+  await user.type(screen.getByLabelText("Date of birth"), "1985-04-12");
+  await user.selectOptions(screen.getByLabelText("Education level"), "college");
+  await user.type(screen.getByLabelText("School or university"), "State University");
+  await user.type(screen.getByLabelText("Phone number"), "+15551234567");
+}
+
 describe("SignUpPage", () => {
   beforeEach(() => {
     pushMock.mockClear();
@@ -39,17 +49,58 @@ describe("SignUpPage", () => {
     const user = userEvent.setup();
     render(<SignUpPage />);
 
+    await fillCommonFields(user);
+    await user.click(screen.getByRole("button", { name: /sign up/i }));
+
+    expect(signUpParentMock).toHaveBeenCalledWith({
+      email: "jamie@example.com",
+      password: "hunter2pass",
+      displayName: "Jamie Parent",
+      dateOfBirth: "1985-04-12",
+      educationLevel: "college",
+      institutionName: "State University",
+      phoneNumber: "+15551234567",
+    });
+    expect(pushMock).toHaveBeenCalledWith("/consent");
+  });
+
+  it("does not require an institution name for working professionals", async () => {
+    signUpParentMock.mockResolvedValue({
+      data: { userId: "parent-1", needsEmailConfirmation: false },
+      error: null,
+    });
+    const user = userEvent.setup();
+    render(<SignUpPage />);
+
     await user.type(screen.getByLabelText("Your name"), "Jamie Parent");
     await user.type(screen.getByLabelText("Email"), "jamie@example.com");
     await user.type(screen.getByLabelText("Password"), "hunter2pass");
+    await user.type(screen.getByLabelText("Date of birth"), "1985-04-12");
+    await user.selectOptions(screen.getByLabelText("Education level"), "working_professional");
+    await user.type(screen.getByLabelText("Phone number"), "+15551234567");
     await user.click(screen.getByRole("button", { name: /sign up/i }));
 
     expect(signUpParentMock).toHaveBeenCalledWith(
-      "jamie@example.com",
-      "hunter2pass",
-      "Jamie Parent",
+      expect.objectContaining({ educationLevel: "working_professional", institutionName: null }),
     );
     expect(pushMock).toHaveBeenCalledWith("/consent");
+  });
+
+  it("rejects an invalid phone number before calling signUpParent", async () => {
+    const user = userEvent.setup();
+    render(<SignUpPage />);
+
+    await user.type(screen.getByLabelText("Your name"), "Jamie Parent");
+    await user.type(screen.getByLabelText("Email"), "jamie@example.com");
+    await user.type(screen.getByLabelText("Password"), "hunter2pass");
+    await user.type(screen.getByLabelText("Date of birth"), "1985-04-12");
+    await user.selectOptions(screen.getByLabelText("Education level"), "college");
+    await user.type(screen.getByLabelText("School or university"), "State University");
+    await user.type(screen.getByLabelText("Phone number"), "not-a-phone");
+    await user.click(screen.getByRole("button", { name: /sign up/i }));
+
+    expect(await screen.findByText(/valid phone number/i)).toBeInTheDocument();
+    expect(signUpParentMock).not.toHaveBeenCalled();
   });
 
   it("shows a confirmation message instead of redirecting when email confirmation is required", async () => {
@@ -60,9 +111,7 @@ describe("SignUpPage", () => {
     const user = userEvent.setup();
     render(<SignUpPage />);
 
-    await user.type(screen.getByLabelText("Your name"), "Jamie Parent");
-    await user.type(screen.getByLabelText("Email"), "jamie@example.com");
-    await user.type(screen.getByLabelText("Password"), "hunter2pass");
+    await fillCommonFields(user);
     await user.click(screen.getByRole("button", { name: /sign up/i }));
 
     expect(pushMock).not.toHaveBeenCalled();
@@ -74,12 +123,27 @@ describe("SignUpPage", () => {
     const user = userEvent.setup();
     render(<SignUpPage />);
 
-    await user.type(screen.getByLabelText("Your name"), "Jamie Parent");
-    await user.type(screen.getByLabelText("Email"), "jamie@example.com");
-    await user.type(screen.getByLabelText("Password"), "hunter2pass");
+    await fillCommonFields(user);
     await user.click(screen.getByRole("button", { name: /sign up/i }));
 
     expect(await screen.findByText("Email already registered")).toBeInTheDocument();
+    expect(pushMock).not.toHaveBeenCalled();
+  });
+
+  it("shows a duplicate phone number error returned from signUpParent", async () => {
+    signUpParentMock.mockResolvedValue({
+      data: null,
+      error: "An account with this phone number already exists.",
+    });
+    const user = userEvent.setup();
+    render(<SignUpPage />);
+
+    await fillCommonFields(user);
+    await user.click(screen.getByRole("button", { name: /sign up/i }));
+
+    expect(
+      await screen.findByText("An account with this phone number already exists."),
+    ).toBeInTheDocument();
     expect(pushMock).not.toHaveBeenCalled();
   });
 });
