@@ -59,7 +59,7 @@ export function Hero() {
 
           <motion.p
             variants={item}
-            className="mt-6 max-w-lg text-lg leading-relaxed text-neutral-600"
+            className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground"
           >
             FinEsse teaches personal finance in three stages — School,
             College, and Job-Ready — so every lesson meets you exactly where
@@ -75,7 +75,7 @@ export function Hero() {
 
           <motion.div
             variants={item}
-            className="mt-10 flex items-center gap-3 text-sm text-neutral-500"
+            className="mt-10 flex items-center gap-3 text-sm text-muted-foreground"
           >
             <div className="flex -space-x-1.5">
               {tierDots.map((tier) => (
@@ -103,12 +103,12 @@ export function Hero() {
             style={{ rotate: -6 }}
             className="absolute left-0 top-6 w-64 rounded-[var(--radius-card)] border-2 border-foreground bg-surface p-5 shadow-[var(--shadow-offset)]"
           >
-            <p className="text-xs font-semibold text-neutral-500">Today&apos;s lesson</p>
+            <p className="text-xs font-semibold text-muted-foreground">Today&apos;s lesson</p>
             <p className="mt-1 font-display text-lg font-semibold">Needs vs. wants</p>
-            <div className="mt-4 h-2 w-full rounded-full bg-neutral-100">
+            <div className="mt-4 h-2 w-full rounded-full bg-neutral-100 dark:bg-neutral-800">
               <div className="h-2 w-2/3 rounded-full bg-accent-500" />
             </div>
-            <p className="mt-2 text-xs text-neutral-500">2 of 3 quizzes complete</p>
+            <p className="mt-2 text-xs text-muted-foreground">2 of 3 quizzes complete</p>
           </motion.div>
 
           <motion.div
