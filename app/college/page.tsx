@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
+import { BadgeShelf } from "@/components/BadgeShelf";
 
 export default function CollegePage() {
   return (
@@ -31,6 +32,13 @@ export default function CollegePage() {
             Explore roles
           </Link>
         </div>
+        <Link
+          href="/college/pocket-money"
+          className="text-sm font-medium text-primary-500 hover:text-primary-600"
+        >
+          Pocket Money Planner →
+        </Link>
+        <BadgeShelf />
       </main>
     </div>
   );

@@ -282,6 +282,60 @@ no free-form AI grading.
   values, only pass/fail per key — and `already_completed` is `true` when this
   pass was not the first (so XP/mastery were not re-awarded).
 
+#### Content-depth pass 2, free-response quizzes, and milestone badges
+
+`supabase/migrations/00000000000046_college_depth_schema_extensions.sql` adds
+three additive concepts (no existing column dropped/retyped):
+
+- `difficulty` (`easy` \| `medium` \| `hard`, default `medium`) on both
+  `quiz_questions` and `interview_questions`.
+- Typed free-response questions on `quiz_questions`: `question_type`
+  (`multiple_choice` \| `free_response`), `grading_keywords` (jsonb array,
+  the free-response answer key — never exposed to clients, same posture as
+  `correct_answer`), `min_keyword_matches`, and `scenario_context` (shown to
+  the student, so it IS exposed via `quiz_questions_public`).
+  `grade_quiz_attempt` grades a `free_response` question by counting how many
+  of `grading_keywords` appear (case-insensitive substring match) in the
+  student's answer text and requiring at least `min_keyword_matches`.
+- Milestone badges: `badges` (reference data, one row per `criteria_type` —
+  `first_lesson_completed` \| `first_quiz_passed` \|
+  `first_modeling_exercise_passed` \| `tier_completed`) and `profile_badges`
+  (per-student earned log, unique on `(profile_id, badge_id)`). The shared
+  `award_badge(p_profile_id, p_criteria_type)` helper does the idempotent
+  insert; it and `check_and_award_tier_completed` are internal-only
+  (`execute` revoked from `public`), called from inside `grade_quiz_attempt`,
+  `grade_modeling_submission`, and `mark_lesson_complete` — never directly
+  callable by a client. `check_and_award_tier_completed` runs after every
+  passing quiz attempt and awards `tier_completed` once every skill in the
+  profile's own tier is mastered.
+- `lesson_completions` — a new append-only per-`(profile_id, lesson_id)` log
+  (lessons previously had no completion concept at all; "completed" means
+  "opened", no partial-scroll tracking) backing the new
+  `mark_lesson_complete(p_lesson_id)` RPC, which resolves the student from
+  `auth.uid()`, re-checks the lesson is visible to the caller's tier, and
+  awards `first_lesson_completed` on the student's first-ever call.
+  `LessonDetail.tsx` calls it best-effort on lesson view.
+
+`supabase/migrations/00000000000047_seed_college_depth_content.sql` adds 10
+more College skills (109-118: budgeting on a student income, student loans
+& interest, credit scores & credit cards, investing basics, taxes for a
+first job, retirement accounts, insurance, negotiating salary, side
+income/freelancing, and a capstone financial-planning-for-post-grad-life
+topic), bringing College to 18 skills — each with a 10-question quiz (vs.
+the 5-6 questions Phase 4/8's expansion used); 3 skills (student loans,
+investing, retirement) also get a modeling exercise, same case-style pattern
+as `grade_modeling_submission` already supports.
+`supabase/migrations/00000000000048_seed_college_case_studies.sql` adds 3
+case-study quizzes (mixed multiple-choice + free-response, 8 questions each)
+as a *second* quiz on skills 109/110/118.
+`supabase/migrations/00000000000049_backfill_difficulty_labels.sql`
+backfills `difficulty` on pre-existing quiz/interview questions (the new
+quiz ids 109-121 already have authored values).
+
+**`skills.slug` is unique across the whole table, not scoped per tier** —
+check `select slug from skills` across all tiers before picking a new slug
+for any tier, not just the tier being added to.
+
 #### Seed content (Phase 4)
 
 `supabase/migrations/00000000000016_seed_college_content.sql` — 4 College

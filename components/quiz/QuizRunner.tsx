@@ -29,7 +29,7 @@ export function QuizRunner({ quizId, tier = "college" }: QuizRunnerProps) {
 
     supabase
       .from("quiz_questions_public")
-      .select("id, quiz_id, question, options, order_index")
+      .select("id, quiz_id, question, options, order_index, difficulty, question_type, scenario_context")
       .eq("quiz_id", quizId)
       .order("order_index", { ascending: true })
       .then(({ data, error: fetchError }) => {
@@ -128,28 +128,57 @@ export function QuizRunner({ quizId, tier = "college" }: QuizRunnerProps) {
           key={question.id}
           className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-6 shadow-soft"
         >
+          <div className="mb-3 flex flex-wrap items-center gap-2">
+            <span
+              className={cn(
+                "rounded-full px-2.5 py-0.5 text-xs font-medium capitalize",
+                question.difficulty === "easy" && "bg-green-500/10 text-green-600",
+                question.difficulty === "medium" && "bg-amber-500/10 text-amber-600",
+                question.difficulty === "hard" && "bg-red-500/10 text-red-600",
+              )}
+            >
+              {question.difficulty}
+            </span>
+          </div>
+          {question.scenario_context ? (
+            <p className="mb-3 rounded-lg bg-primary-500/5 px-3 py-2 text-xs text-muted-foreground">
+              {question.scenario_context}
+            </p>
+          ) : null}
           <p className="mb-4 font-medium">
             {index + 1}. {question.question}
           </p>
-          <div className="space-y-2">
-            {question.options.map((option) => (
-              <button
-                key={option}
-                type="button"
-                onClick={() =>
-                  setAnswers((prev) => ({ ...prev, [question.id]: option }))
-                }
-                className={cn(
-                  "block w-full rounded-xl border px-4 py-2.5 text-left text-sm transition-colors",
-                  answers[question.id] === option
-                    ? "border-primary-500 bg-primary-500/10 text-primary-600"
-                    : "border-surface-border hover:border-primary-300",
-                )}
-              >
-                {option}
-              </button>
-            ))}
-          </div>
+          {question.question_type === "free_response" ? (
+            <textarea
+              value={answers[question.id] ?? ""}
+              onChange={(event) =>
+                setAnswers((prev) => ({ ...prev, [question.id]: event.target.value }))
+              }
+              placeholder="Type your answer…"
+              rows={3}
+              className="w-full rounded-xl border border-surface-border bg-transparent px-4 py-2.5 text-sm focus:border-primary-400 focus:outline-none"
+            />
+          ) : (
+            <div className="space-y-2">
+              {question.options.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() =>
+                    setAnswers((prev) => ({ ...prev, [question.id]: option }))
+                  }
+                  className={cn(
+                    "block w-full rounded-xl border px-4 py-2.5 text-left text-sm transition-colors",
+                    answers[question.id] === option
+                      ? "border-primary-500 bg-primary-500/10 text-primary-600"
+                      : "border-surface-border hover:border-primary-300",
+                  )}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       ))}
 

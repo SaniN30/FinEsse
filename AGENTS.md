@@ -315,6 +315,99 @@ filtered them out" from "genuinely no content" (an empty result renders an empty
 messaging) — not a live bug right now since content is populated, but worth tightening if this
 class of report recurs.
 
+## College-tier content depth pass 2, free-response case studies, and milestone badges (2026-08-01)
+
+- College had only 8 skills (101-108) versus the "10-15+ substantive topics" bar the captain
+  asked for. `00000000000047_seed_college_depth_content.sql` adds 10 more (109-118: budgeting
+  on a student income, student loans & interest, credit scores & credit cards, investing
+  basics, taxes for a first job, retirement accounts, insurance, negotiating salary, side
+  income/freelancing, and a capstone financial-planning-for-post-grad-life topic), bringing
+  College to 18 skills. Unlike the 5-6 question quizzes migrations 27-31 used, every quiz here
+  has exactly 10 questions per the captain's added scope; 3 skills (student loans, investing,
+  retirement) also got a modeling exercise, following the existing case-style pattern.
+- **`skills.slug` is unique across the whole table, not scoped per tier** — a real collision
+  hit this migration (College's planned `insurance-basics` slug already existed on School from
+  migration 040) and would have failed the push. Check `select slug from skills` across *all*
+  tiers before picking a new slug, not just the tier you're adding to.
+- `00000000000046_college_depth_schema_extensions.sql` adds `quiz_questions.difficulty`
+  (easy/medium/hard), free-response question support (`question_type`, `grading_keywords`,
+  `min_keyword_matches`, `scenario_context` — graded by keyword match inside
+  `grade_quiz_attempt`, not exact string equality), and milestone badges (`badges`/
+  `profile_badges`, awarded via `award_badge()` from `grade_quiz_attempt`,
+  `grade_modeling_submission`, and the new `mark_lesson_complete` RPC on first lesson/quiz/
+  modeling-exercise completion and full tier mastery). `components/BadgeShelf.tsx` renders a
+  profile's earned badges; `LessonDetail.tsx` fires `mark_lesson_complete` best-effort per
+  lesson view. `00000000000048_seed_college_case_studies.sql` adds 3 case-study quizzes (mixed
+  MCQ + free-response, 8 questions each) as a *second* quiz attached to skills 109/110/118 —
+  no frontend change was needed since `LessonDetail` already renders every quiz row for a
+  skill. `00000000000049_backfill_difficulty_labels.sql` backfills `difficulty` on
+  pre-existing quiz/interview questions (excluding the new quiz ids 109-121, which already
+  have authored values). This content pass was originally authored and pushed live at numbers
+  042/043/044/045 and renumbered to 046-049 only *after* a `no-mistakes` pipeline rebase pulled
+  in `fm/finesse-signup-fields-expansion` (#27, merged to `main` mid-session), whose own
+  `00000000000042_profile_signup_fields.sql` collided with this pass's original 042 — see the
+  next point for why that collision briefly caused real live-DB bookkeeping damage, not just a
+  filename clash.
+- **A genuine migration-history corruption, self-inflicted by misdiagnosing a numbering
+  collision as the "recorded applied but never ran" failure mode** (that failure mode is real
+  and previously hit migration 031, see the postmortem above — but this was a *different* bug
+  that looks identical from the CLI's output alone): before the rebase above, this content
+  pass's schema-extensions migration was authored and pushed at `00000000000042`, at a point
+  in time when this worktree's local `supabase/migrations/` did **not** yet contain
+  `fm/finesse-signup-fields-expansion`'s file (that branch hadn't been rebased in yet). Pushing
+  failed with a `column "difficulty" does not exist` error even though `migration list` showed
+  version `00000000000042` as already remote-applied. That looked exactly like the migration-
+  031 phantom-apply bug, so the same fix was applied —
+  `supabase migration repair --status reverted 00000000000042` then a real `db push` — **but
+  the remote row for `00000000000042` was not actually a phantom**: it was `profile_signup_
+  fields`'s legitimately-already-applied migration (pushed live by that PR's own session,
+  independently, at some earlier point — its `education_level`/`institution_name`/
+  `phone_number` columns on `profiles` really did exist). The `repair --status reverted` call
+  deleted the bookkeeping row for that real, already-applied migration; the subsequent `db
+  push` then ran *this* content pass's DDL under the now-freed `00000000000042` slot and
+  re-inserted a row — but tagged with this pass's own `name`/`statements`, silently erasing the
+  tracking record for `profile_signup_fields` even though its actual schema changes remained
+  live untouched. Net effect: both migrations' DDL was genuinely live, but only one bookkeeping
+  row existed, pointing at the wrong migration. Caught only once the rebase (above) put both
+  files in the same `supabase/migrations/` directory and made the `00000000000042` collision
+  visible. Fixed by renumbering this pass's four files to 046-049 (`git mv`, plus fixing the
+  cross-referencing migration numbers in their header comments) and directly repairing the live
+  `supabase_migrations.schema_migrations` table to match — `update ... set version=... where
+  version=...` to shift this pass's four rows from 042-045 to 046-049, then `insert into
+  supabase_migrations.schema_migrations (version, name) values ('00000000000042',
+  'profile_signup_fields')` to restore the lost tracking row (verified via `supabase migration
+  list` showing every local file matched to a remote entry, and `db push --dry-run` reporting
+  "Remote database is up to date" afterward). **Lesson: before running `migration repair
+  --status reverted` on a version that shows as remote-applied but seems to be missing its
+  DDL, first check whether a *different*, currently-uncommitted-to-your-branch migration might
+  legitimately own that exact version number** — reverting-and-repushing is only safe once
+  you've confirmed the remote row's `name`/`statements` (via the Management API's
+  `POST /v1/projects/{ref}/database/query` — the `supabase db push` CLI's own JSON error output
+  swallows the underlying Postgres error text entirely, so that direct query is also the only
+  reliable way to see the real error in the first place) actually match *your* file, not
+  someone else's.
+- This worktree, unlike prior College-lane sessions, *did* have a live, already-linked
+  Supabase CLI session (`npx supabase projects list` / `link` / `db push` all worked without
+  any manual token or DB password) plus Management-API access to the CLI's own stored access
+  token via macOS Keychain (`security find-generic-password -w -s "Supabase CLI" -a
+  "supabase"`) — usable to fetch the project's `service_role` key on demand
+  (`GET /v1/projects/{ref}/api-keys?reveal=true`) for admin-API test-account creation. Don't
+  assume "no live push access" without checking this first; it varies by environment/session,
+  not just by project.
+- All content live-verified end-to-end via a real signup→consent→create-student→student-login
+  browser flow (parent created via Auth Admin API to skip email confirmation, same as the
+  prior postmortem): lesson rendering, a standard 10-question quiz, the case-study quiz (mixed
+  MCQ + free-response, keyword-graded, scored 100%), the investing modeling exercise, and 3 of
+  4 badge types (first-lesson-completed, first-quiz-passed, first-modeling-exercise-passed) —
+  all confirmed both in the UI and via direct DB query. Test accounts deleted afterward.
+- The "College lessons/Pocket Money Planner empty" report traced to two separate causes, both
+  now fixed: (1) College genuinely only had 8 thin-ish skills, addressed by this content pass;
+  (2) `PocketMoneyPlanner` (tier-agnostic component, no tier-specific logic) was only reachable
+  at `/school/pocket-money` with copy calling it "built for the School tier" — added
+  `/college/pocket-money` (mirroring School's route) and made the copy tier-neutral. No RLS or
+  migration-not-applied issue was found specific to College this time (all tiers use the same
+  `p.tier = s.tier` RLS join pattern).
+
 ## Maintaining this file
 
 Keep this file short and durable — project structure, conventions, and
