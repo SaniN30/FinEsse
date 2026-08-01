@@ -301,10 +301,13 @@ client-side or by a later Edge Function by the time it reaches this layer.
 
 `interview_questions` — shared reference content (like `skills`/`roles`),
 not tier-gated: `firm_style` (e.g. `JPMorgan Chase`, `Goldman Sachs`,
-`Morgan Stanley`), `question_text`, `category` (`behavioral` \|
-`technical`), `published`. Seeded with 9 real early-career finance
-interview questions across those 3 firm styles
-(`00000000000019_seed_interview_questions.sql`).
+`Morgan Stanley`, general behavioral/situational, and role-specific styles
+naming one of the Phase 4 roles), `question_text`, `category` (`behavioral`
+\| `technical`), `published`. Seeded with 9 real early-career finance
+interview questions across 3 firm styles
+(`00000000000019_seed_interview_questions.sql`), then expanded to 104 with
+broader behavioral/situational, technical/case, and role-specific questions
+(`00000000000035_expand_interview_questions.sql`).
 
 `interview_sessions` (table declared in Phase 1, migration 004) — `profile_id`,
 `question_id` (added in migration 020, FK to `interview_questions`),
