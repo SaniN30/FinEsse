@@ -174,6 +174,23 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   not just `main` alone, and pick a clearly-past-the-end number to avoid a second collision.
   31 was free as of this migration.
 
+## School-tier content depth pass 2 (post-capstone)
+
+- School had only 7 skills after migrations 09/27/30/31 versus College/Job-Ready's
+  deeper chains. `00000000000040_seed_school_content_depth_pass2.sql` adds 8 more
+  (008-015: digital payments & online safety, simple investing basics, taxes basics,
+  entrepreneurship basics, credit & debt basics, insurance basics, comparison shopping
+  & consumer skills, financial goal setting), chaining off `banking-and-inflation-basics`
+  (007), bringing School to 15 total skills. Same lesson/quiz depth pattern as
+  migrations 27-31 (one article lesson with a worked example + recap, one 5-6 question
+  quiz per skill); School still has no `modeling_exercises` concept, so none were added.
+  40 was picked per the existing migration-numbering-collision note below (highest
+  in use on `main` at write time was 33).
+- This worktree has no linked Supabase CLI session and only the anon key in
+  `.env.local` (no DB password/service role/access token), so this migration could not
+  be pushed to the live project from here — same constraint noted above for
+  migrations 27-31.
+
 ## Frontend redesign (optimalearn.com reference)
 
 - `DESIGN.md` was reworked to reference https://www.optimalearn.com (cream ground,
