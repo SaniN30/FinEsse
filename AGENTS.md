@@ -179,9 +179,9 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   chrome individually restyled) was explicitly deferred to follow-up work.
 - This repo's dev environment has no live Supabase access (`.env.local` holds
   placeholder credentials, no `supabase` CLI, no linked project ref, no CI/CD
-  migration deploy step) — verifying whether migrations `00000000000027`-`00000000000030`
-  (School/College content depth + Job-Ready lesson track + advanced-tier skills)
-  are actually applied to the live project requires real project credentials
+  migration deploy step) — verifying whether migrations `00000000000027`-`00000000000031`
+  (School/College content depth + Job-Ready lesson track + advanced-tier and
+  capstone skills) are actually applied to the live project requires real project credentials
   from whoever operates it; that gap, not missing code, is the likely cause of a
   "no coursework" report against the live site.
 
