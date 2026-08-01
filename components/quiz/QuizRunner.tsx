@@ -156,7 +156,7 @@ export function QuizRunner({ quizId, tier = "college" }: QuizRunnerProps) {
               }
               placeholder="Type your answer…"
               rows={3}
-              className="w-full rounded-xl border border-surface-border bg-transparent px-4 py-2.5 text-sm focus:border-primary-400 focus:outline-none"
+              className="w-full rounded-xl border border-surface-border bg-transparent px-4 py-2.5 text-sm focus:border-purple-400 focus:outline-none"
             />
           ) : (
             <div className="space-y-2">
@@ -170,8 +170,8 @@ export function QuizRunner({ quizId, tier = "college" }: QuizRunnerProps) {
                   className={cn(
                     "block w-full rounded-xl border px-4 py-2.5 text-left text-sm transition-colors",
                     answers[question.id] === option
-                      ? "border-primary-500 bg-primary-500/10 text-primary-600"
-                      : "border-surface-border hover:border-primary-300",
+                      ? "border-purple-500 bg-purple-500/10 text-purple-600"
+                      : "border-surface-border hover:border-purple-300",
                   )}
                 >
                   {option}

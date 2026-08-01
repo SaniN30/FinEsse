@@ -13,7 +13,7 @@ interface ProgressBarProps {
 export function ProgressBar({
   value,
   label,
-  colorClassName = "bg-accent-500",
+  colorClassName = "bg-purple-500",
   className,
 }: ProgressBarProps) {
   const clamped = Math.min(100, Math.max(0, value));

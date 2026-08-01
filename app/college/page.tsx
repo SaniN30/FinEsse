@@ -21,13 +21,13 @@ export default function CollegePage() {
         <div className="flex flex-wrap gap-4 pt-2">
           <Link
             href="/college/lessons"
-            className="rounded-full bg-primary-500 px-6 py-3 text-sm font-medium text-white shadow-soft hover:bg-primary-600"
+            className="rounded-full bg-purple-500 px-6 py-3 text-sm font-medium text-white shadow-soft hover:bg-purple-600"
           >
             Start lessons
           </Link>
           <Link
             href="/college/roles"
-            className="rounded-full border border-surface-border bg-surface px-6 py-3 text-sm font-medium hover:border-primary-400"
+            className="rounded-full border border-surface-border bg-surface px-6 py-3 text-sm font-medium hover:border-purple-400"
           >
             Explore roles
           </Link>

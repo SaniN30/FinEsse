@@ -29,11 +29,12 @@ via `@theme inline`.
 
 | Role | Token | Hex | Use |
 |---|---|---|---|
-| Primary (brand) | `primary-500` | `#1A56FF` | CTAs, links, brand accents (Optimalearn Blue) |
+| Primary (brand) | `primary-500` | `#1A56FF` | Links, brand accents, tier hues (Optimalearn Blue) |
 | Primary dark | `primary-700` | `#1034A8` | Gradients, dark surfaces |
 | Secondary | `secondary-500` | `#3D84EF` | Chat/coach surfaces |
-| Accent | `accent-500` | `#1FC491` | Growth/money cues, Job-Ready tier, progress bars |
-| Neutral (cream ground, navy ink) | `neutral-50`…`neutral-950` | `#FAF6EC` → `#0A0D18` | Backgrounds, text, borders |
+| Accent | `accent-500` | `#1FC491` | Growth/money cues, Job-Ready tier |
+| Purple (brand accent) | `purple-500` | `#7C3AED` | Primary buttons, active/selected states, highlights, progress bars — lifted from the logo's violet gradient, constant across both themes (white text on `purple-500` is ~5.8:1, WCAG AA) |
+| Neutral (cream ground, navy ink) | `neutral-50`…`neutral-950` | `#FAF6EC` → `#0A0D18` | Light-theme backgrounds, text, borders (dark theme no longer reuses this scale directly — see Dark mode below) |
 
 Tier accent mapping (`--color-tier-school` / `--color-tier-college` /
 `--color-tier-jobready`, used by `LevelCard` and every `bg-tier-*`/`text-tier-*`/
@@ -54,10 +55,22 @@ transitional College (softer radius, gradient underline), minimal Job-Ready
 
 Dark variant is driven by `prefers-color-scheme` and an optional `data-theme`
 attribute override on `:root`. Background/foreground/surface tokens
-(`--background`, `--foreground`, `--surface`, `--surface-border`) flip; the
-primary/secondary/accent scales stay constant so brand color reads consistently
-in both themes. `--shadow-offset` is redefined per theme since it's keyed off
-`var(--foreground)`.
+(`--background`, `--foreground`, `--surface`, `--surface-border`,
+`--muted-foreground`) flip; the primary/secondary/accent/purple scales stay
+constant so brand color reads consistently in both themes. `--shadow-offset`
+is redefined per theme since it's keyed off `var(--foreground)`.
+
+Dark-mode values are a deliberate deep violet-black register (`#120f1e`
+background, `#1b1730` surface, `#ede9f5` foreground) custom to dark mode, not
+a bg/fg swap of the light neutral scale — that swap was the prior dark theme's
+core problem: it reused the light theme's warm cream/navy hexes with roles
+flipped, so it read as an inverted light theme rather than a designed dark
+palette. The three `LevelCard` tier panels also have their own theme-aware
+tokens (`--panel-school`/`--panel-college`/`--panel-jobready`, defined in
+`app/globals.css`) rather than the fixed light-pastel hexes used before —
+those fixed hexes combined with `--foreground` flipping to a light color in
+dark mode made card headings unreadable; panels are now dark-tinted per tier
+in dark mode so `--foreground` text stays legible on them.
 
 ## Spacing & Radius
 
