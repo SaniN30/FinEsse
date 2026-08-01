@@ -39,6 +39,22 @@
   --color-accent-500: #1fc491;
   --color-accent-600: #14a377;
 
+  /* Purple — brand accent lifted from the FinEsse logo mark's violet gradient.
+     Added alongside the existing palette (not a replacement): drives primary
+     buttons, active/selected states, highlights, and progress fills across
+     both themes. Constant across themes like primary/secondary/accent above;
+     purple-500 on white text is ~5.8:1 (WCAG AA). */
+  --color-purple-50: #f5f3ff;
+  --color-purple-100: #ede9fe;
+  --color-purple-200: #ddd6fe;
+  --color-purple-300: #c4b5fd;
+  --color-purple-400: #a78bfa;
+  --color-purple-500: #7c3aed;
+  --color-purple-600: #6d28d9;
+  --color-purple-700: #5b21b6;
+  --color-purple-800: #4c1d95;
+  --color-purple-900: #3b0f70;
+
   /* Tier accents — kept as distinct hues per tier, retuned to sit on the
      cream ground instead of the old cool-neutral one. */
   --color-tier-school: #e0855f;
@@ -57,6 +73,16 @@
      fixed-value text used to drop to ~2.3-3.5:1 on dark surfaces). */
   --muted-foreground: var(--color-neutral-500);
 
+  /* Level-card tier panels — theme-aware so heading text (which uses
+     --foreground) stays legible: light panels stay pastel-on-dark-ink here,
+     dark panels below flip to dark-tinted-on-light-ink instead of reusing
+     these same light hexes (that reuse was the bug: --foreground flips to a
+     light color in dark mode, so a fixed light pastel panel made card
+     headings nearly invisible). */
+  --panel-school: #fbeae0;
+  --panel-college: var(--color-primary-50);
+  --panel-jobready: #e1f7ec;
+
   --radius-card: 1.5rem;
   --shadow-soft: 0 1px 2px rgba(20, 25, 43, 0.04), 0 12px 32px -12px rgba(20, 25, 43, 0.12);
   /* Hard offset shadow — the optimalearn signature on buttons/pill chrome:
@@ -67,32 +93,44 @@
 }
 
 :root[data-theme="dark"] {
-  --background: var(--color-neutral-950);
-  --foreground: var(--color-neutral-100);
-  --surface: var(--color-neutral-900);
-  --surface-border: var(--color-neutral-700);
+  /* Dark theme rework — a deliberate deep violet-black register (matching the
+     new purple brand accent) rather than the old cool-navy inversion of the
+     light neutral scale. Values below are custom to dark mode, not reused
+     light-theme hexes with foreground/background swapped. */
+  --background: #120f1e;
+  --foreground: #ede9f5;
+  --surface: #1b1730;
+  --surface-border: #35304f;
+  --muted-foreground: #a79bc4;
 
   --color-tier-school: #f0a37e;
-  --color-tier-college: #6f96ff;
+  --color-tier-college: #8fa8ff;
   --color-tier-jobready-ink: #f3f1ea;
   --color-success: #4fdbae;
   --shadow-offset: 3px 3px 0 var(--foreground);
-  --muted-foreground: var(--color-neutral-400);
+
+  --panel-school: #2b2013;
+  --panel-college: #1e1b3a;
+  --panel-jobready: #142720;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --background: var(--color-neutral-950);
-    --foreground: var(--color-neutral-100);
-    --surface: var(--color-neutral-900);
-    --surface-border: var(--color-neutral-700);
+    --background: #120f1e;
+    --foreground: #ede9f5;
+    --surface: #1b1730;
+    --surface-border: #35304f;
+    --muted-foreground: #a79bc4;
 
     --color-tier-school: #f0a37e;
-    --color-tier-college: #6f96ff;
+    --color-tier-college: #8fa8ff;
     --color-tier-jobready-ink: #f3f1ea;
     --color-success: #4fdbae;
     --shadow-offset: 3px 3px 0 var(--foreground);
-    --muted-foreground: var(--color-neutral-400);
+
+    --panel-school: #2b2013;
+    --panel-college: #1e1b3a;
+    --panel-jobready: #142720;
   }
 }
 
@@ -122,6 +160,17 @@
   --color-accent-400: var(--color-accent-400);
   --color-accent-500: var(--color-accent-500);
   --color-accent-600: var(--color-accent-600);
+
+  --color-purple-50: var(--color-purple-50);
+  --color-purple-100: var(--color-purple-100);
+  --color-purple-200: var(--color-purple-200);
+  --color-purple-300: var(--color-purple-300);
+  --color-purple-400: var(--color-purple-400);
+  --color-purple-500: var(--color-purple-500);
+  --color-purple-600: var(--color-purple-600);
+  --color-purple-700: var(--color-purple-700);
+  --color-purple-800: var(--color-purple-800);
+  --color-purple-900: var(--color-purple-900);
 
   --color-tier-school: var(--color-tier-school);
   --color-tier-college: var(--color-tier-college);

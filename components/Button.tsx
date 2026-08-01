@@ -14,10 +14,10 @@ interface ButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary-500 text-white shadow-soft hover:bg-primary-600 focus-visible:outline-primary-500",
+    "bg-purple-500 text-white shadow-soft hover:bg-purple-600 focus-visible:outline-purple-500",
   secondary:
-    "bg-surface text-foreground border-2 border-foreground shadow-[var(--shadow-offset)] hover:bg-neutral-50 focus-visible:outline-primary-500",
-  ghost: "bg-transparent text-foreground hover:bg-neutral-100/60 focus-visible:outline-primary-500",
+    "bg-surface text-foreground border-2 border-foreground shadow-[var(--shadow-offset)] hover:bg-neutral-50 focus-visible:outline-purple-500",
+  ghost: "bg-transparent text-foreground hover:bg-neutral-100/60 focus-visible:outline-purple-500",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

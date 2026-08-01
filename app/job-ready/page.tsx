@@ -17,7 +17,7 @@ export default function JobReadyPage() {
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Link
             href="/job-ready/lessons"
-            className="rounded-full bg-primary-500 px-6 py-3 text-sm font-medium text-white shadow-soft hover:bg-primary-600"
+            className="rounded-full bg-purple-500 px-6 py-3 text-sm font-medium text-white shadow-soft hover:bg-purple-600"
           >
             Start lessons
           </Link>

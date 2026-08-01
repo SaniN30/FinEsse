@@ -21,19 +21,19 @@ const tierStyles: Record<
   school: {
     accent: "bg-tier-school",
     badge: "bg-secondary-400/15 text-secondary-600",
-    panel: "bg-[#FBEAE0]",
+    panel: "bg-[var(--panel-school)]",
     label: "Level 01",
   },
   college: {
     accent: "bg-tier-college",
     badge: "bg-primary-400/15 text-primary-600",
-    panel: "bg-primary-50",
+    panel: "bg-[var(--panel-college)]",
     label: "Level 02",
   },
   jobready: {
     accent: "bg-tier-jobready",
     badge: "bg-accent-400/15 text-accent-600",
-    panel: "bg-accent-300/20",
+    panel: "bg-[var(--panel-jobready)]",
     label: "Level 03",
   },
 };

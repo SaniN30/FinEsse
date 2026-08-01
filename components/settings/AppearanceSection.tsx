@@ -34,8 +34,8 @@ export function AppearanceSection() {
             className={cn(
               "rounded-xl border px-4 py-2 text-sm font-medium transition-colors",
               preference === option.value
-                ? "border-primary-500 bg-primary-50 text-primary-700"
-                : "border-surface-border text-muted-foreground hover:border-primary-400",
+                ? "border-purple-500 bg-purple-50 text-purple-700"
+                : "border-surface-border text-muted-foreground hover:border-purple-400",
             )}
           >
             {option.label}
