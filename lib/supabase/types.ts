@@ -51,12 +51,18 @@ export interface Quiz {
   published: boolean;
 }
 
+export type QuestionDifficulty = "easy" | "medium" | "hard";
+export type QuizQuestionType = "multiple_choice" | "free_response";
+
 export interface QuizQuestionPublic {
   id: string;
   quiz_id: string;
   question: string;
   options: string[];
   order_index: number;
+  difficulty: QuestionDifficulty;
+  question_type: QuizQuestionType;
+  scenario_context: string | null;
 }
 
 export interface GradeQuizAttemptResult {
@@ -178,4 +184,26 @@ export interface InterviewSession {
 export interface ScoreInterviewSessionResult {
   session_id: string;
   rubric_scores: InterviewRubricScores;
+}
+
+export type BadgeCriteriaType =
+  | "first_lesson_completed"
+  | "first_quiz_passed"
+  | "first_modeling_exercise_passed"
+  | "tier_completed";
+
+export interface Badge {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  criteria_type: BadgeCriteriaType;
+}
+
+export interface ProfileBadge {
+  id: string;
+  profile_id: string;
+  badge_id: string;
+  awarded_at: string;
+  badges: Badge;
 }

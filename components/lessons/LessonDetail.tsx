@@ -57,6 +57,12 @@ export function LessonDetail({ skillId, quizBasePath, modelingBasePath }: Lesson
         setQuizzes(quizResult.data ?? []);
         setModelingExercises(modelingResult.data ?? []);
       }
+
+      for (const lesson of lessonResult.data ?? []) {
+        // Best-effort: powers the "first lesson completed" badge only, so a
+        // failure here shouldn't interrupt the student reading the lesson.
+        supabase.rpc("mark_lesson_complete", { p_lesson_id: lesson.id }).then(() => {});
+      }
     }
 
     load();

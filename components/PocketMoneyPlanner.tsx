@@ -117,8 +117,8 @@ export function PocketMoneyPlanner() {
           The Pocket Money Planner
         </h2>
         <p className="mt-4 max-w-xl text-primary-50">
-          A hands-on budgeting tool built for the School tier — set a savings goal, deposit and
-          withdraw on your own terms, and watch progress grow. Sign in to get started.
+          A hands-on budgeting tool — set a savings goal, deposit and withdraw on your own terms,
+          and watch progress grow. Sign in to get started.
         </p>
       </div>
     </motion.section>

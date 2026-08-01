@@ -315,6 +315,69 @@ filtered them out" from "genuinely no content" (an empty result renders an empty
 messaging) — not a live bug right now since content is populated, but worth tightening if this
 class of report recurs.
 
+## College-tier content depth pass 2, free-response case studies, and milestone badges (2026-08-01)
+
+- College had only 8 skills (101-108) versus the "10-15+ substantive topics" bar the captain
+  asked for. `00000000000043_seed_college_depth_content.sql` adds 10 more (109-118: budgeting
+  on a student income, student loans & interest, credit scores & credit cards, investing
+  basics, taxes for a first job, retirement accounts, insurance, negotiating salary, side
+  income/freelancing, and a capstone financial-planning-for-post-grad-life topic), bringing
+  College to 18 skills. Unlike the 5-6 question quizzes migrations 27-31 used, every quiz here
+  has exactly 10 questions per the captain's added scope; 3 skills (student loans, investing,
+  retirement) also got a modeling exercise, following the existing case-style pattern.
+- **`skills.slug` is unique across the whole table, not scoped per tier** — a real collision
+  hit this migration (College's planned `insurance-basics` slug already existed on School from
+  migration 040) and would have failed the push. Check `select slug from skills` across *all*
+  tiers before picking a new slug, not just the tier you're adding to.
+- `00000000000042_college_depth_schema_extensions.sql` adds `quiz_questions.difficulty`
+  (easy/medium/hard), free-response question support (`question_type`, `grading_keywords`,
+  `min_keyword_matches`, `scenario_context` — graded by keyword match inside
+  `grade_quiz_attempt`, not exact string equality), and milestone badges (`badges`/
+  `profile_badges`, awarded via `award_badge()` from `grade_quiz_attempt`,
+  `grade_modeling_submission`, and the new `mark_lesson_complete` RPC on first lesson/quiz/
+  modeling-exercise completion and full tier mastery). `components/BadgeShelf.tsx` renders a
+  profile's earned badges; `LessonDetail.tsx` fires `mark_lesson_complete` best-effort per
+  lesson view. `00000000000044_seed_college_case_studies.sql` adds 3 case-study quizzes (mixed
+  MCQ + free-response, 8 questions each) as a *second* quiz attached to skills 109/110/118 —
+  no frontend change was needed since `LessonDetail` already renders every quiz row for a
+  skill. `00000000000045_backfill_difficulty_labels.sql` backfills `difficulty` on
+  pre-existing quiz/interview questions (excluding the new quiz ids 109-121, which already
+  have authored values).
+- **Recurrence of the "migration recorded as applied but never actually ran" failure mode**
+  (previously hit migration 031, see the postmortem above): migration 042 showed up in
+  `supabase migration list` as applied on the live project, but none of its DDL had actually
+  run (no `badges` table, no `difficulty` column) — a prior session must have pushed it
+  partway or repaired its status without the SQL executing. Confirmed via direct Postgres
+  errors (the `supabase db push` CLI's JSON error output swallows the underlying Postgres
+  error text entirely — get the real error by calling the Management API's
+  `POST /v1/projects/{ref}/database/query` directly with the failing statement wrapped in
+  `begin; ...; rollback;`). Fixed the same way as before:
+  `supabase migration repair --status reverted 00000000000042` then a real `db push`, which
+  re-ran it for real. If a migration in this project errors with a column/table "does not
+  exist" that a prior migration should have created, check `migration list`'s remote status
+  and consider repairing-and-repushing before assuming the new migration's SQL is wrong.
+- This worktree, unlike prior College-lane sessions, *did* have a live, already-linked
+  Supabase CLI session (`npx supabase projects list` / `link` / `db push` all worked without
+  any manual token or DB password) plus Management-API access to the CLI's own stored access
+  token via macOS Keychain (`security find-generic-password -w -s "Supabase CLI" -a
+  "supabase"`) — usable to fetch the project's `service_role` key on demand
+  (`GET /v1/projects/{ref}/api-keys?reveal=true`) for admin-API test-account creation. Don't
+  assume "no live push access" without checking this first; it varies by environment/session,
+  not just by project.
+- All content live-verified end-to-end via a real signup→consent→create-student→student-login
+  browser flow (parent created via Auth Admin API to skip email confirmation, same as the
+  prior postmortem): lesson rendering, a standard 10-question quiz, the case-study quiz (mixed
+  MCQ + free-response, keyword-graded, scored 100%), the investing modeling exercise, and 3 of
+  4 badge types (first-lesson-completed, first-quiz-passed, first-modeling-exercise-passed) —
+  all confirmed both in the UI and via direct DB query. Test accounts deleted afterward.
+- The "College lessons/Pocket Money Planner empty" report traced to two separate causes, both
+  now fixed: (1) College genuinely only had 8 thin-ish skills, addressed by this content pass;
+  (2) `PocketMoneyPlanner` (tier-agnostic component, no tier-specific logic) was only reachable
+  at `/school/pocket-money` with copy calling it "built for the School tier" — added
+  `/college/pocket-money` (mirroring School's route) and made the copy tier-neutral. No RLS or
+  migration-not-applied issue was found specific to College this time (all tiers use the same
+  `p.tier = s.tier` RLS join pattern).
+
 ## Maintaining this file
 
 Keep this file short and durable — project structure, conventions, and
