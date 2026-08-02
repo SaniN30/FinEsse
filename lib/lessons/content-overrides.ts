@@ -235,6 +235,11 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       type: "mistake",
       body: "Answering every question the same way regardless of type — a vague general answer to a behavioral question, or a rambling personal anecdote to a technical one.",
     },
+    {
+      type: "keyterm",
+      term: "Behavioral question",
+      definition: "A question asking how you've actually handled a real past situation (\"tell me about a time...\"), best answered with one specific story rather than a general claim about yourself.",
+    },
   ],
   // Job-Ready — negotiating-a-job-offer
   "00000000-0000-0000-0001-000000000208": [
@@ -290,6 +295,17 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       type: "example",
       title: "\"Estimate coffees sold in this city each day\"",
       body: "Assume 1,000,000 people in the city. Assume ~30% drink coffee regularly = 300,000 coffee drinkers. Assume each drinks 1.2 coffees/day = 360,000 coffees/day. The exact number matters far less than showing clear, sensible assumptions and a step-by-step build-up.",
+    },
+    {
+      type: "diagram",
+      caption: "The five-step case structure",
+      nodes: [
+        { label: "Clarify", sublabel: "Restate the question" },
+        { label: "Break down", sublabel: "Split into components" },
+        { label: "State assumptions", sublabel: "Say them out loud" },
+        { label: "Compute", sublabel: "Work the math step by step" },
+        { label: "Sanity-check", sublabel: "Compare to something known" },
+      ],
     },
     {
       type: "takeaway",
