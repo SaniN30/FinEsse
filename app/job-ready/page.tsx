@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
-import { BadgeShelf } from "@/components/badges/BadgeShelf";
+import { BadgeShelf } from "@/components/BadgeShelf";
 
 export default function JobReadyPage() {
   return (

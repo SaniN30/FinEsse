@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
 import { SkillDashboard } from "@/components/school/SkillDashboard";
+import { BadgeShelf } from "@/components/BadgeShelf";
 
 export default function SchoolPage() {
   return (
@@ -19,6 +20,9 @@ export default function SchoolPage() {
         </Link>
         <div className="mt-8">
           <SkillDashboard />
+        </div>
+        <div className="mt-10">
+          <BadgeShelf />
         </div>
       </main>
     </div>

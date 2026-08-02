@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { fetchLesson, fetchQuizzesForLesson, fetchSkill } from "@/lib/school/queries";
 import { BackLink } from "@/components/BackLink";
 import { Skeleton } from "@/components/Skeleton";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import type { Lesson, Quiz, Skill } from "@/lib/supabase/types";
 import { lessonContentOverrides } from "@/lib/lessons/content-overrides";
 import { LessonBlockList } from "@/components/lessons/blocks/LessonBlockRenderer";
@@ -61,6 +62,12 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
         setLesson(lessonResult);
         setQuizzes(quizzesResult);
         setSkill(skillResult);
+
+        // Best-effort: powers the "first lesson completed" badge only, so a
+        // failure here shouldn't interrupt the student reading the lesson.
+        getSupabaseClient()
+          .rpc("mark_lesson_complete", { p_lesson_id: lessonId })
+          .then(() => {});
       })
       .catch((err: unknown) => {
         if (isMounted) setError(err instanceof Error ? err.message : "Could not load lesson.");
