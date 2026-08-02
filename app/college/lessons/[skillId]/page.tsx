@@ -16,7 +16,12 @@ export default async function CollegeLessonDetailPage({
       <Nav />
       <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-16">
         <BackLink href="/college" label="Back to College" />
-        <LessonDetail skillId={skillId} quizBasePath="/college/quiz" modelingBasePath="/college/modeling" />
+        <LessonDetail
+          skillId={skillId}
+          tier="college"
+          quizBasePath="/college/quiz"
+          modelingBasePath="/college/modeling"
+        />
       </main>
     </div>
   );

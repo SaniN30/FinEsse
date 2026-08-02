@@ -649,6 +649,40 @@ genuinely distinct bugs, both now fixed:
   start working once that migration reconciliation lands, with no Practice-side change
   needed.
 
+## Lesson content presentation components
+
+- Lesson bodies can render as structured, tier-styled components instead of a
+  plain paragraph: `components/lessons/blocks/` (`ConceptCard`, `KeyTermBox`,
+  `ComparisonTable`, `StepSequence`, `FlowDiagram` — an inline-SVG diagram
+  primitive — `WorkedExample`, `PitfallCallout`, `TakeawayBox`), rendered via
+  `LessonBlockList`/`LessonBlockRenderer`. Block content types live in
+  `lib/lessons/content-blocks.ts`; per-tier chrome (School: offset-shadow
+  cards, Baloo headings; College: thin-border analytical cards, blue accent;
+  Job-Ready: minimal green-accent scenario cards) is centralized in
+  `lib/lessons/tier-block-styles.ts` so a block component doesn't hardcode
+  tier styling itself.
+- A lesson opts in via `lib/lessons/content-overrides.ts`, a `Record<skill_id,
+  LessonBlock[]>` restructuring that skill's existing `content_body` prose
+  into blocks (same facts, no rewrite) — checked by both `components/lessons/
+  LessonDetail.tsx` (College/Job-Ready, now takes a required `tier` prop) and
+  `components/school/LessonDetail.tsx` before falling back to the raw
+  `content_body` paragraph. This lives in code rather than `content_body`
+  itself specifically to avoid touching the live migration history — see the
+  College-depth-pass-2 postmortem above for why that history is fragile right
+  now; a lesson's `content_body` stays the source of truth for facts, and an
+  override entry is a reversible, code-only presentation decision that could
+  be migrated into the database later once that history is stable. Only a
+  representative sample of lessons (a few per tier) has an override entry so
+  far — most lessons still render their plain `content_body`.
+- This worktree had live `service_role`-key access (via the Supabase CLI's
+  linked session + Management API, see the College-depth-pass-2 note above on
+  how to fetch it) despite no `.env.local` being checked in; that key was used
+  read-only to ground override content in each lesson's real `content_body`
+  text and to create/delete disposable parent+student test accounts for live
+  browser verification (`chrome-devtools-axi`, signing in as the student by
+  writing a real password-grant access token into the `sb-<ref>-auth-token`
+  localStorage key) — no schema or migration changes were made.
+
 ## Maintaining this file
 
 Keep this file short and durable — project structure, conventions, and

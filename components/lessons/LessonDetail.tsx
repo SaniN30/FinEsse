@@ -3,15 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import type { Lesson, ModelingExercisePublic, Quiz } from "@/lib/supabase/types";
+import type { Lesson, ModelingExercisePublic, Quiz, Tier } from "@/lib/supabase/types";
+import { lessonContentOverrides } from "@/lib/lessons/content-overrides";
+import { LessonBlockList } from "@/components/lessons/blocks/LessonBlockRenderer";
 
 interface LessonDetailProps {
   skillId: string;
+  tier: Tier;
   quizBasePath: string;
   modelingBasePath?: string;
 }
 
-export function LessonDetail({ skillId, quizBasePath, modelingBasePath }: LessonDetailProps) {
+export function LessonDetail({ skillId, tier, quizBasePath, modelingBasePath }: LessonDetailProps) {
   const [lessons, setLessons] = useState<Lesson[] | null>(null);
   const [quizzes, setQuizzes] = useState<Quiz[] | null>(null);
   const [modelingExercises, setModelingExercises] = useState<ModelingExercisePublic[] | null>(null);
@@ -81,12 +84,17 @@ export function LessonDetail({ skillId, quizBasePath, modelingBasePath }: Lesson
 
   return (
     <div className="space-y-8">
-      {lessons.map((lesson) => (
+      {lessons.map((lesson) => {
+        const blocks = lessonContentOverrides[lesson.skill_id];
+
+        return (
         <article
           key={lesson.id}
           className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-6 shadow-soft"
         >
-          {lesson.content_body ? (
+          {blocks ? (
+            <LessonBlockList tier={tier} blocks={blocks} />
+          ) : lesson.content_body ? (
             <p className="text-sm leading-relaxed text-muted-foreground">{lesson.content_body}</p>
           ) : null}
           {lesson.content_url ? (
@@ -100,7 +108,8 @@ export function LessonDetail({ skillId, quizBasePath, modelingBasePath }: Lesson
             </a>
           ) : null}
         </article>
-      ))}
+        );
+      })}
 
       {quizzes && quizzes.length > 0 ? (
         <div className="flex flex-wrap gap-3">
