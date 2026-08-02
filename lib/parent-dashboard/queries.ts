@@ -1,5 +1,5 @@
 import { getSupabaseClient } from "@/lib/supabase/client";
-import type { ParentDashboardChild } from "@/lib/supabase/types";
+import type { ParentDashboardChild, Tier } from "@/lib/supabase/types";
 
 /**
  * One row per linked child, aggregated on read from `parent_dashboard_children`
@@ -17,4 +17,18 @@ export async function fetchParentDashboardChildren(): Promise<ParentDashboardChi
 
   if (error) throw error;
   return (data ?? []) as ParentDashboardChild[];
+}
+
+/**
+ * Changes a linked child's tier -- the only way to move a student past the
+ * tier chosen at account creation (see the "College/Job-Ready 0 lessons"
+ * postmortem in AGENTS.md: `profiles.tier` was previously fixed for life,
+ * silently locking every pre-fix account, and most existing accounts, to
+ * School). `profiles_update` RLS already permits a parent to update their
+ * linked child's row, so this is a plain client-side update, not an RPC.
+ */
+export async function updateChildTier(profileId: string, tier: Tier): Promise<void> {
+  const supabase = getSupabaseClient();
+  const { error } = await supabase.from("profiles").update({ tier }).eq("id", profileId);
+  if (error) throw error;
 }

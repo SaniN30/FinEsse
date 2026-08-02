@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { ProgressBar } from "@/components/ProgressBar";
 import { cn } from "@/lib/cn";
+import { updateChildTier } from "@/lib/parent-dashboard/queries";
 import type { ParentDashboardChild, Tier } from "@/lib/supabase/types";
 
 function formatCents(cents: number): string {
@@ -43,10 +45,27 @@ function rubricOverallScore(rubricScores: Record<string, unknown>): number | nul
 interface ChildRollupCardProps {
   child: ParentDashboardChild;
   index?: number;
+  onTierChange?: (profileId: string, tier: Tier) => void;
 }
 
-export function ChildRollupCard({ child, index = 0 }: ChildRollupCardProps) {
+export function ChildRollupCard({ child, index = 0, onTierChange }: ChildRollupCardProps) {
   const tier = child.tier ?? "school";
+  const [isSavingTier, setIsSavingTier] = useState(false);
+  const [tierError, setTierError] = useState<string | null>(null);
+
+  async function handleTierChange(nextTier: Tier) {
+    if (nextTier === tier) return;
+    setIsSavingTier(true);
+    setTierError(null);
+    try {
+      await updateChildTier(child.profile_id, nextTier);
+      onTierChange?.(child.profile_id, nextTier);
+    } catch (err: unknown) {
+      setTierError(err instanceof Error ? err.message : "Couldn't change tier.");
+    } finally {
+      setIsSavingTier(false);
+    }
+  }
 
   return (
     <motion.article
@@ -63,14 +82,24 @@ export function ChildRollupCard({ child, index = 0 }: ChildRollupCardProps) {
           </span>
           <div>
             <h3 className="text-lg font-semibold">{child.display_name ?? "Student"}</h3>
-            <span
+            <label className="sr-only" htmlFor={`tier-${child.profile_id}`}>
+              Tier for {child.display_name ?? "this student"}
+            </label>
+            <select
+              id={`tier-${child.profile_id}`}
+              value={tier}
+              disabled={isSavingTier}
+              onChange={(event) => handleTierChange(event.target.value as Tier)}
               className={cn(
-                "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                "inline-flex items-center rounded-full border-none px-2.5 py-0.5 text-xs font-semibold",
                 tierBadge[tier],
               )}
             >
-              {tierLabel[tier]}
-            </span>
+              <option value="school">{tierLabel.school}</option>
+              <option value="college">{tierLabel.college}</option>
+              <option value="job_ready">{tierLabel.job_ready}</option>
+            </select>
+            {tierError ? <p className="mt-1 text-xs text-red-600">{tierError}</p> : null}
           </div>
         </div>
         <div className="text-right">
