@@ -494,9 +494,15 @@ class of report recurs.
   surface are consistent (not live-synced — each surface re-fetches on its
   own mount). Drag/resize is implemented with plain pointer events (no drag
   library) on `StickyNoteCard.tsx`; any interactive control nested inside the
-  draggable header (e.g. the delete button) must call
+  draggable header (e.g. the Save/delete buttons) must call
   `event.stopPropagation()` on `onPointerDown`, or the header's
-  `setPointerCapture` swallows its click.
+  `setPointerCapture` swallows its click. Both the widget card and the All
+  Notes page have an explicit Save button (debounced autosave-on-change stays
+  as a safety net, not replaced) that flashes a brief "✓ Saved" confirmation.
+  Each note's heading is derived from its stored `source` route via
+  `lib/sticky-notes/source.ts#getSourceTitle` (e.g. `/parent/dashboard` →
+  "Parent · Dashboard") and styled with the app's `font-display` heading
+  type, not the raw path string.
 
 ## Maintaining this file
 
