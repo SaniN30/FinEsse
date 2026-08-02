@@ -84,4 +84,41 @@ describe("StickyNoteCard", () => {
 
     expect(screen.getByTitle("/college/lessons/budgeting-basics")).toBeInTheDocument();
   });
+
+  it("derives a readable heading from the note's source route", () => {
+    render(
+      <StickyNoteCard
+        note={makeNote({ source: "/parent/dashboard" })}
+        onMove={vi.fn()}
+        onResize={vi.fn()}
+        onContentChange={vi.fn()}
+        onDelete={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByText("Parent · Dashboard")).toBeInTheDocument();
+  });
+
+  it("saves immediately and flashes a confirmation when the Save button is clicked", async () => {
+    const user = userEvent.setup();
+    const onContentChange = vi.fn();
+    render(
+      <StickyNoteCard
+        note={makeNote({ content: "draft" })}
+        onMove={vi.fn()}
+        onResize={vi.fn()}
+        onContentChange={onContentChange}
+        onDelete={vi.fn()}
+      />,
+    );
+
+    const textarea = screen.getByPlaceholderText(/write a note/i);
+    fireEvent.change(textarea, { target: { value: "buy milk" } });
+    expect(onContentChange).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: /save note/i }));
+
+    expect(onContentChange).toHaveBeenCalledWith("note-1", "buy milk");
+    expect(await screen.findByText(/saved/i)).toBeInTheDocument();
+  });
 });

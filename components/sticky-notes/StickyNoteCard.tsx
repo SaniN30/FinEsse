@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { StickyNote } from "@/lib/supabase/types";
+import { getSourceTitle } from "@/lib/sticky-notes/source";
 
 const MIN_WIDTH = 200;
 const MIN_HEIGHT = 160;
+const SAVED_FLASH_MS = 1400;
 
 interface StickyNoteCardProps {
   note: StickyNote;
@@ -22,14 +24,31 @@ export function StickyNoteCard({
   onDelete,
 }: StickyNoteCardProps) {
   const [content, setContent] = useState(note.content);
+  const [justSaved, setJustSaved] = useState(false);
   const dragState = useRef<{ startX: number; startY: number; originX: number; originY: number } | null>(null);
   const resizeState = useRef<{ startX: number; startY: number; originWidth: number; originHeight: number } | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (content === note.content) return;
-    const timeout = setTimeout(() => onContentChange(note.id, content), 500);
-    return () => clearTimeout(timeout);
+    debounceRef.current = setTimeout(() => onContentChange(note.id, content), 500);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
   }, [content, note.content, note.id, onContentChange]);
+
+  useEffect(() => {
+    if (!justSaved) return;
+    const timeout = setTimeout(() => setJustSaved(false), SAVED_FLASH_MS);
+    return () => clearTimeout(timeout);
+  }, [justSaved]);
+
+  function handleSaveClick(event: React.MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    onContentChange(note.id, content);
+    setJustSaved(true);
+  }
 
   function handleDragPointerDown(event: React.PointerEvent<HTMLDivElement>) {
     event.currentTarget.setPointerCapture(event.pointerId);
@@ -96,18 +115,39 @@ export function StickyNoteCard({
         onPointerUp={handleDragPointerUp}
         className="flex cursor-grab items-center justify-between gap-2 border-b-2 border-foreground bg-tier-school/20 px-3 py-1.5 active:cursor-grabbing"
       >
-        <span className="truncate text-xs font-medium text-muted-foreground" title={note.source}>
-          {note.source}
-        </span>
-        <button
-          type="button"
-          aria-label="Delete note"
-          onPointerDown={(event) => event.stopPropagation()}
-          onClick={() => onDelete(note.id)}
-          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-surface hover:text-foreground"
+        <span
+          className="truncate font-display text-sm font-semibold text-foreground"
+          title={note.source}
         >
-          ×
-        </button>
+          {getSourceTitle(note.source)}
+        </span>
+        <div className="flex shrink-0 items-center gap-1">
+          <button
+            type="button"
+            aria-label="Save note"
+            title="Save"
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={handleSaveClick}
+            className="flex h-6 items-center gap-1 rounded-full px-2 text-xs font-medium text-foreground/70 transition-colors hover:bg-surface hover:text-foreground"
+          >
+            {justSaved ? (
+              <span className="text-primary-500" aria-live="polite">
+                ✓ Saved
+              </span>
+            ) : (
+              "Save"
+            )}
+          </button>
+          <button
+            type="button"
+            aria-label="Delete note"
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={() => onDelete(note.id)}
+            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-surface hover:text-foreground"
+          >
+            ×
+          </button>
+        </div>
       </div>
       <textarea
         value={content}

@@ -83,15 +83,23 @@ export function StickyNotesWidget() {
           onDelete={handleDelete}
         />
       ))}
-      <button
-        type="button"
-        onClick={handleCreate}
-        aria-label="New sticky note"
-        title="New sticky note"
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full border-2 border-foreground bg-primary-500 text-2xl font-semibold text-white shadow-[var(--shadow-offset)] transition-transform hover:-translate-y-0.5"
-      >
-        +
-      </button>
+      <div className="group fixed bottom-6 right-6 z-50">
+        <span
+          role="tooltip"
+          className="pointer-events-none absolute bottom-full right-0 mb-2 w-max max-w-[14rem] rounded-lg border-2 border-foreground bg-surface px-3 py-1.5 text-xs font-medium text-foreground opacity-0 shadow-[var(--shadow-offset)] transition-opacity duration-150 group-hover:opacity-100"
+        >
+          Click to jot down your important notes
+        </span>
+        <button
+          type="button"
+          onClick={handleCreate}
+          aria-label="New sticky note"
+          title="Click to jot down your important notes"
+          className="flex h-14 w-14 items-center justify-center rounded-full border-2 border-foreground bg-primary-500 text-2xl font-semibold text-white shadow-[var(--shadow-offset)] transition-transform hover:-translate-y-0.5"
+        >
+          +
+        </button>
+      </div>
     </>
   );
 }
