@@ -241,14 +241,18 @@ grading only needs `auth.uid()`, not the Auth Admin API.
   is an append-only per-profile award log (`profile_id`, `badge_id`,
   `earned_at`, unique per pair), RLS-readable via `is_own_or_linked_profile`
   — same "visibility, not control" posture as `quiz_attempts`.
-- `award_badge(p_profile_id, p_slug)` is the only way a row is ever written:
-  `SECURITY DEFINER`, idempotent (`on conflict (profile_id, badge_id) do
-  nothing`), and silently no-ops if `p_slug` doesn't match any `badges` row
-  — seeding order between badge definitions and their award sites never
-  matters. Called from `grade_quiz_attempt` (lesson completed / quiz passed
-  / tier completed, Job-Ready only so far) and from the
-  `score-interview-session` Edge Function (first mock interview completed),
-  since interview scoring happens there, not in Postgres.
+- `award_badge` is the only way a row is ever written: `SECURITY DEFINER`,
+  idempotent (`on conflict (profile_id, badge_id) do nothing`), and silently
+  no-ops if the badge identifier doesn't match any `badges` row — seeding
+  order between badge definitions and their award sites never matters.
+  Called from `grade_quiz_attempt` (lesson completed / quiz passed / tier
+  completed) and from the `score-interview-session` Edge Function (first
+  mock interview completed), since interview scoring happens there, not in
+  Postgres. The signature described here was superseded by College's
+  `award_badge(p_profile_id, p_criteria_type)` — see the "Content-depth pass
+  2" section below for the current definition and its 5-value
+  `criteria_type` enum (`first_mock_interview` added by migration `00000000000072`
+  for Job-Ready's use).
 
 ### College-tier content: `roles`, `modeling_exercises`, `modeling_submissions` (Phase 4)
 
@@ -333,7 +337,9 @@ three additive concepts (no existing column dropped/retyped):
   student's answer text and requiring at least `min_keyword_matches`.
 - Milestone badges: `badges` (reference data, one row per `criteria_type` —
   `first_lesson_completed` \| `first_quiz_passed` \|
-  `first_modeling_exercise_passed` \| `tier_completed`) and `profile_badges`
+  `first_modeling_exercise_passed` \| `tier_completed`, plus
+  `first_mock_interview` added by migration `00000000000072` for
+  Job-Ready's mock-interview badge) and `profile_badges`
   (per-student earned log, unique on `(profile_id, badge_id)`). The shared
   `award_badge(p_profile_id, p_criteria_type)` helper does the idempotent
   insert; it and `check_and_award_tier_completed` are internal-only
