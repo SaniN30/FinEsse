@@ -548,6 +548,21 @@ deliberately not `is_own_or_linked_profile`, since notes are a personal
 scratchpad a parent has no reason to read on a linked child's behalf, unlike
 every other table above.
 
+`practice_attempts` (migration `00000000000070`) has a `select`-only policy
+(`is_own_or_linked_profile`) and no `insert`/`update`/`delete` policy for
+`authenticated` — same "visibility not control" posture as `quiz_attempts`.
+Rows are written exclusively by the `SECURITY DEFINER` function
+`grade_practice_attempt(question_id, answer)`, which grades one question in
+isolation (keyword-match for `free_response`, exact-match otherwise) and
+never writes to `quiz_attempts`/`skill_attempts`/`xp_events`/
+`profile_badges`, so practice cannot affect lesson completion, mastery, XP,
+or badge state. The `practice_questions` view unions `quiz_questions_public`
+and `interview_questions` across all tiers and runs as the view owner
+(postgres), so — like `quiz_questions_public` — it is not itself
+tier-restricted by RLS; see AGENTS.md's "Free Practice mode" section for the
+frontend-side tier filtering and the pre-existing live-schema gap this
+migration works around.
+
 ## Auth / consent flow (COPPA + GDPR-K)
 
 There is no independent student sign-up. The flow is:
