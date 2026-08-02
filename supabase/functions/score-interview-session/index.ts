@@ -222,7 +222,7 @@ Deno.serve(async (req) => {
     // that already succeeded and already recorded xp_events.
     const { error: badgeError } = await admin.rpc("award_badge", {
       p_profile_id: session.profile_id,
-      p_slug: "jobready_first_mock_interview_completed",
+      p_criteria_type: "first_mock_interview",
     });
 
     if (badgeError) {

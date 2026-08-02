@@ -504,6 +504,87 @@ class of report recurs.
   "Parent · Dashboard") and styled with the app's `font-display` heading
   type, not the raw path string.
 
+## "College/Job-Ready 0 lessons" + missing Job-Ready content-depth — root causes and fix (2026-08-02)
+
+Despite College (PR #28) and Job-Ready (PR #29) content-depth both being merged to `main`,
+the live College/Job-Ready Lessons pages showed "0 lessons" on every topic card. Two
+genuinely distinct bugs, both now fixed:
+
+1. **Every real student account is silently locked to School tier at creation time.**
+   `app/create-student/page.tsx`'s form never collected a tier — `createStudentAccount()`
+   always called the Edge Function with `tier` omitted, and
+   `supabase/functions/create-student-account/index.ts:114` defaults omitted tier to
+   `"school"`. Combined with `lessons_select`'s RLS
+   (`supabase/migrations/00000000000007_content_rls.sql`) requiring the viewer's own
+   `profiles.tier` to match the skill's tier — while `skills_select` has no such
+   gate — any real student (always school-tier) browsing `/college/lessons` or
+   `/job-ready/lessons` saw full skill cards (skills query succeeds) but "0 lessons" on
+   every one (lessons query is RLS-denied). This is the actual mechanism behind the
+   screenshot, reproduced live with a real student created through the unmodified UI. Fixed
+   by adding a tier `SelectField` to `app/create-student/page.tsx`, threading it through to
+   the already-tier-aware Edge Function (no backend change needed). Verified end-to-end: a
+   real College-tier student created through the fixed flow sees real lesson content on
+   every College topic card; a real Job-Ready-tier student (created via the Admin API,
+   verified through an authenticated `skills`/`lessons` REST query using the exact RLS path
+   the frontend uses) sees the same for all 23 Job-Ready skills.
+2. **PR #29's Job-Ready content-depth migrations never actually reached the live
+   project**, independent of (1). `00000000000043_quiz_case_study_badges_schema.sql` was
+   recorded live under version `00000000000043`, but that live bookkeeping row is actually
+   `sticky_notes` — an unrelated, still-unmerged branch (`fm/finesse-sticky-notes`, PR #32)
+   pushed its own migration directly to the live project under the same version number,
+   overwriting the tracking row without Job-Ready's DDL ever running. As a direct
+   consequence `00000000000044`/`00000000000045` (which depend on that schema) never
+   applied either, and `00000000000046_interview_questions_difficulty_and_guides.sql`
+   collided on its own version with College's unrelated
+   `00000000000046_college_depth_schema_extensions.sql` (College's won the live slot).
+   Verified directly against `supabase_migrations.schema_migrations` and
+   `information_schema.columns` — never trust `supabase migration list`'s local/remote
+   version match alone, since it only compares version numbers, not file identity (this is
+   the same failure class as the migration-031/042 postmortems above, just a fresh
+   instance). Fixed by `supabase/migrations/00000000000072_reconcile_jobready_content_depth.sql`
+   — not a re-run of the original files (which would collide with College's now-live
+   `quiz_questions.difficulty/question_type/grading_keywords/min_keyword_matches/scenario_context`
+   and generic `badges/profile_badges/award_badge(profile_id, criteria_type)` schema), but a
+   reconciliation of the same intent against that reality: adds the still-missing
+   `quizzes.quiz_type/scenario_body/context_tag`, re-seeds the Job-Ready quiz-depth
+   expansion and case-study skill/quizzes/questions (translating `keywords` →
+   `grading_keywords` + computed `min_keyword_matches` via SQL expression, not hand-typed
+   values, to avoid transcription error), extends `badges_criteria_type_check` (a closed
+   4-value enum) to admit a 5th `first_mock_interview` value, and backfills all 115
+   `interview_questions.improvement_guide` rows verbatim from the original migration. Also
+   fixed `supabase/functions/score-interview-session/index.ts`'s `award_badge` RPC call,
+   which was calling the live (College-authored) function with a `p_slug` parameter that
+   doesn't exist on it (`award_badge(profile_id, criteria_type)`) — silently failing every
+   award attempt (best-effort, caught and logged, never surfaced) since that function was
+   deployed. Content completeness verified directly against the live DB after applying:
+   23 Job-Ready skills (was 22), all 22 pre-existing quizzes at 10 questions, the 4
+   case-study quizzes seeded, 0-of-115 `interview_questions` missing
+   `improvement_guide`.
+   **Lesson**: `supabase db push`/`db pull` refuse to run at all once local migrations
+   directory and live `schema_migrations` disagree by more than a simple gap (as happened
+   here mid-session when a concurrent task pushed its own migrations `00000000000070`/`71`
+   live) — and the CLI's own suggested fix is `migration repair --status applied` on files
+   that never actually ran, which would silently misrepresent history exactly like the
+   031/042 incidents. When this happens, do not run the CLI's suggested repair blindly:
+   apply new migration SQL directly via the Management API
+   (`POST /v1/projects/{ref}/database/query`, same endpoint used for read-only diagnostics
+   throughout these postmortems) and insert only that migration's own tracking row into
+   `supabase_migrations.schema_migrations` — touching no other row.
+   Pocket Money Planner (also reported broken live on College/School) could **not** be
+   reproduced: verified rendering correctly for a real signed-in student on both
+   `/school/pocket-money` and `/college/pocket-money`, at desktop and mobile viewports, with
+   zero console/network errors — its underlying `account_balances`/`savings_goal_progress`
+   views have no tier dependency at all, so it was never architecturally exposed to bug (1).
+   Most likely explanation: the original report was observed in the same session as bug (1)
+   and reflects the same tier-mismatch confusion, or a fresh account's legitimate `$0.00`
+   empty state being read as "not visible."
+   **Environment note**: this worktree's `chrome-devtools-axi` browser is shared with other
+   concurrently-running sessions in this environment — pages/tabs can be silently navigated
+   or hijacked mid-task by unrelated work. Always re-check the page URL immediately before
+   acting, explicitly `selectpage`/`newpage` rather than assume tab identity persists, and
+   prefer a direct authenticated REST/RPC call over the browser for verification when a
+   page keeps getting hijacked.
+
 ## Maintaining this file
 
 Keep this file short and durable — project structure, conventions, and

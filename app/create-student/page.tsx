@@ -6,10 +6,18 @@ import Link from "next/link";
 import { AuthCard } from "@/components/auth/AuthCard";
 import { FormField } from "@/components/auth/FormField";
 import { PinInput } from "@/components/auth/PinInput";
+import { SelectField } from "@/components/auth/SelectField";
 import { Button } from "@/components/Button";
 import { createStudentAccount } from "@/lib/supabase/auth-actions";
 import { rememberStudent } from "@/lib/supabase/student-registry";
 import { useAuth } from "@/lib/supabase/auth-context";
+import type { Tier } from "@/lib/supabase/types";
+
+const TIER_OPTIONS: { value: Tier; label: string }[] = [
+  { value: "school", label: "School" },
+  { value: "college", label: "College" },
+  { value: "job_ready", label: "Job-Ready" },
+];
 
 function CreateStudentForm() {
   const router = useRouter();
@@ -18,6 +26,7 @@ function CreateStudentForm() {
 
   const consentId = params.get("consent_id") ?? "";
   const [displayName, setDisplayName] = useState(params.get("name") ?? "");
+  const [tier, setTier] = useState<Tier>("school");
   const [pin, setPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +59,7 @@ function CreateStudentForm() {
     }
 
     setSubmitting(true);
-    const result = await createStudentAccount({ consentId, displayName, pin });
+    const result = await createStudentAccount({ consentId, displayName, pin, tier });
     setSubmitting(false);
 
     if (result.error || !result.data) {
@@ -107,6 +116,13 @@ function CreateStudentForm() {
           onChange={(e) => setDisplayName(e.target.value)}
           required
           autoComplete="off"
+        />
+        <SelectField
+          label="Which tier are they starting at?"
+          name="tier"
+          value={tier}
+          onChange={(e) => setTier(e.target.value as Tier)}
+          options={TIER_OPTIONS}
         />
         <PinInput label="Choose a PIN" value={pin} onChange={setPin} />
         <PinInput label="Confirm PIN" value={confirmPin} onChange={setConfirmPin} />
