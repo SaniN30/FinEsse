@@ -684,6 +684,36 @@ in any error visible from a plain `curl localhost:3000` (which will happily hit 
 session's server and return 200). Check the dev server's own log for the port it actually
 bound before pointing a browser at `localhost:3000` by assumption.
 
+## Content reads are no longer tier-gated (2026-08-02)
+
+Per explicit captain directive, `profiles.tier` no longer restricts *reading*
+lesson/quiz/modeling content at all -- any authenticated FinEsse account (any
+tier) can browse School, College, and Job-Ready lesson/quiz/modeling-exercise
+content. `supabase/migrations/00000000000076_remove_tier_gating_from_content_reads.sql`
+drops the `p.tier = s.tier` join from `lessons_select`/`quizzes_select` RLS and
+from the `modeling_exercises_public` view, replacing it with the same
+`auth.role() = 'authenticated'` gate `skills_select`/`roles_select`/
+`interview_questions_select` already used. `profiles.tier` still exists and
+still drives which tier a student's own dashboard/badges/mastery defaults to
+(see the parent-dashboard tier switcher above) -- it's just no longer a read
+gate. Write/progress-tracking RLS (`quiz_attempts`, `modeling_submissions`,
+`skill_attempts`, `xp_events`, `practice_attempts`, `profile_badges`,
+`lesson_completions`, `interview_sessions`) was untouched -- all of it is
+already scoped to `is_own_or_linked_profile(profile_id)`, unrelated to tier.
+Applied directly via the Management API (same reasoning as the migration-
+031/042/072 postmortems: `supabase db push` refuses to run here because this
+worktree's local migrations directory doesn't have the concurrently-pushed
+`00000000000070`/`71`/`75` files, and blindly running its suggested
+`migration repair` would misrepresent those other branches' history) --
+statements were sent to `POST /v1/projects/{ref}/database/query`
+**one at a time**; sending the whole multi-statement migration file (with its
+leading comment block) in one call returned success but silently applied
+nothing, so verify each DDL statement's effect with a follow-up read query
+before trusting a 201/`[]` response body. Live-verified: a real school-tier
+student browsing `/college/lessons` and `/job-ready/lessons` sees full lesson
+counts and real lesson content (not blank pages) on both tiers, not just their
+own.
+
 ## Lesson content presentation components
 
 - Lesson bodies can render as structured, tier-styled components instead of a
