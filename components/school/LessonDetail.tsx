@@ -6,6 +6,8 @@ import { fetchLesson, fetchQuizzesForLesson } from "@/lib/school/queries";
 import { BackLink } from "@/components/BackLink";
 import { Skeleton } from "@/components/Skeleton";
 import type { Lesson, Quiz } from "@/lib/supabase/types";
+import { lessonContentOverrides } from "@/lib/lessons/content-overrides";
+import { LessonBlockList } from "@/components/lessons/blocks/LessonBlockRenderer";
 
 function LessonContent({ lesson }: { lesson: Lesson }) {
   if (lesson.content_type === "video" && lesson.content_url) {
@@ -22,6 +24,11 @@ function LessonContent({ lesson }: { lesson: Lesson }) {
         title="Interactive lesson"
       />
     );
+  }
+
+  const blocks = lessonContentOverrides[lesson.skill_id];
+  if (blocks) {
+    return <LessonBlockList tier="school" blocks={blocks} />;
   }
 
   return (
