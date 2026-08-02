@@ -80,9 +80,14 @@ export function QuestionPicker() {
             href={`/job-ready/interview/${question.id}`}
             className="block rounded-[var(--radius-card)] border border-surface-border bg-surface p-5 shadow-soft transition-colors hover:border-primary-400"
           >
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-primary-500">
-              {question.firm_style}
-            </p>
+            <div className="mb-1 flex items-center justify-between gap-3">
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary-500">
+                {question.firm_style}
+              </p>
+              <span className="shrink-0 rounded-full border border-surface-border px-2 py-0.5 text-xs font-medium capitalize text-muted-foreground">
+                {question.difficulty}
+              </span>
+            </div>
             <p className="text-sm font-medium text-foreground">{question.question_text}</p>
           </Link>
         ))}

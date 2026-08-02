@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Nav } from "@/components/Nav";
+import { BadgeShelf } from "@/components/badges/BadgeShelf";
 
 export default function JobReadyPage() {
   return (
@@ -28,6 +29,7 @@ export default function JobReadyPage() {
             Practice an interview question →
           </Link>
         </div>
+        <BadgeShelf />
       </main>
     </div>
   );

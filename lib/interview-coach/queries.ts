@@ -9,7 +9,7 @@ export async function fetchInterviewQuestions(): Promise<InterviewQuestion[]> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("interview_questions")
-    .select("id, firm_style, question_text, category, published")
+    .select("id, firm_style, question_text, category, published, difficulty, improvement_guide")
     .eq("published", true)
     .order("firm_style", { ascending: true });
 
@@ -21,7 +21,7 @@ export async function fetchInterviewQuestion(questionId: string): Promise<Interv
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("interview_questions")
-    .select("id, firm_style, question_text, category, published")
+    .select("id, firm_style, question_text, category, published, difficulty, improvement_guide")
     .eq("id", questionId)
     .single();
 

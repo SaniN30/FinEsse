@@ -42,6 +42,10 @@ export interface Lesson {
   published: boolean;
 }
 
+export type QuizType = "standard" | "case_study";
+export type QuestionDifficulty = "easy" | "medium" | "hard";
+export type QuizQuestionType = "multiple_choice" | "free_response";
+
 export interface Quiz {
   id: string;
   skill_id: string | null;
@@ -49,16 +53,16 @@ export interface Quiz {
   title: string;
   pass_threshold: number;
   published: boolean;
+  quiz_type: QuizType;
+  scenario_body: string | null;
+  context_tag: string | null;
 }
-
-export type QuestionDifficulty = "easy" | "medium" | "hard";
-export type QuizQuestionType = "multiple_choice" | "free_response";
 
 export interface QuizQuestionPublic {
   id: string;
   quiz_id: string;
   question: string;
-  options: string[];
+  options: string[] | null;
   order_index: number;
   difficulty: QuestionDifficulty;
   question_type: QuizQuestionType;
@@ -156,6 +160,8 @@ export interface InterviewQuestion {
   question_text: string;
   category: InterviewQuestionCategory;
   published: boolean;
+  difficulty: QuestionDifficulty;
+  improvement_guide: string;
 }
 
 export interface RubricScoreEntry {
@@ -206,4 +212,16 @@ export interface ProfileBadge {
   badge_id: string;
   awarded_at: string;
   badges: Badge;
+}
+
+export interface EarnedBadgeInfo {
+  slug: string;
+  title: string;
+  description: string;
+  icon: string;
+}
+
+/** One row per earned badge, from `profile_badges` joined to `badges`. */
+export interface EarnedBadge extends EarnedBadgeInfo {
+  earned_at: string;
 }

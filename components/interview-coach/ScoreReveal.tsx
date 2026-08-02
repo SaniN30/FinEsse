@@ -8,11 +8,12 @@ import type { InterviewRubricScores } from "@/lib/supabase/types";
 
 interface ScoreRevealProps {
   rubricScores: InterviewRubricScores;
+  improvementGuide?: string;
   onPracticeAgain?: () => void;
 }
 
 /** Renders the headline score and every sub-score together, once -- no staggered/streamed reveal (score-interview-session is one synchronous call). */
-export function ScoreReveal({ rubricScores, onPracticeAgain }: ScoreRevealProps) {
+export function ScoreReveal({ rubricScores, improvementGuide, onPracticeAgain }: ScoreRevealProps) {
   const overall = rubricOverallScore(rubricScores);
 
   return (
@@ -69,6 +70,15 @@ export function ScoreReveal({ rubricScores, onPracticeAgain }: ScoreRevealProps)
           </div>
         ) : null}
       </div>
+
+      {improvementGuide ? (
+        <div className="rounded-[var(--radius-card)] border border-primary-300 bg-primary-500/5 p-5 shadow-soft">
+          <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-primary-500">
+            How to strengthen this answer
+          </p>
+          <p className="text-sm leading-relaxed text-foreground">{improvementGuide}</p>
+        </div>
+      ) : null}
 
       {onPracticeAgain ? (
         <Button variant="secondary" onClick={onPracticeAgain}>
