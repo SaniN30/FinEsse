@@ -81,6 +81,14 @@ export async function fetchLessonsForSkill(skillId: string): Promise<Lesson[]> {
   return data as Lesson[];
 }
 
+export async function fetchSkill(skillId: string): Promise<Skill> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.from("skills").select("*").eq("id", skillId).single();
+
+  if (error) throw error;
+  return data as Skill;
+}
+
 export async function fetchLesson(lessonId: string): Promise<Lesson> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase

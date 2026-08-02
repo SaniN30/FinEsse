@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { fetchLesson, fetchQuizzesForLesson } from "@/lib/school/queries";
+import { fetchLesson, fetchQuizzesForLesson, fetchSkill } from "@/lib/school/queries";
 import { BackLink } from "@/components/BackLink";
 import { Skeleton } from "@/components/Skeleton";
-import type { Lesson, Quiz } from "@/lib/supabase/types";
+import type { Lesson, Quiz, Skill } from "@/lib/supabase/types";
 import { lessonContentOverrides } from "@/lib/lessons/content-overrides";
 import { LessonBlockList } from "@/components/lessons/blocks/LessonBlockRenderer";
+import { LessonHeading } from "@/components/lessons/LessonHeading";
+import { LessonBody } from "@/components/lessons/LessonBody";
 
 function LessonContent({ lesson }: { lesson: Lesson }) {
   if (lesson.content_type === "video" && lesson.content_url) {
@@ -31,25 +33,34 @@ function LessonContent({ lesson }: { lesson: Lesson }) {
     return <LessonBlockList tier="school" blocks={blocks} />;
   }
 
-  return (
-    <div className="prose prose-neutral max-w-none whitespace-pre-wrap text-foreground">
-      {lesson.content_body ?? "This lesson has no content yet."}
-    </div>
-  );
+  if (!lesson.content_body) {
+    return <p className="text-sm text-muted-foreground">This lesson has no content yet.</p>;
+  }
+
+  return <LessonBody text={lesson.content_body} />;
 }
 
 export function LessonDetail({ lessonId }: { lessonId: string }) {
   const [lesson, setLesson] = useState<Lesson | null>(null);
+  const [skill, setSkill] = useState<Skill | null>(null);
   const [quizzes, setQuizzes] = useState<Quiz[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
-    Promise.all([fetchLesson(lessonId), fetchQuizzesForLesson(lessonId)])
-      .then(([lessonResult, quizzesResult]) => {
+    fetchLesson(lessonId)
+      .then((lessonResult) =>
+        Promise.all([
+          Promise.resolve(lessonResult),
+          fetchQuizzesForLesson(lessonId),
+          fetchSkill(lessonResult.skill_id),
+        ]),
+      )
+      .then(([lessonResult, quizzesResult, skillResult]) => {
         if (!isMounted) return;
         setLesson(lessonResult);
         setQuizzes(quizzesResult);
+        setSkill(skillResult);
       })
       .catch((err: unknown) => {
         if (isMounted) setError(err instanceof Error ? err.message : "Could not load lesson.");
@@ -80,6 +91,7 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
   return (
     <div>
       <BackLink href={`/school/skills/${lesson.skill_id}`} label="Back to Lessons" />
+      {skill ? <LessonHeading title={skill.title} /> : null}
       <LessonContent lesson={lesson} />
 
       {quizzes && quizzes.length > 0 ? (

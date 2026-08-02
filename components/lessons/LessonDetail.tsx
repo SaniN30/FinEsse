@@ -2,10 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { getSupabaseClient } from "@/lib/supabase/client";
-import type { Lesson, ModelingExercisePublic, Quiz, Tier } from "@/lib/supabase/types";
+import type { Lesson, ModelingExercisePublic, Quiz, Skill, Tier } from "@/lib/supabase/types";
 import { lessonContentOverrides } from "@/lib/lessons/content-overrides";
 import { LessonBlockList } from "@/components/lessons/blocks/LessonBlockRenderer";
+import { LessonHeading } from "@/components/lessons/LessonHeading";
+import { LessonBody } from "@/components/lessons/LessonBody";
+
+const EASE_OUT_QUART = [0.25, 1, 0.5, 1] as const;
 
 interface LessonDetailProps {
   skillId: string;
@@ -15,6 +20,7 @@ interface LessonDetailProps {
 }
 
 export function LessonDetail({ skillId, tier, quizBasePath, modelingBasePath }: LessonDetailProps) {
+  const [skill, setSkill] = useState<Skill | null>(null);
   const [lessons, setLessons] = useState<Lesson[] | null>(null);
   const [quizzes, setQuizzes] = useState<Quiz[] | null>(null);
   const [modelingExercises, setModelingExercises] = useState<ModelingExercisePublic[] | null>(null);
@@ -25,7 +31,8 @@ export function LessonDetail({ skillId, tier, quizBasePath, modelingBasePath }: 
     const supabase = getSupabaseClient();
 
     async function load() {
-      const [lessonResult, quizResult, modelingResult] = await Promise.all([
+      const [skillResult, lessonResult, quizResult, modelingResult] = await Promise.all([
+        supabase.from("skills").select("*").eq("id", skillId).single(),
         supabase
           .from("lessons")
           .select("*")
@@ -43,10 +50,11 @@ export function LessonDetail({ skillId, tier, quizBasePath, modelingBasePath }: 
           : Promise.resolve({ data: [], error: null }),
       ]);
 
-      if (lessonResult.error || quizResult.error || modelingResult.error) {
+      if (skillResult.error || lessonResult.error || quizResult.error || modelingResult.error) {
         if (isMounted) {
           setError(
-            lessonResult.error?.message ??
+            skillResult.error?.message ??
+              lessonResult.error?.message ??
               quizResult.error?.message ??
               modelingResult.error?.message ??
               "Failed to load lesson"
@@ -56,6 +64,7 @@ export function LessonDetail({ skillId, tier, quizBasePath, modelingBasePath }: 
       }
 
       if (isMounted) {
+        setSkill(skillResult.data as Skill);
         setLessons(lessonResult.data ?? []);
         setQuizzes(quizResult.data ?? []);
         setModelingExercises(modelingResult.data ?? []);
@@ -84,30 +93,36 @@ export function LessonDetail({ skillId, tier, quizBasePath, modelingBasePath }: 
 
   return (
     <div className="space-y-8">
-      {lessons.map((lesson) => {
+      {skill ? <LessonHeading title={skill.title} /> : null}
+
+      {lessons.map((lesson, index) => {
         const blocks = lessonContentOverrides[lesson.skill_id];
 
         return (
-        <article
-          key={lesson.id}
-          className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-6 shadow-soft"
-        >
-          {blocks ? (
-            <LessonBlockList tier={tier} blocks={blocks} />
-          ) : lesson.content_body ? (
-            <p className="text-sm leading-relaxed text-muted-foreground">{lesson.content_body}</p>
-          ) : null}
-          {lesson.content_url ? (
-            <a
-              href={lesson.content_url}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-2 inline-block text-sm font-medium text-primary-500 hover:text-primary-600"
-            >
-              Open {lesson.content_type} →
-            </a>
-          ) : null}
-        </article>
+          <motion.article
+            key={lesson.id}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.5, ease: EASE_OUT_QUART, delay: index * 0.06 }}
+            className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-6 shadow-soft"
+          >
+            {blocks ? (
+              <LessonBlockList tier={tier} blocks={blocks} />
+            ) : lesson.content_body ? (
+              <LessonBody text={lesson.content_body} />
+            ) : null}
+            {lesson.content_url ? (
+              <a
+                href={lesson.content_url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 inline-block text-sm font-medium text-primary-500 hover:text-primary-600"
+              >
+                Open {lesson.content_type} →
+              </a>
+            ) : null}
+          </motion.article>
         );
       })}
 
