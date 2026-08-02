@@ -54,6 +54,33 @@ export function StickyNoteCard({
     return () => clearTimeout(timeout);
   }, [justSaved]);
 
+  // A note's saved position/size can come from a wider viewport (e.g. dragged
+  // near the right edge on desktop). Clamp it back on screen whenever the
+  // viewport is narrower than that, so it's never stuck off-screen and
+  // undraggable on a phone.
+  useEffect(() => {
+    function clampToViewport() {
+      const maxWidth = Math.max(MIN_WIDTH, window.innerWidth - 16);
+      const maxHeight = Math.max(MIN_HEIGHT, window.innerHeight - 16);
+      const clampedWidth = Math.min(note.width, maxWidth);
+      const clampedHeight = Math.min(note.height, maxHeight);
+      if (clampedWidth !== note.width || clampedHeight !== note.height) {
+        onResize(note.id, clampedWidth, clampedHeight);
+      }
+      const maxX = Math.max(0, window.innerWidth - clampedWidth);
+      const maxY = Math.max(0, window.innerHeight - clampedHeight);
+      const clampedX = Math.min(note.position_x, maxX);
+      const clampedY = Math.min(note.position_y, maxY);
+      if (clampedX !== note.position_x || clampedY !== note.position_y) {
+        onMove(note.id, clampedX, clampedY);
+      }
+    }
+    clampToViewport();
+    window.addEventListener("resize", clampToViewport);
+    return () => window.removeEventListener("resize", clampToViewport);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [note.id]);
+
   function handleSaveClick(event: React.MouseEvent<HTMLButtonElement>) {
     event.stopPropagation();
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -124,7 +151,7 @@ export function StickyNoteCard({
         onPointerDown={handleDragPointerDown}
         onPointerMove={handleDragPointerMove}
         onPointerUp={handleDragPointerUp}
-        className="flex cursor-grab items-center justify-between gap-2 border-b-2 border-foreground bg-tier-school/20 px-3 py-1.5 active:cursor-grabbing"
+        className="flex touch-none cursor-grab items-center justify-between gap-2 border-b-2 border-foreground bg-tier-school/20 px-3 py-1.5 active:cursor-grabbing"
       >
         <span
           className="truncate font-display text-sm font-semibold text-foreground"
@@ -171,7 +198,7 @@ export function StickyNoteCard({
         onPointerMove={handleResizePointerMove}
         onPointerUp={handleResizePointerUp}
         aria-hidden
-        className="absolute bottom-0 right-0 h-4 w-4 cursor-nwse-resize"
+        className="absolute bottom-0 right-0 h-6 w-6 touch-none cursor-nwse-resize"
       >
         <div className="absolute bottom-1 right-1 h-2 w-2 border-b-2 border-r-2 border-foreground/50" />
       </div>

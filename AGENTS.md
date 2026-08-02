@@ -799,6 +799,35 @@ own.
   browser verification (`chrome-devtools-axi`, signing in as the student by
   writing a real password-grant access token into the `sb-<ref>-auth-token`
   localStorage key) — no schema or migration changes were made.
+## Mobile responsiveness pass
+
+- Nav (`components/Nav.tsx`) already had a `sm:hidden` hamburger → dropdown-drawer
+  pattern before this pass; no other screen needed a comparable nav-collapse fix.
+  `Hero.tsx`'s three floating stat cards used `absolute` positioning tuned for
+  desktop only (`w-64`/`w-56`/`w-48` cards with `left-14 top-52` etc.) — below
+  `lg:`, they now stack in normal flow (`flex flex-col`) with the float/rotate
+  animation disabled (`useIsDesktop()` gates it via a `min-width: 1024px`
+  media-query listener), since a stacked static card doesn't need the desktop
+  float. `app/globals.css` reserves `padding-bottom: 4.5rem` on the body below
+  640px so the fixed sticky-note FAB (`bottom-6 right-6`) never sits on top of
+  the last on-screen element at the true end of a page — it can still overlap a
+  mid-list item while scrolling past it, same as any fixed FAB over a scrollable
+  list, which is expected and clears once scrolled by.
+- `StickyNoteCard.tsx` persists `position_x/y`/`width`/`height` in pixels
+  (`00000000000050_sticky_notes.sql`), so a note dragged near the right/bottom
+  edge on a wide desktop viewport would previously render off-screen and
+  undraggable on a phone. It now clamps to the current viewport on mount and on
+  `resize` (shrinking width/height first, then position), and the drag
+  handle/resize handle both have `touch-none` so a touch drag doesn't fight the
+  page's own scroll/pan gestures.
+- No blocking mobile-only overflow was found elsewhere: a static grep for
+  fixed-px widths/`whitespace-nowrap`/`overflow-x-auto`/wide `grid-cols-*`
+  outside `sm:`/`lg:` guards, plus live `chrome-devtools-axi` checks (390px and
+  768px, `document.documentElement.scrollWidth === clientWidth`) across every
+  route in the app (landing, signup/login, School/College/Job-Ready tier pages,
+  lesson/skill lists, quiz runner, interview coach, Pocket Money Planner + its
+  "New savings goal" form, parent dashboard, settings, notes), came back clean.
+  Desktop layout was spot-checked unchanged at 1440px after these fixes.
 
 ## Lesson page heading/interactivity treatment
 
