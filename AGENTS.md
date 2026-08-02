@@ -17,9 +17,9 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   these over ad-hoc styling.
 - Routes: `/` (landing), `/school`, `/college`, `/job-ready` (tier landing pages;
   `/job-ready` links to both its lesson track and the Phase 9 AI Interview Coach),
-  `/settings` (Account, Appearance, Notifications, Help, Legal —
-  `components/settings/`, theme state via `lib/settings/theme.ts`), plus the
-  Phase 6 auth flow below.
+  `/practice` (free-practice question bank, see below), `/settings` (Account,
+  Appearance, Notifications, Help, Legal — `components/settings/`, theme state via
+  `lib/settings/theme.ts`), plus the Phase 6 auth flow below.
 - `tsconfig.json`'s `include` intentionally excludes `vitest.config.ts`/
   `vitest.config.component.ts` (see `tsconfig.vitest.json`) so a dev-tooling
   version drift in vitest/vite plugins can't break `npm run build` — don't
@@ -584,6 +584,70 @@ genuinely distinct bugs, both now fixed:
    acting, explicitly `selectpage`/`newpage` rather than assume tab identity persists, and
    prefer a direct authenticated REST/RPC call over the browser for verification when a
    page keeps getting hijacked.
+
+## Free Practice mode (post-content-depth)
+
+- `/practice` (nav entry alongside School/College/Job-Ready) lets a signed-in student
+  browse and answer quiz/case-study questions from any tier outside the guided lesson
+  flow, plus browse (not yet answer inline) the interview-question bank. Built entirely
+  on the already-live College-depth schema (`quiz_questions.difficulty`/`question_type`/
+  `grading_keywords`/`min_keyword_matches`/`scenario_context`, `interview_questions.
+  difficulty`) — it does **not** depend on `quizzes.quiz_type`/`scenario_body`/
+  `context_tag` or `interview_questions.improvement_guide`, which are referenced by
+  already-merged frontend code (`components/quiz/QuizRunner.tsx`,
+  `lib/interview-coach/queries.ts`) but were never actually pushed to the live database
+  — see the next bullet.
+- **Known pre-existing gap, not fixed by this pass**: main's migration history has three
+  files from an earlier merged PR (`00000000000043_quiz_case_study_badges_schema.sql`,
+  `00000000000045_seed_jobready_case_studies.sql`,
+  `00000000000046_interview_questions_difficulty_and_guides.sql`) that were never applied
+  live — version `043` was independently claimed live by an unrelated sticky-notes
+  migration, and a later, separately-authored College-depth pass shipped an overlapping
+  but differently-shaped schema (its own `badges`/`difficulty`/free-response columns)
+  under `046-049` instead. `supabase db push --dry-run` confirms the stuck files will
+  hard-fail if pushed as-is (duplicate columns, missing dependent columns). This means
+  the live Interview Coach question picker (`fetchInterviewQuestions`, which selects
+  `improvement_guide`) and the case-study banner in `components/quiz/QuizRunner.tsx`
+  (which reads `quizzes.scenario_body`/`context_tag`/`quiz_type`) are currently broken in
+  production. Do not build new frontend code against those columns until this is
+  reconciled — check `select column_name from information_schema.columns where
+  table_name = '...'` against the live project first.
+- `practice_attempts` (new table, `00000000000070_practice_mode_schema.sql`) and
+  `grade_practice_attempt(question_id, answer)` (security-definer RPC) are fully isolated
+  from the graded-lesson path: grading a practice question never writes to
+  `quiz_attempts`/`skill_attempts`/`xp_events`/`profile_badges`, so free practice cannot
+  affect lesson completion, mastery, XP, or badge state — verified live via direct DB
+  query after answering a mix of MCQ and free-response/case-study questions as a real
+  student. The `practice_questions` view (same migration) unions quiz- and
+  interview-sourced questions for the browse/filter UI; it runs as the view owner
+  (postgres), same pattern as `quiz_questions_public`, so — like that view — it is not
+  itself tier-restricted by RLS. `/practice` defaults its tier filter to the student's own
+  `profile.tier` client-side rather than relying on RLS to enforce it.
+- `00000000000071_seed_practice_case_studies.sql` adds 5 new case-study quizzes (one
+  School MCQ-only — School's `components/school/QuizRunner.tsx` has no free_response
+  support, so its case study avoids that question type — plus 2 College and 2 Job-Ready
+  mixing MCQ/free-response), each attached as a second quiz on an existing skill (same
+  non-breaking pattern as `00000000000048_seed_college_case_studies.sql` — doesn't add a
+  new skill, so tier-completion mastery math over `skills` is unaffected). Brings the
+  platform to 58 case-study questions (`quiz_questions.scenario_context is not null`) and
+  500 total practice-eligible questions (`quiz_questions` + `interview_questions`
+  combined) — both verified by live count query, comfortably past the 50/100 bars.
+- `components/practice/` (`PracticeFilters`, `PracticeList`, `PracticeQuestionCard`,
+  `InterviewPracticeList`) + `lib/practice/queries.ts`. `PracticeList`/
+  `InterviewPracticeList` are remounted via a `key` on their filter values from
+  `app/practice/page.tsx` rather than resetting state from inside an effect — this
+  repo's ESLint config enforces `react-hooks/set-state-in-effect` as an error, so a
+  synchronous `setState` at the top of an effect body (even to reset loading state before
+  a refetch) fails lint; the existing `components/lessons/LessonDetail.tsx` pattern
+  (state only ever set inside a `.then`/`catch`) is the one to copy for new data-fetching
+  components in this repo.
+- Interview questions are browsable in `/practice`'s "Interview Prep" tab (deep, its own
+  defensive query selecting only currently-live columns) but attempting one links out to
+  the existing `/job-ready/interview/[questionId]` flow rather than a duplicate
+  in-Practice scoring UI — per the task brief's "reuse existing UI patterns" instruction.
+  That link currently 400s client-side due to the `improvement_guide` gap above; it will
+  start working once that migration reconciliation lands, with no Practice-side change
+  needed.
 
 ## Maintaining this file
 

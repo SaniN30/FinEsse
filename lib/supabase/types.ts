@@ -238,3 +238,27 @@ export interface StickyNote {
   created_at: string;
   updated_at: string;
 }
+
+export type PracticeSource = "quiz" | "interview";
+
+/** One row from the `practice_questions` view (see migration 00000000000070). */
+export interface PracticeQuestion {
+  id: string;
+  source: PracticeSource;
+  tier: Tier;
+  topic_slug: string | null;
+  topic_title: string | null;
+  difficulty: QuestionDifficulty;
+  question_type: QuizQuestionType;
+  question: string;
+  options: string[] | null;
+  scenario_context: string | null;
+  is_case_study: boolean;
+  ref_id: string | null;
+}
+
+export interface GradePracticeAttemptResult {
+  attempt_id: string;
+  question_id: string;
+  is_correct: boolean;
+}
