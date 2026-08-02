@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Nav } from "@/components/Nav";
 import { useAuth } from "@/lib/supabase/auth-context";
-import { isParentWithChildFlow } from "@/lib/supabase/profile-helpers";
 import { PracticeFilters } from "@/components/practice/PracticeFilters";
 import { PracticeList } from "@/components/practice/PracticeList";
 import { InterviewPracticeList } from "@/components/practice/InterviewPracticeList";
@@ -19,9 +18,13 @@ export default function PracticePage() {
 
   // Defaults the tier filter to the student's own tier until they pick one
   // explicitly, without syncing profile.tier into state via an effect.
+  // profiles.tier defaults to "school" in the DB for every role (including
+  // parents), so this default is only meaningful for students -- a
+  // non-student account starts on "all tiers" instead of inheriting that
+  // placeholder value.
   const effectiveFilters: PracticeFiltersValue = {
     ...filters,
-    tier: filters.tier ?? profile?.tier ?? undefined,
+    tier: filters.tier ?? (profile?.role === "student" ? profile.tier ?? undefined : undefined),
   };
   const filtersKey = `${effectiveFilters.tier ?? ""}-${effectiveFilters.difficulty ?? ""}-${effectiveFilters.questionType ?? ""}-${effectiveFilters.caseStudyOnly ? "1" : "0"}`;
 
@@ -41,15 +44,11 @@ export default function PracticePage() {
           <p className="text-sm text-muted-foreground">Loading…</p>
         ) : !session ? (
           <div className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-8 text-center shadow-soft">
-            <p className="mb-4 text-sm text-muted-foreground">Sign in as a student to start practicing.</p>
+            <p className="mb-4 text-sm text-muted-foreground">Sign in to start practicing.</p>
             <a href="/login" className="text-sm font-medium text-primary-500 hover:text-primary-600">
               Sign in →
             </a>
           </div>
-        ) : !profile || isParentWithChildFlow(profile) ? (
-          <p className="text-sm text-muted-foreground">
-            Practice is available on a student account -- sign in as a student to use it.
-          </p>
         ) : (
           <>
             <div className="mb-6 flex gap-2">
