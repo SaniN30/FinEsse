@@ -295,6 +295,14 @@ Next.js 14+ (App Router) + TypeScript + Tailwind CSS v4 + Framer Motion.
   theme to a deliberate deep-violet register (rather than an inverted light
   theme), plus theme-aware `LevelCard` panel tokens — see `DESIGN.md`'s
   "Colors" and "Dark mode" sections for the current token set.
+- Home page motion polish: `components/MotionProvider.tsx` wraps the app in
+  framer-motion's `MotionConfig` (mounted in `app/layout.tsx`, inside `AuthProvider`)
+  with `reducedMotion="user"`, so all existing motion (Hero stagger/floating cards,
+  `LevelCard` scroll-in/hover, `Button` press) degrades to instant transitions when
+  the OS `prefers-reduced-motion` setting is on — no per-component opt-in needed.
+  `LevelCard.tsx` also gained a full-card `Link` overlay to its tier route plus a
+  hover-revealed "Explore →" affordance, since the cards looked interactive but
+  weren't previously clickable.
 - This repo's dev environment has no live Supabase access (`.env.local` holds
   placeholder credentials, no `supabase` CLI, no linked project ref, no CI/CD
   migration deploy step) — verifying whether migrations `00000000000027`-`00000000000031`

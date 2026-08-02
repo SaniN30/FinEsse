@@ -1,9 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { cn } from "@/lib/cn";
 
 export type LevelTier = "school" | "college" | "jobready";
+
+const tierHrefs: Record<LevelTier, string> = {
+  school: "/school",
+  college: "/college",
+  jobready: "/job-ready",
+};
 
 interface LevelCardProps {
   tier: LevelTier;
@@ -54,12 +61,15 @@ export function LevelCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.6, ease: [0.25, 1, 0.5, 1] as const, delay: index * 0.12 }}
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -6, scale: 1.015 }}
+      whileTap={{ y: -2, scale: 0.99 }}
       className={cn(
-        "group relative overflow-hidden rounded-[var(--radius-card)] border-2 border-foreground p-6 shadow-[var(--shadow-offset)] transition-transform duration-300",
+        "group relative overflow-hidden rounded-[var(--radius-card)] border-2 border-foreground p-6 shadow-[var(--shadow-offset)]",
         styles.panel,
       )}
     >
+      <Link href={tierHrefs[tier]} className="absolute inset-0 z-10" aria-label={`Explore ${title}`} />
+
       <div className={cn("mb-4 inline-flex items-center rounded-full border-2 border-foreground bg-surface px-3 py-1 text-xs font-semibold", styles.badge)}>
         {styles.label}
       </div>
@@ -76,9 +86,17 @@ export function LevelCard({
         ))}
       </ul>
 
-      <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-        <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", styles.accent)} />
-        {stat}
+      <div className="flex items-center justify-between gap-2 text-xs font-medium text-muted-foreground">
+        <span className="flex items-center gap-2">
+          <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", styles.accent)} />
+          {stat}
+        </span>
+        <span className="flex items-center gap-1 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+          Explore
+          <span aria-hidden className="transition-transform duration-200 group-hover:translate-x-0.5">
+            →
+          </span>
+        </span>
       </div>
     </motion.article>
   );
