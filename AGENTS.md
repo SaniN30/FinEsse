@@ -683,6 +683,27 @@ genuinely distinct bugs, both now fixed:
   writing a real password-grant access token into the `sb-<ref>-auth-token`
   localStorage key) — no schema or migration changes were made.
 
+## Lesson page heading/interactivity treatment
+
+- Per-topic lesson pages (School's `components/school/LessonDetail.tsx` and the
+  shared College/Job-Ready `components/lessons/LessonDetail.tsx`) render the
+  skill title through `components/lessons/LessonHeading.tsx` — a real animated
+  `h1`, which picks up each tier's `.theme-tier-*` heading treatment (see
+  `DESIGN.md`) automatically rather than duplicating tier-specific styling.
+  Lesson body text goes through `components/lessons/LessonBody.tsx`, which
+  splits `content_body` into paragraphs revealed on scroll (`whileInView`,
+  staggered) and renders the final paragraph as a collapsible "Why this
+  matters" callout tinted with `--tier-accent` — the one shared interactivity
+  pattern across all three tiers. Extend these two components rather than
+  re-implementing heading/body rendering per tier.
+- This repo's dev environment can have a stale `next dev` instance already
+  bound to port 3000 from another concurrent session — `npm run dev` silently
+  falls back to 3001 in that case (check its own log line, don't assume 3000).
+  Likewise `chrome-devtools-axi`'s default browser session can be hijacked
+  mid-task by other concurrent work; set `CHROME_DEVTOOLS_AXI_SESSION` to a
+  unique name to get an isolated browser instance before doing any live
+  verification that takes more than one navigation.
+
 ## Maintaining this file
 
 Keep this file short and durable — project structure, conventions, and
