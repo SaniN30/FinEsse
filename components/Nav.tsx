@@ -73,6 +73,9 @@ export function Nav() {
                   Dashboard
                 </a>
               ) : null}
+              <a href="/notes" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                Notes
+              </a>
               <a href="/settings" className="text-sm font-medium text-muted-foreground hover:text-foreground">
                 Settings
               </a>
@@ -117,6 +120,13 @@ export function Nav() {
                   Dashboard
                 </a>
               ) : null}
+              <a
+                href="/notes"
+                className="rounded-lg px-2 py-3 transition-colors hover:bg-surface hover:text-foreground"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Notes
+              </a>
               <a
                 href="/settings"
                 className="rounded-lg px-2 py-3 transition-colors hover:bg-surface hover:text-foreground"

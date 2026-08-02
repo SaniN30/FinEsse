@@ -481,6 +481,23 @@ class of report recurs.
   migration-not-applied issue was found specific to College this time (all tiers use the same
   `p.tier = s.tier` RLS join pattern).
 
+## Sticky notes widget
+
+- A global, draggable/resizable sticky-note widget (`components/sticky-notes/`)
+  is mounted once in `app/layout.tsx` inside `AuthProvider`, so it renders on
+  every authenticated page regardless of whether that page includes `Nav`. It
+  renders nothing when there's no session. `lib/sticky-notes/queries.ts` wraps
+  CRUD against the `sticky_notes` table (migration
+  `00000000000050_sticky_notes.sql`; RLS contract documented in `BACKEND.md`'s
+  Row Level Security section). The "All Notes" page (`app/notes`, linked from `Nav`) lists the same rows
+  newest-first and shares the same query module, so edits/deletes from either
+  surface are consistent (not live-synced — each surface re-fetches on its
+  own mount). Drag/resize is implemented with plain pointer events (no drag
+  library) on `StickyNoteCard.tsx`; any interactive control nested inside the
+  draggable header (e.g. the delete button) must call
+  `event.stopPropagation()` on `onPointerDown`, or the header's
+  `setPointerCapture` swallows its click.
+
 ## Maintaining this file
 
 Keep this file short and durable — project structure, conventions, and

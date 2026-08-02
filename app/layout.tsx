@@ -4,6 +4,7 @@ import { AuthProvider } from "@/lib/supabase/auth-context";
 import "./globals.css";
 import { Footer } from "@/components/Footer";
 import { MotionProvider } from "@/components/MotionProvider";
+import { StickyNotesWidget } from "@/components/sticky-notes/StickyNotesWidget";
 
 const baloo2 = Baloo_2({
   variable: "--font-baloo-2",
@@ -43,6 +44,7 @@ export default function RootLayout({
           <AuthProvider>
             {children}
             <Footer />
+            <StickyNotesWidget />
           </AuthProvider>
         </MotionProvider>
       </body>

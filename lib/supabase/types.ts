@@ -225,3 +225,16 @@ export interface EarnedBadgeInfo {
 export interface EarnedBadge extends EarnedBadgeInfo {
   earned_at: string;
 }
+
+export interface StickyNote {
+  id: string;
+  profile_id: string;
+  content: string;
+  source: string;
+  position_x: number;
+  position_y: number;
+  width: number;
+  height: number;
+  created_at: string;
+  updated_at: string;
+}

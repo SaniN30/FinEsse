@@ -536,6 +536,12 @@ way funds move, and they're `SECURITY DEFINER` so they aren't affected by
 this tightening — they run as the function owner and enforce
 `profile_id = auth.uid()` themselves before touching any account.
 
+`sticky_notes` (migration `00000000000050`) has full `select`/`insert`/
+`update`/`delete` policies, all self-only (`profile_id = auth.uid()`) —
+deliberately not `is_own_or_linked_profile`, since notes are a personal
+scratchpad a parent has no reason to read on a linked child's behalf, unlike
+every other table above.
+
 ## Auth / consent flow (COPPA + GDPR-K)
 
 There is no independent student sign-up. The flow is:
