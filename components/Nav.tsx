@@ -12,6 +12,7 @@ const links = [
   { href: "/school", label: "School" },
   { href: "/college", label: "College" },
   { href: "/job-ready", label: "Job-Ready" },
+  { href: "/practice", label: "Practice" },
 ];
 
 export function Nav() {
