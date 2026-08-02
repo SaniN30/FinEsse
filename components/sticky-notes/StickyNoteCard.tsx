@@ -43,7 +43,7 @@ export function StickyNoteCard({
     return () => clearTimeout(timeout);
   }, [justSaved]);
 
-  function handleSaveClick(event: React.PointerEvent<HTMLButtonElement>) {
+  function handleSaveClick(event: React.MouseEvent<HTMLButtonElement>) {
     event.stopPropagation();
     if (debounceRef.current) clearTimeout(debounceRef.current);
     onContentChange(note.id, content);
@@ -126,7 +126,8 @@ export function StickyNoteCard({
             type="button"
             aria-label="Save note"
             title="Save"
-            onPointerDown={handleSaveClick}
+            onPointerDown={(event) => event.stopPropagation()}
+            onClick={handleSaveClick}
             className="flex h-6 items-center gap-1 rounded-full px-2 text-xs font-medium text-foreground/70 transition-colors hover:bg-surface hover:text-foreground"
           >
             {justSaved ? (
