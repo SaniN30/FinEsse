@@ -503,6 +503,16 @@ class of report recurs.
   `lib/sticky-notes/source.ts#getSourceTitle` (e.g. `/parent/dashboard` →
   "Parent · Dashboard") and styled with the app's `font-display` heading
   type, not the raw path string.
+- The widget and the All Notes page share one in-memory cache
+  (`lib/sticky-notes/store.ts`, subscribed via `useSyncExternalStore`), not
+  independent per-mount fetches — a create/edit/delete on either surface is
+  visible on the other immediately, including with no navigation at all,
+  since the widget never unmounts across client-side routes. Any component
+  reading `note.content` into local buffered state (`StickyNoteCard`,
+  `NoteListItem`) must reset that local state from the `note.content` prop
+  during render when it changes (React's prop-change pattern, not a
+  `useEffect` — `react-hooks/set-state-in-effect` flags the effect form) or
+  edits made elsewhere silently stop reaching an already-mounted card.
 
 ## "College/Job-Ready 0 lessons" + missing Job-Ready content-depth — root causes and fix (2026-08-02)
 
