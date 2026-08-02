@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Nav } from "@/components/Nav";
@@ -10,7 +10,10 @@ import {
   fetchStickyNotes,
   updateStickyNote,
 } from "@/lib/sticky-notes/queries";
+import { getSourceTitle } from "@/lib/sticky-notes/source";
 import type { StickyNote } from "@/lib/supabase/types";
+
+const SAVED_FLASH_MS = 1400;
 
 function formatTimestamp(iso: string): string {
   return new Date(iso).toLocaleString(undefined, {
@@ -23,6 +26,8 @@ export default function AllNotesPage() {
   const router = useRouter();
   const { session, loading } = useAuth();
   const [notes, setNotes] = useState<StickyNote[] | null>(null);
+  const [savedIds, setSavedIds] = useState<Record<string, boolean>>({});
+  const savedTimeouts = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   useEffect(() => {
     if (!loading && !session) {
@@ -35,12 +40,28 @@ export default function AllNotesPage() {
     fetchStickyNotes().then(setNotes);
   }, [session]);
 
+  useEffect(() => {
+    const timeouts = savedTimeouts.current;
+    return () => {
+      Object.values(timeouts).forEach(clearTimeout);
+    };
+  }, []);
+
   function handleContentChange(id: string, content: string) {
     setNotes((prev) => (prev ?? []).map((note) => (note.id === id ? { ...note, content } : note)));
   }
 
   function handleContentBlur(id: string, content: string) {
     void updateStickyNote(id, { content });
+  }
+
+  function handleSaveClick(id: string, content: string) {
+    void updateStickyNote(id, { content });
+    setSavedIds((prev) => ({ ...prev, [id]: true }));
+    if (savedTimeouts.current[id]) clearTimeout(savedTimeouts.current[id]);
+    savedTimeouts.current[id] = setTimeout(() => {
+      setSavedIds((prev) => ({ ...prev, [id]: false }));
+    }, SAVED_FLASH_MS);
   }
 
   function handleDelete(id: string) {
@@ -80,13 +101,27 @@ export default function AllNotesPage() {
                   className="rounded-[var(--radius-card)] border-2 border-foreground bg-surface p-5 shadow-[var(--shadow-offset)]"
                 >
                   <div className="mb-3 flex items-center justify-between gap-4">
-                    <span className="truncate text-xs font-medium text-muted-foreground">
-                      {note.source}
+                    <span className="truncate font-display text-lg font-semibold text-foreground">
+                      {getSourceTitle(note.source)}
                     </span>
                     <div className="flex shrink-0 items-center gap-3">
                       <span className="text-xs text-muted-foreground">
                         {formatTimestamp(note.created_at)}
                       </span>
+                      <button
+                        type="button"
+                        aria-label="Save note"
+                        onClick={() => handleSaveClick(note.id, note.content)}
+                        className="text-xs font-medium text-foreground/70 transition-colors hover:text-foreground"
+                      >
+                        {savedIds[note.id] ? (
+                          <span className="text-primary-500" aria-live="polite">
+                            ✓ Saved
+                          </span>
+                        ) : (
+                          "Save"
+                        )}
+                      </button>
                       <button
                         type="button"
                         aria-label="Delete note"
