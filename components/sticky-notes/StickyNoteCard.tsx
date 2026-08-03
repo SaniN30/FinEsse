@@ -58,28 +58,31 @@ export function StickyNoteCard({
   // near the right edge on desktop). Clamp it back on screen whenever the
   // viewport is narrower than that, so it's never stuck off-screen and
   // undraggable on a phone.
+  const noteGeometryRef = useRef(note);
+  noteGeometryRef.current = note;
+
   useEffect(() => {
     function clampToViewport() {
+      const current = noteGeometryRef.current;
       const maxWidth = Math.max(MIN_WIDTH, window.innerWidth - 16);
       const maxHeight = Math.max(MIN_HEIGHT, window.innerHeight - 16);
-      const clampedWidth = Math.min(note.width, maxWidth);
-      const clampedHeight = Math.min(note.height, maxHeight);
-      if (clampedWidth !== note.width || clampedHeight !== note.height) {
-        onResize(note.id, clampedWidth, clampedHeight);
+      const clampedWidth = Math.min(current.width, maxWidth);
+      const clampedHeight = Math.min(current.height, maxHeight);
+      if (clampedWidth !== current.width || clampedHeight !== current.height) {
+        onResize(current.id, clampedWidth, clampedHeight);
       }
       const maxX = Math.max(0, window.innerWidth - clampedWidth);
       const maxY = Math.max(0, window.innerHeight - clampedHeight);
-      const clampedX = Math.min(note.position_x, maxX);
-      const clampedY = Math.min(note.position_y, maxY);
-      if (clampedX !== note.position_x || clampedY !== note.position_y) {
-        onMove(note.id, clampedX, clampedY);
+      const clampedX = Math.min(current.position_x, maxX);
+      const clampedY = Math.min(current.position_y, maxY);
+      if (clampedX !== current.position_x || clampedY !== current.position_y) {
+        onMove(current.id, clampedX, clampedY);
       }
     }
     clampToViewport();
     window.addEventListener("resize", clampToViewport);
     return () => window.removeEventListener("resize", clampToViewport);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [note.id]);
+  }, [note.id, onMove, onResize]);
 
   function handleSaveClick(event: React.MouseEvent<HTMLButtonElement>) {
     event.stopPropagation();
