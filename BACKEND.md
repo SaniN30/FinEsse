@@ -277,8 +277,9 @@ advanced seeded School skill). Two genuinely new concepts:
   never directly readable; students read via `modeling_exercises_public`
   (owned by the migration role, omits `rubric`, and — unlike
   `quiz_questions_public`, which relies on `quizzes_select`'s RLS policy for
-  gating — embeds its own published/tier check directly in the view
-  definition, since there's no separate gating table to lean on).
+  gating — embeds its own published check directly in the view definition,
+  since there's no separate gating table to lean on; not tier-gated, per the
+  same content-reads change as `lessons`/`quizzes` above).
 - `modeling_submissions` (`profile_id`, `exercise_id`, `submitted_values`
   jsonb, `score`, `passed`, `submitted_at`) — the per-student append-only
   submission log, same pattern as `quiz_attempts`.
@@ -490,9 +491,9 @@ RLS check and parent-dashboard query filters on it.
 `skill_attempts` and `xp_events` only have `select`/`insert` policies (no
 `update`/`delete`) to keep them genuinely append-only.
 
-`lessons`/`quizzes` are readable by any authenticated user whose own
-`profiles.tier` matches the underlying skill's tier, once `published`.
-`quiz_questions` has no policies at all (see above — read via
+`lessons`/`quizzes` are readable by any authenticated user, once
+`published` — not gated by `profiles.tier` (see AGENTS.md's "Content reads
+are no longer tier-gated" note). `quiz_questions` has no policies at all (see above — read via
 `quiz_questions_public` instead). `quiz_attempts` is append-only and has a
 `select` policy only (`is_own_or_linked_profile`) — no `insert`/`update`/
 `delete` policy for `authenticated` at all. Rows are written exclusively by

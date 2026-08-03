@@ -649,6 +649,71 @@ genuinely distinct bugs, both now fixed:
   start working once that migration reconciliation lands, with no Practice-side change
   needed.
 
+## Job-Ready "0 lessons" recurrence: `profiles.tier` was permanent, no way to change it (2026-08-02)
+
+The captain re-reported the same "Job-Ready shows 0 lessons / blank lesson page" symptom
+immediately after the fix above (PR #34) had merged. Content/RLS/migration state were all
+re-verified correct at the DB level (23 Job-Ready skills, all with a published lesson;
+migration `00000000000072` genuinely applied) — the previous fix (tier `SelectField` at
+`/create-student`) only affects *new* student creation and does nothing for accounts
+already created. There was, and had never been, any way to change `profiles.tier` after
+creation anywhere in the app. Live query confirmed 111 students on `school`, 42 on
+`college`, only 2 on `job_ready` — so almost every real account is permanently stuck on
+whichever tier it started at, and any of those accounts browsing another tier reproduces
+exactly this symptom (skill cards render since `skills_select` has no tier gate; each
+shows "0 lessons" and a blank lesson-detail page since `lessons_select`/`quizzes_select`
+RLS requires `profiles.tier` to match). Reproduced directly: authenticated as a real
+school-tier student via password grant, `GET lessons?skill_id=eq.<job-ready skill>`
+returned `[]`.
+
+Fixed by adding a tier changer to the parent dashboard (`components/parent-dashboard/
+ChildRollupCard.tsx`'s tier badge is now a `<select>`, wired to
+`lib/parent-dashboard/queries.ts#updateChildTier`) rather than a backend/migration change —
+`profiles_update` RLS (`supabase/migrations/00000000000005_rls_policies.sql`) already lets
+a parent update their linked child's row, `tier` included, so this is a plain client-side
+`.update()`, no new RPC needed. Live-verified end-to-end: changed a real student's tier
+`job_ready` → `school` via this control, confirmed via direct REST query as that student
+that Job-Ready lessons became invisible (reproducing the bug on demand), then changed it
+back and confirmed the same student's `/job-ready/lessons` page rendered all 23 skill
+cards with their real lesson content again.
+
+**Environment note**: this worktree's local dev server can collide with another
+concurrently-running session's `npm run dev` on port 3000 — Next.js silently falls back to
+the next free port (3002 in this session) and only says so once in its own startup log, not
+in any error visible from a plain `curl localhost:3000` (which will happily hit the *other*
+session's server and return 200). Check the dev server's own log for the port it actually
+bound before pointing a browser at `localhost:3000` by assumption.
+
+## Content reads are no longer tier-gated (2026-08-02)
+
+Per explicit captain directive, `profiles.tier` no longer restricts *reading*
+lesson/quiz/modeling content at all -- any authenticated FinEsse account (any
+tier) can browse School, College, and Job-Ready lesson/quiz/modeling-exercise
+content. `supabase/migrations/00000000000076_remove_tier_gating_from_content_reads.sql`
+drops the `p.tier = s.tier` join from `lessons_select`/`quizzes_select` RLS and
+from the `modeling_exercises_public` view, replacing it with the same
+`auth.role() = 'authenticated'` gate `skills_select`/`roles_select`/
+`interview_questions_select` already used. `profiles.tier` still exists and
+still drives which tier a student's own dashboard/badges/mastery defaults to
+(see the parent-dashboard tier switcher above) -- it's just no longer a read
+gate. Write/progress-tracking RLS (`quiz_attempts`, `modeling_submissions`,
+`skill_attempts`, `xp_events`, `practice_attempts`, `profile_badges`,
+`lesson_completions`, `interview_sessions`) was untouched -- all of it is
+already scoped to `is_own_or_linked_profile(profile_id)`, unrelated to tier.
+Applied directly via the Management API (same reasoning as the migration-
+031/042/072 postmortems: `supabase db push` refuses to run here because this
+worktree's local migrations directory doesn't have the concurrently-pushed
+`00000000000070`/`71`/`75` files, and blindly running its suggested
+`migration repair` would misrepresent those other branches' history) --
+statements were sent to `POST /v1/projects/{ref}/database/query`
+**one at a time**; sending the whole multi-statement migration file (with its
+leading comment block) in one call returned success but silently applied
+nothing, so verify each DDL statement's effect with a follow-up read query
+before trusting a 201/`[]` response body. Live-verified: a real school-tier
+student browsing `/college/lessons` and `/job-ready/lessons` sees full lesson
+counts and real lesson content (not blank pages) on both tiers, not just their
+own.
+
 ## Lesson content presentation components
 
 - Lesson bodies can render as structured, tier-styled components instead of a

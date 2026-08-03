@@ -89,6 +89,14 @@ export default function ParentDashboardPage() {
     };
   }, [session]);
 
+  function handleTierChange(profileId: string, tier: ParentDashboardChild["tier"]) {
+    setChildren((prev) =>
+      prev
+        ? prev.map((child) => (child.profile_id === profileId ? { ...child, tier } : child))
+        : prev,
+    );
+  }
+
   if (loading || !session) {
     return null;
   }
@@ -134,7 +142,12 @@ export default function ParentDashboardPage() {
               <CombinedStatsStrip childProfiles={children} />
               <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 {children.map((child, index) => (
-                  <ChildRollupCard key={child.profile_id} child={child} index={index} />
+                  <ChildRollupCard
+                    key={child.profile_id}
+                    child={child}
+                    index={index}
+                    onTierChange={handleTierChange}
+                  />
                 ))}
               </div>
             </>
