@@ -41,7 +41,7 @@ describe("SignUpPage", () => {
     signUpParentMock.mockReset();
   });
 
-  it("submits parent details and redirects to consent on immediate session", async () => {
+  it("submits college signup details and redirects directly to college content (no parent/child flow)", async () => {
     signUpParentMock.mockResolvedValue({
       data: { userId: "parent-1", needsEmailConfirmation: false },
       error: null,
@@ -61,10 +61,10 @@ describe("SignUpPage", () => {
       institutionName: "State University",
       phoneNumber: "+15551234567",
     });
-    expect(pushMock).toHaveBeenCalledWith("/consent");
+    expect(pushMock).toHaveBeenCalledWith("/college");
   });
 
-  it("does not require an institution name for working professionals", async () => {
+  it("redirects working_professional signups to consent (parent/child flow)", async () => {
     signUpParentMock.mockResolvedValue({
       data: { userId: "parent-1", needsEmailConfirmation: false },
       error: null,
@@ -84,6 +84,29 @@ describe("SignUpPage", () => {
       expect.objectContaining({ educationLevel: "working_professional", institutionName: null }),
     );
     expect(pushMock).toHaveBeenCalledWith("/consent");
+  });
+
+  it("redirects school signups directly to school content (no parent/child flow)", async () => {
+    signUpParentMock.mockResolvedValue({
+      data: { userId: "parent-1", needsEmailConfirmation: false },
+      error: null,
+    });
+    const user = userEvent.setup();
+    render(<SignUpPage />);
+
+    await user.type(screen.getByLabelText("Your name"), "Jamie Parent");
+    await user.type(screen.getByLabelText("Email"), "jamie@example.com");
+    await user.type(screen.getByLabelText("Password"), "hunter2pass");
+    await user.type(screen.getByLabelText("Date of birth"), "1985-04-12");
+    await user.selectOptions(screen.getByLabelText("Education level"), "school");
+    await user.type(screen.getByLabelText("School or university"), "Riverside High");
+    await user.type(screen.getByLabelText("Phone number"), "+15551234567");
+    await user.click(screen.getByRole("button", { name: /sign up/i }));
+
+    expect(signUpParentMock).toHaveBeenCalledWith(
+      expect.objectContaining({ educationLevel: "school" }),
+    );
+    expect(pushMock).toHaveBeenCalledWith("/school");
   });
 
   it("rejects an invalid phone number before calling signUpParent", async () => {

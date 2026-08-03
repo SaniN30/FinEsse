@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/Button";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/lib/supabase/auth-context";
+import { isParentWithChildFlow } from "@/lib/supabase/profile-helpers";
 
 const links = [
   { href: "/school", label: "School" },
@@ -18,7 +19,7 @@ const links = [
 export function Nav() {
   const router = useRouter();
   const { session, profile, signOut } = useAuth();
-  const isParent = Boolean(session) && profile?.role !== "student";
+  const showParentDashboard = Boolean(session) && isParentWithChildFlow(profile);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -69,7 +70,7 @@ export function Nav() {
         <div className="hidden sm:flex">
           {session ? (
             <div className="flex items-center gap-3">
-              {isParent ? (
+              {showParentDashboard ? (
                 <a href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground">
                   Dashboard
                 </a>
@@ -112,7 +113,7 @@ export function Nav() {
           ))}
           {session ? (
             <>
-              {isParent ? (
+              {showParentDashboard ? (
                 <a
                   href="/dashboard"
                   className="rounded-lg px-2 py-3 transition-colors hover:bg-surface hover:text-foreground"

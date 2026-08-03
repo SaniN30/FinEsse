@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/supabase/auth-context";
+import { isParentWithChildFlow, tierBasePath } from "@/lib/supabase/profile-helpers";
 
 /**
  * Per finesse-page-plan.html, /dashboard is the parent's landing screen and
@@ -18,12 +19,19 @@ import { useAuth } from "@/lib/supabase/auth-context";
  */
 export default function DashboardPage() {
   const router = useRouter();
-  const { session, loading } = useAuth();
+  const { session, profile, loading } = useAuth();
 
   useEffect(() => {
     if (loading) return;
-    router.replace(session ? "/parent/dashboard" : "/login");
-  }, [loading, session, router]);
+    if (!session) {
+      router.replace("/login");
+      return;
+    }
+    // A school/college self-service account (see profile-helpers.ts) has no
+    // child to view an aggregate rollup for -- send it to its own tier
+    // content instead of the parent dashboard.
+    router.replace(isParentWithChildFlow(profile) ? "/parent/dashboard" : tierBasePath(profile?.tier ?? null));
+  }, [loading, session, profile, router]);
 
   return null;
 }

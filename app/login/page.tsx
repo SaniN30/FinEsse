@@ -8,6 +8,7 @@ import { FormField } from "@/components/auth/FormField";
 import { Button } from "@/components/Button";
 import { signInParent, ensureParentProfile } from "@/lib/supabase/auth-actions";
 import { useAuth } from "@/lib/supabase/auth-context";
+import { isParentWithChildFlow, tierBasePath } from "@/lib/supabase/profile-helpers";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,7 +40,10 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/dashboard");
+    const profile = profileResult.data;
+    router.push(
+      profile && isParentWithChildFlow(profile) ? "/dashboard" : tierBasePath(profile?.tier ?? null),
+    );
   }
 
   return (

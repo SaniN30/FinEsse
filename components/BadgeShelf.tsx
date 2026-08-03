@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { useAuth } from "@/lib/supabase/auth-context";
+import { isParentWithChildFlow } from "@/lib/supabase/profile-helpers";
 import type { ProfileBadge } from "@/lib/supabase/types";
 
 const BADGE_ICON: Record<string, string> = {
@@ -17,7 +18,7 @@ export function BadgeShelf() {
   const [badges, setBadges] = useState<ProfileBadge[] | null>(null);
 
   useEffect(() => {
-    if (!profile || profile.role !== "student") {
+    if (!profile || isParentWithChildFlow(profile)) {
       return;
     }
 
