@@ -1,21 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/Button";
 
+const DESKTOP_QUERY = "(min-width: 1024px)";
+
+function subscribeToDesktopQuery(onChange: () => void) {
+  const query = window.matchMedia(DESKTOP_QUERY);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+
 function useIsDesktop() {
-  const [isDesktop, setIsDesktop] = useState(false);
-
-  useEffect(() => {
-    const query = window.matchMedia("(min-width: 1024px)");
-    setIsDesktop(query.matches);
-    const handleChange = (event: MediaQueryListEvent) => setIsDesktop(event.matches);
-    query.addEventListener("change", handleChange);
-    return () => query.removeEventListener("change", handleChange);
-  }, []);
-
-  return isDesktop;
+  return useSyncExternalStore(
+    subscribeToDesktopQuery,
+    () => window.matchMedia(DESKTOP_QUERY).matches,
+    () => false,
+  );
 }
 
 const container = {
