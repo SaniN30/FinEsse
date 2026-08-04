@@ -639,10 +639,14 @@ genuinely distinct bugs, both now fixed:
 
 ## Free Practice mode (post-content-depth)
 
-- `/practice` (nav entry alongside School/College/Job-Ready) lets a signed-in student
-  browse and answer quiz/case-study questions from any tier outside the guided lesson
-  flow, plus browse (not yet answer inline) the interview-question bank. Built entirely
-  on the already-live College-depth schema (`quiz_questions.difficulty`/`question_type`/
+- `/practice` (nav entry alongside School/College/Job-Ready) lets any signed-in account —
+  student or parent, no role/tier gate — browse and answer quiz/case-study questions from
+  any tier outside the guided lesson flow, plus browse (not yet answer inline) the
+  interview-question bank. `app/practice/page.tsx` gates purely on `session` truthiness;
+  `practice_questions`/`grade_practice_attempt` never had a student-only restriction to
+  begin with (see below), so opening this to parents required only the frontend gate and
+  the tier-filter default (next bullet). Built entirely on the already-live College-depth
+  schema (`quiz_questions.difficulty`/`question_type`/
   `grading_keywords`/`min_keyword_matches`/`scenario_context`, `interview_questions.
   difficulty`) — it does **not** depend on `quizzes.quiz_type`/`scenario_body`/
   `context_tag` or `interview_questions.improvement_guide`, which are referenced by
@@ -673,8 +677,12 @@ genuinely distinct bugs, both now fixed:
   student. The `practice_questions` view (same migration) unions quiz- and
   interview-sourced questions for the browse/filter UI; it runs as the view owner
   (postgres), same pattern as `quiz_questions_public`, so — like that view — it is not
-  itself tier-restricted by RLS. `/practice` defaults its tier filter to the student's own
-  `profile.tier` client-side rather than relying on RLS to enforce it.
+  itself tier-restricted by RLS. `/practice` defaults its tier filter to the caller's own
+  `profile.tier` client-side, but only when `profile.role === "student"` — `profiles.tier`
+  has a `not null default 'school'` at the DB level
+  (`00000000000001_profiles_and_consent.sql`), so a parent profile's `tier` reads as the
+  literal string `"school"` too, not `null`; naively defaulting on `profile?.tier` would
+  silently restrict every parent to School. Non-student accounts start on "all tiers."
 - `00000000000071_seed_practice_case_studies.sql` adds 5 new case-study quizzes (one
   School MCQ-only — School's `components/school/QuizRunner.tsx` has no free_response
   support, so its case study avoids that question type — plus 2 College and 2 Job-Ready
