@@ -96,17 +96,23 @@ export function LessonDetail({ skillId, tier, quizBasePath, modelingBasePath }: 
       {skill ? <LessonHeading title={skill.title} /> : null}
 
       {lessons.map((lesson, index) => {
-        const blocks = lessonContentOverrides[lesson.skill_id];
+        const blocks = lessonContentOverrides[`${lesson.skill_id}:${lesson.order_index}`];
 
         return (
           <motion.article
             key={lesson.id}
+            id={`lesson-${lesson.id}`}
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.5, ease: EASE_OUT_QUART, delay: index * 0.06 }}
             className="rounded-[var(--radius-card)] border border-surface-border bg-surface p-6 shadow-soft"
           >
+            {lessons.length > 1 ? (
+              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Lesson {index + 1} of {lessons.length}
+              </p>
+            ) : null}
             {blocks ? (
               <LessonBlockList tier={tier} blocks={blocks} />
             ) : lesson.content_body ? (
