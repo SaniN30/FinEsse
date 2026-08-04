@@ -59,7 +59,9 @@ export function StickyNoteCard({
   // viewport is narrower than that, so it's never stuck off-screen and
   // undraggable on a phone.
   const noteGeometryRef = useRef(note);
-  noteGeometryRef.current = note;
+  useEffect(() => {
+    noteGeometryRef.current = note;
+  }, [note]);
 
   useEffect(() => {
     function clampToViewport() {

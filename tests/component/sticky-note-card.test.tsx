@@ -121,4 +121,32 @@ describe("StickyNoteCard", () => {
     expect(onContentChange).toHaveBeenCalledWith("note-1", "buy milk");
     expect(await screen.findByText(/saved/i)).toBeInTheDocument();
   });
+
+  it("clamps a note positioned off-screen on a desktop viewport back on-screen for a narrow (phone) viewport", () => {
+    const originalInnerWidth = window.innerWidth;
+    const originalInnerHeight = window.innerHeight;
+    Object.defineProperty(window, "innerWidth", { configurable: true, value: 390 });
+    Object.defineProperty(window, "innerHeight", { configurable: true, value: 844 });
+
+    const onMove = vi.fn();
+    const onResize = vi.fn();
+    // Saved from a wide desktop viewport: dragged near the right/bottom edge,
+    // far outside a 390px-wide phone viewport.
+    const note = makeNote({ position_x: 900, position_y: 700, width: 240, height: 220 });
+
+    render(
+      <StickyNoteCard
+        note={note}
+        onMove={onMove}
+        onResize={onResize}
+        onContentChange={vi.fn()}
+        onDelete={vi.fn()}
+      />,
+    );
+
+    expect(onMove).toHaveBeenCalledWith("note-1", 390 - 240, 844 - 220);
+
+    Object.defineProperty(window, "innerWidth", { configurable: true, value: originalInnerWidth });
+    Object.defineProperty(window, "innerHeight", { configurable: true, value: originalInnerHeight });
+  });
 });
