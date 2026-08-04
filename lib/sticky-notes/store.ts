@@ -50,9 +50,10 @@ async function loadFromServer(profileId: string): Promise<void> {
   const fetched = await fetchStickyNotes();
 
   const fetchedIds = new Set(fetched.map((note) => note.id));
-  const missingLocalCreates = createdSinceLoadStarted.filter(
-    (note) => !fetchedIds.has(note.id) && !deletedSinceLoadStarted.has(note.id),
-  );
+  const currentNotesById = new Map((notes ?? []).map((note) => [note.id, note]));
+  const missingLocalCreates = createdSinceLoadStarted
+    .filter((note) => !fetchedIds.has(note.id) && !deletedSinceLoadStarted.has(note.id))
+    .map((note) => currentNotesById.get(note.id) ?? note);
   notes = [...missingLocalCreates, ...fetched].filter(
     (note) => !deletedSinceLoadStarted.has(note.id),
   );
