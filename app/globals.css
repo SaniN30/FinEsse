@@ -70,8 +70,11 @@
   --surface-border: var(--color-neutral-200);
   /* Secondary/muted text — flips scale step per theme so it stays >= 4.5:1
      against --background/--surface in both light and dark (neutral-500/600
-     fixed-value text used to drop to ~2.3-3.5:1 on dark surfaces). */
-  --muted-foreground: var(--color-neutral-500);
+     fixed-value text used to drop to ~2.3-3.5:1 on dark surfaces).
+     neutral-500 itself only cleared ~4.4:1 against --background here (just
+     under the 4.5:1 AA floor for normal-weight text), which read as washed
+     out — neutral-600 clears 7.5:1 instead. */
+  --muted-foreground: var(--color-neutral-600);
 
   /* Level-card tier panels — theme-aware so heading text (which uses
      --foreground) stays legible: light panels stay pastel-on-dark-ink here,
