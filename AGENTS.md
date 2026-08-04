@@ -840,6 +840,36 @@ own.
   "New savings goal" form, parent dashboard, settings, notes), came back clean.
   Desktop layout was spot-checked unchanged at 1440px after these fixes.
 
+## Job-Ready had no Pocket Money Planner route at all (2026-08-04)
+
+- Re-investigated a recurring "Pocket Money Planner not visible" report by signing in as
+  the actual reporting account (a real, confirmed `auth.users` row — an earlier session's
+  "no matching account" finding was stale) via an admin-generated magiclink `token_hash`
+  exchanged through `/auth/v1/verify` (no password change needed) and injecting the
+  resulting session into the `sb-<ref>-auth-token` localStorage key against the live
+  production Vercel URL (`gh api repos/<org>/<repo>/deployments` — not a fixed domain, look
+  it up per session). For that account (tier `school`) the planner rendered correctly on
+  desktop and mobile, both on `/` and `/school/pocket-money` — genuinely empty ($0.00, no
+  goals), matching the earlier postmortem's "fresh account empty state" theory, not a
+  rendering bug.
+- Checking all three tier landing pages the task brief asked for surfaced a real,
+  independent bug though: unlike `/school` and `/college` (each with a "Pocket Money
+  Planner →" link to their own `/pocket-money` route, added for College by the
+  College-depth-pass-2 postmortem above), `/job-ready` had no such link and
+  `app/job-ready/pocket-money/` didn't exist — `PocketMoneyPlanner` itself is tier-agnostic
+  and would have worked fine there too, it was just never wired up when the Job-Ready
+  lesson track landed. Since content reads are no longer tier-gated and real accounts do
+  exist on the `job_ready` tier, this is a genuine "planner missing" case for that segment.
+  Fixed by adding `app/job-ready/pocket-money/page.tsx` (identical to School/College's) and
+  a matching CTA link on `app/job-ready/page.tsx`.
+- Account-tier mismatches are still possible for accounts created before the signup
+  role-gate feature (`isParentWithChildFlow`/`educationLevelToTier` above) existed —
+  `profiles.tier` was left at the schema default regardless of `education_level` for
+  anyone who signed up earlier. Not fixed here (no user-reported symptom pointed at it,
+  and it's a data backfill decision, not a code bug) — worth a one-off backfill query if a
+  future report describes tier/institution content mismatching what a student picked at
+  signup.
+
 ## Lesson page heading/interactivity treatment
 
 - Per-topic lesson pages (School's `components/school/LessonDetail.tsx` and the
