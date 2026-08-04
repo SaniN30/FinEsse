@@ -1,16 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { getCurrentSourceLabel } from "@/lib/sticky-notes/source";
 import {
-  createStickyNote,
-  deleteStickyNote,
-  fetchStickyNotes,
-  updateStickyNote,
-} from "@/lib/sticky-notes/queries";
-import type { StickyNote } from "@/lib/supabase/types";
+  clearStickyNotesStore,
+  createStickyNoteShared,
+  deleteStickyNoteShared,
+  ensureStickyNotesLoaded,
+  getStickyNotesSnapshot,
+  subscribeStickyNotes,
+  updateStickyNoteShared,
+} from "@/lib/sticky-notes/store";
 import { StickyNoteCard } from "@/components/sticky-notes/StickyNoteCard";
 
 const NEW_NOTE_OFFSET = 32;
@@ -18,55 +20,41 @@ const NEW_NOTE_OFFSET = 32;
 export function StickyNotesWidget() {
   const { session } = useAuth();
   const pathname = usePathname();
-  const [notes, setNotes] = useState<StickyNote[] | null>(null);
+  const notes = useSyncExternalStore(subscribeStickyNotes, getStickyNotesSnapshot, () => null);
 
   useEffect(() => {
-    if (!session) return;
-    let isMounted = true;
-    fetchStickyNotes().then((data) => {
-      if (isMounted) setNotes(data);
-    });
-    return () => {
-      isMounted = false;
-    };
+    if (!session) {
+      clearStickyNotesStore();
+      return;
+    }
+    ensureStickyNotesLoaded(session.user.id);
   }, [session]);
 
   const handleCreate = useCallback(async () => {
     if (!session) return;
     const offset = ((notes?.length ?? 0) % 6) * NEW_NOTE_OFFSET;
-    const created = await createStickyNote({
+    await createStickyNoteShared({
       profileId: session.user.id,
       source: getCurrentSourceLabel(pathname),
       positionX: 24 + offset,
       positionY: 96 + offset,
     });
-    setNotes((prev) => [created, ...(prev ?? [])]);
   }, [session, notes, pathname]);
 
   const handleMove = useCallback((id: string, x: number, y: number) => {
-    setNotes((prev) =>
-      (prev ?? []).map((note) => (note.id === id ? { ...note, position_x: x, position_y: y } : note)),
-    );
-    void updateStickyNote(id, { positionX: x, positionY: y });
+    updateStickyNoteShared(id, { positionX: x, positionY: y });
   }, []);
 
   const handleResize = useCallback((id: string, width: number, height: number) => {
-    setNotes((prev) =>
-      (prev ?? []).map((note) => (note.id === id ? { ...note, width, height } : note)),
-    );
-    void updateStickyNote(id, { width, height });
+    updateStickyNoteShared(id, { width, height });
   }, []);
 
   const handleContentChange = useCallback((id: string, content: string) => {
-    setNotes((prev) =>
-      (prev ?? []).map((note) => (note.id === id ? { ...note, content } : note)),
-    );
-    void updateStickyNote(id, { content });
+    updateStickyNoteShared(id, { content });
   }, []);
 
   const handleDelete = useCallback((id: string) => {
-    setNotes((prev) => (prev ?? []).filter((note) => note.id !== id));
-    void deleteStickyNote(id);
+    deleteStickyNoteShared(id);
   }, []);
 
   if (!session) return null;

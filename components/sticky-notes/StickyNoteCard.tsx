@@ -29,6 +29,17 @@ export function StickyNoteCard({
   const resizeState = useRef<{ startX: number; startY: number; originWidth: number; originHeight: number } | null>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // This card stays mounted across client-side navigation (the widget lives in the root
+  // layout), so an edit made elsewhere (e.g. the All Notes page) arrives here as a prop
+  // change, not a remount. Resetting local state from a prop change during render (rather
+  // than in an effect) is React's documented pattern for this — see
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes.
+  const [prevNoteContent, setPrevNoteContent] = useState(note.content);
+  if (note.content !== prevNoteContent) {
+    setPrevNoteContent(note.content);
+    setContent(note.content);
+  }
+
   useEffect(() => {
     if (content === note.content) return;
     debounceRef.current = setTimeout(() => onContentChange(note.id, content), 500);

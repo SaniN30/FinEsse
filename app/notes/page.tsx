@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Nav } from "@/components/Nav";
 import { useAuth } from "@/lib/supabase/auth-context";
 import {
-  deleteStickyNote,
-  fetchStickyNotes,
-  updateStickyNote,
-} from "@/lib/sticky-notes/queries";
+  clearStickyNotesStore,
+  deleteStickyNoteShared,
+  ensureStickyNotesLoaded,
+  getStickyNotesSnapshot,
+  subscribeStickyNotes,
+  updateStickyNoteShared,
+} from "@/lib/sticky-notes/store";
 import { getSourceTitle } from "@/lib/sticky-notes/source";
 import type { StickyNote } from "@/lib/supabase/types";
 
@@ -22,12 +25,99 @@ function formatTimestamp(iso: string): string {
   });
 }
 
+interface NoteListItemProps {
+  note: StickyNote;
+  onDelete: (id: string) => void;
+}
+
+/**
+ * Buffers edits in local state (like StickyNoteCard's textarea) rather than binding
+ * the textarea directly to the shared store: a fully store-controlled value here would
+ * be raced by every store notify() while typing, silently discarding keystrokes before
+ * Save ever sees them.
+ */
+function NoteListItem({ note, onDelete }: NoteListItemProps) {
+  const [content, setContent] = useState(note.content);
+  const [justSaved, setJustSaved] = useState(false);
+  const savedTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // This row stays mounted across shared-store updates from elsewhere (e.g. an edit made
+  // in the widget), so it needs to resync when note.content changes underneath it.
+  // Resetting local state from a prop change during render (rather than in an effect) is
+  // React's documented pattern — see
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes.
+  const [prevNoteContent, setPrevNoteContent] = useState(note.content);
+  if (note.content !== prevNoteContent) {
+    setPrevNoteContent(note.content);
+    setContent(note.content);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (savedTimeout.current) clearTimeout(savedTimeout.current);
+    };
+  }, []);
+
+  function handleBlur() {
+    if (content === note.content) return;
+    updateStickyNoteShared(note.id, { content });
+  }
+
+  function handleSaveClick() {
+    updateStickyNoteShared(note.id, { content });
+    setJustSaved(true);
+    if (savedTimeout.current) clearTimeout(savedTimeout.current);
+    savedTimeout.current = setTimeout(() => setJustSaved(false), SAVED_FLASH_MS);
+  }
+
+  return (
+    <li className="rounded-[var(--radius-card)] border-2 border-foreground bg-surface p-5 shadow-[var(--shadow-offset)]">
+      <div className="mb-3 flex items-center justify-between gap-4">
+        <span className="truncate font-display text-lg font-semibold text-foreground">
+          {getSourceTitle(note.source)}
+        </span>
+        <div className="flex shrink-0 items-center gap-3">
+          <span className="text-xs text-muted-foreground">{formatTimestamp(note.created_at)}</span>
+          <button
+            type="button"
+            aria-label="Save note"
+            onClick={handleSaveClick}
+            className="text-xs font-medium text-foreground/70 transition-colors hover:text-foreground"
+          >
+            {justSaved ? (
+              <span className="text-primary-500" aria-live="polite">
+                ✓ Saved
+              </span>
+            ) : (
+              "Save"
+            )}
+          </button>
+          <button
+            type="button"
+            aria-label="Delete note"
+            onClick={() => onDelete(note.id)}
+            className="text-xs font-medium text-foreground/70 transition-colors hover:text-foreground"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+      <textarea
+        value={content}
+        onChange={(event) => setContent(event.target.value)}
+        onBlur={handleBlur}
+        placeholder="Write a note…"
+        rows={3}
+        className="w-full resize-y rounded-lg bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+      />
+    </li>
+  );
+}
+
 export default function AllNotesPage() {
   const router = useRouter();
   const { session, loading } = useAuth();
-  const [notes, setNotes] = useState<StickyNote[] | null>(null);
-  const [savedIds, setSavedIds] = useState<Record<string, boolean>>({});
-  const savedTimeouts = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const notes = useSyncExternalStore(subscribeStickyNotes, getStickyNotesSnapshot, () => null);
 
   useEffect(() => {
     if (!loading && !session) {
@@ -36,37 +126,15 @@ export default function AllNotesPage() {
   }, [loading, session, router]);
 
   useEffect(() => {
-    if (!session) return;
-    fetchStickyNotes().then(setNotes);
+    if (!session) {
+      clearStickyNotesStore();
+      return;
+    }
+    ensureStickyNotesLoaded(session.user.id);
   }, [session]);
 
-  useEffect(() => {
-    const timeouts = savedTimeouts.current;
-    return () => {
-      Object.values(timeouts).forEach(clearTimeout);
-    };
-  }, []);
-
-  function handleContentChange(id: string, content: string) {
-    setNotes((prev) => (prev ?? []).map((note) => (note.id === id ? { ...note, content } : note)));
-  }
-
-  function handleContentBlur(id: string, content: string) {
-    void updateStickyNote(id, { content });
-  }
-
-  function handleSaveClick(id: string, content: string) {
-    void updateStickyNote(id, { content });
-    setSavedIds((prev) => ({ ...prev, [id]: true }));
-    if (savedTimeouts.current[id]) clearTimeout(savedTimeouts.current[id]);
-    savedTimeouts.current[id] = setTimeout(() => {
-      setSavedIds((prev) => ({ ...prev, [id]: false }));
-    }, SAVED_FLASH_MS);
-  }
-
   function handleDelete(id: string) {
-    setNotes((prev) => (prev ?? []).filter((note) => note.id !== id));
-    void deleteStickyNote(id);
+    deleteStickyNoteShared(id);
   }
 
   if (loading || !session) {
@@ -96,51 +164,7 @@ export default function AllNotesPage() {
           ) : (
             <ul className="space-y-4">
               {notes.map((note) => (
-                <li
-                  key={note.id}
-                  className="rounded-[var(--radius-card)] border-2 border-foreground bg-surface p-5 shadow-[var(--shadow-offset)]"
-                >
-                  <div className="mb-3 flex items-center justify-between gap-4">
-                    <span className="truncate font-display text-lg font-semibold text-foreground">
-                      {getSourceTitle(note.source)}
-                    </span>
-                    <div className="flex shrink-0 items-center gap-3">
-                      <span className="text-xs text-muted-foreground">
-                        {formatTimestamp(note.created_at)}
-                      </span>
-                      <button
-                        type="button"
-                        aria-label="Save note"
-                        onClick={() => handleSaveClick(note.id, note.content)}
-                        className="text-xs font-medium text-foreground/70 transition-colors hover:text-foreground"
-                      >
-                        {savedIds[note.id] ? (
-                          <span className="text-primary-500" aria-live="polite">
-                            ✓ Saved
-                          </span>
-                        ) : (
-                          "Save"
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        aria-label="Delete note"
-                        onClick={() => handleDelete(note.id)}
-                        className="text-xs font-medium text-foreground/70 transition-colors hover:text-foreground"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                  <textarea
-                    value={note.content}
-                    onChange={(event) => handleContentChange(note.id, event.target.value)}
-                    onBlur={(event) => handleContentBlur(note.id, event.target.value)}
-                    placeholder="Write a note…"
-                    rows={3}
-                    className="w-full resize-y rounded-lg bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-                  />
-                </li>
+                <NoteListItem key={note.id} note={note} onDelete={handleDelete} />
               ))}
             </ul>
           )}
