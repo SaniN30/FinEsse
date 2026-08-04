@@ -196,7 +196,11 @@ export type BadgeCriteriaType =
   | "first_lesson_completed"
   | "first_quiz_passed"
   | "first_modeling_exercise_passed"
-  | "tier_completed";
+  | "tier_completed"
+  | "first_mock_interview"
+  | "perfect_quiz_score"
+  | "streak_3_day"
+  | "streak_7_day";
 
 export interface Badge {
   id: string;
@@ -212,18 +216,6 @@ export interface ProfileBadge {
   badge_id: string;
   awarded_at: string;
   badges: Badge;
-}
-
-export interface EarnedBadgeInfo {
-  slug: string;
-  title: string;
-  description: string;
-  icon: string;
-}
-
-/** One row per earned badge, from `profile_badges` joined to `badges`. */
-export interface EarnedBadge extends EarnedBadgeInfo {
-  earned_at: string;
 }
 
 export interface StickyNote {

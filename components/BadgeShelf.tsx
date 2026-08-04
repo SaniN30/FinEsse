@@ -11,6 +11,10 @@ const BADGE_ICON: Record<string, string> = {
   first_quiz_passed: "🧠",
   first_modeling_exercise_passed: "📊",
   tier_completed: "🏆",
+  first_mock_interview: "🎤",
+  perfect_quiz_score: "💯",
+  streak_3_day: "🔥",
+  streak_7_day: "⚡",
 };
 
 export function BadgeShelf() {

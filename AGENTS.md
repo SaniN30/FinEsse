@@ -481,6 +481,48 @@ class of report recurs.
   migration-not-applied issue was found specific to College this time (all tiers use the same
   `p.tier = s.tier` RLS join pattern).
 
+## Milestone badge system completion (2026-08-04)
+
+- The generic `badges`/`profile_badges`/`award_badge` machinery from
+  `00000000000046_college_depth_schema_extensions.sql` (tier-agnostic,
+  `criteria_type`-keyed, idempotent via `on conflict (profile_id, badge_id) do
+  nothing`) already covered first-lesson/first-quiz/first-modeling-exercise/
+  tier-completed/first-mock-interview live. `00000000000075_milestone_badges_
+  streak_and_perfect_score.sql` adds the two remaining milestone types from
+  the badge-system brief — `perfect_quiz_score` (in `grade_quiz_attempt`, on
+  `v_score = 1`) and consecutive-day activity streaks (`streak_3_day`/
+  `streak_7_day`, via new `check_and_award_streak(profile_id)`, called from
+  `grade_quiz_attempt`, `mark_lesson_complete`, and `grade_modeling_submission`
+  on every qualifying action) — same additive `criteria_type` enum extension
+  pattern, no schema redesign. Streak is computed live from the union of
+  `lesson_completions`/`quiz_attempts`/`modeling_submissions` timestamps
+  (`distinct ...::date`, walked backward from `current_date` until a gap),
+  not a separate tracking table.
+- An earlier, never-applied local migration file
+  (`00000000000043_quiz_case_study_badges_schema.sql`, slug-keyed, `icon`
+  column, no `criteria_type` — a different, incompatible shape) was deleted
+  rather than reconciled: it never actually ran against the live project (the
+  live `00000000000043` slot was independently claimed by the sticky-notes
+  migration, see the postmortem above), so `00000000000046`'s schema is the
+  only badges schema that was ever live. Its dead frontend counterpart
+  (`components/badges/BadgeShelf.tsx`, `lib/badges/queries.ts`) was removed
+  too — `components/BadgeShelf.tsx` (mounted on all three tier landing pages,
+  `app/{school,college,job-ready}/page.tsx`) is the one live implementation,
+  with a `BADGE_ICON` map covering all 8 `criteria_type` values.
+  `components/school/LessonDetail.tsx` was missing the `mark_lesson_complete`
+  RPC call that College/Job-Ready's shared `components/lessons/LessonDetail.tsx`
+  already had — added, so School's first-lesson badge now fires too.
+- Live-verified end-to-end via a real signup→consent→create-student→
+  password-grant flow (same disposable-account pattern as prior postmortems)
+  plus `chrome-devtools-axi`: a real School-tier student earned
+  first_lesson_completed after opening one lesson, first_quiz_passed +
+  perfect_quiz_score after a 100%-score `grade_quiz_attempt` call, and (via
+  backdated `quiz_attempts.attempted_at` rows plus a direct
+  `check_and_award_streak` call, since a real multi-day wait isn't feasible
+  in one session) streak_3_day and streak_7_day — all 5 rendered correctly
+  with distinct icons/labels on `/school`, and retaking the same quiz did not
+  re-award any badge (`profile_badges` row count per slug stayed at 1).
+
 ## Sticky notes widget
 
 - A global, draggable/resizable sticky-note widget (`components/sticky-notes/`)
