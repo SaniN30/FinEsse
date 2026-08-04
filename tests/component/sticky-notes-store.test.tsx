@@ -10,12 +10,14 @@ vi.mock("@/lib/sticky-notes/queries", () => ({
 
 import {
   clearStickyNotesStore,
+  createStickyNoteShared,
   deleteStickyNoteShared,
   ensureStickyNotesLoaded,
   getStickyNotesSnapshot,
   updateStickyNoteShared,
 } from "@/lib/sticky-notes/store";
 import {
+  createStickyNote,
   deleteStickyNote,
   fetchStickyNotes,
   updateStickyNote,
@@ -70,5 +72,51 @@ describe("sticky notes shared store", () => {
     expect(snapshot?.some((n) => n.id === "note-1")).toBe(false);
     expect(snapshot?.some((n) => n.id === "note-2")).toBe(true);
     expect(deleteStickyNote).toHaveBeenCalledWith("note-1");
+  });
+
+  it("keeps a note created while the initial load is still in flight, instead of the fetch response wiping it out on arrival", async () => {
+    let resolveFetch: (notes: StickyNote[]) => void = () => {};
+    vi.mocked(fetchStickyNotes).mockReturnValue(
+      new Promise((resolve) => {
+        resolveFetch = resolve;
+      }),
+    );
+    const created = makeNote({ id: "note-new", content: "written before load resolved" });
+    vi.mocked(createStickyNote).mockResolvedValue(created);
+
+    ensureStickyNotesLoaded("profile-1");
+    // The fetch this triggered is still pending -- simulates a real create/save race
+    // against network latency, which is exactly what a page-reload snapshot masks.
+    await createStickyNoteShared({
+      profileId: "profile-1",
+      source: "/dashboard",
+      positionX: 24,
+      positionY: 24,
+    });
+    expect(getStickyNotesSnapshot()?.some((n) => n.id === "note-new")).toBe(true);
+
+    resolveFetch([makeNote({ id: "note-old" })]);
+    await vi.waitFor(() =>
+      expect(getStickyNotesSnapshot()?.some((n) => n.id === "note-old")).toBe(true),
+    );
+
+    expect(getStickyNotesSnapshot()?.some((n) => n.id === "note-new")).toBe(true);
+  });
+
+  it("reverts an optimistic edit if the server update actually fails, rather than leaving the UI showing unsaved content as saved", async () => {
+    vi.mocked(fetchStickyNotes).mockResolvedValue([makeNote({ content: "original" })]);
+    vi.mocked(updateStickyNote).mockRejectedValue(new Error("network error"));
+
+    ensureStickyNotesLoaded("profile-1");
+    await vi.waitFor(() => expect(getStickyNotesSnapshot()).not.toBeNull());
+
+    updateStickyNoteShared("note-1", { content: "edited but will fail to save" });
+    expect(getStickyNotesSnapshot()?.find((n) => n.id === "note-1")?.content).toBe(
+      "edited but will fail to save",
+    );
+
+    await vi.waitFor(() =>
+      expect(getStickyNotesSnapshot()?.find((n) => n.id === "note-1")?.content).toBe("original"),
+    );
   });
 });

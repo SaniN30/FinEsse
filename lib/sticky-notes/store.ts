@@ -22,6 +22,15 @@ let loadedForProfileId: string | null = null;
 let inFlight: Promise<void> | null = null;
 const listeners = new Set<Listener>();
 
+/**
+ * Ids created/deleted locally while a loadFromServer() fetch is in flight. The fetch's
+ * response reflects a server snapshot taken when the request was sent, so it can resolve
+ * after — and silently overwrite — a create/delete that happened during the round trip.
+ * Reconciled against the fetch result in loadFromServer rather than assigning it directly.
+ */
+let createdSinceLoadStarted: StickyNote[] = [];
+let deletedSinceLoadStarted = new Set<string>();
+
 function notify(): void {
   listeners.forEach((listener) => listener());
 }
@@ -36,7 +45,17 @@ export function getStickyNotesSnapshot(): StickyNote[] | null {
 }
 
 async function loadFromServer(profileId: string): Promise<void> {
-  notes = await fetchStickyNotes();
+  createdSinceLoadStarted = [];
+  deletedSinceLoadStarted = new Set();
+  const fetched = await fetchStickyNotes();
+
+  const fetchedIds = new Set(fetched.map((note) => note.id));
+  const missingLocalCreates = createdSinceLoadStarted.filter(
+    (note) => !fetchedIds.has(note.id) && !deletedSinceLoadStarted.has(note.id),
+  );
+  notes = [...missingLocalCreates, ...fetched].filter(
+    (note) => !deletedSinceLoadStarted.has(note.id),
+  );
   loadedForProfileId = profileId;
   notify();
 }
@@ -57,6 +76,7 @@ export function clearStickyNotesStore(): void {
 
 export async function createStickyNoteShared(input: CreateStickyNoteInput): Promise<StickyNote> {
   const created = await createStickyNote(input);
+  if (inFlight) createdSinceLoadStarted = [created, ...createdSinceLoadStarted];
   notes = [created, ...(notes ?? [])];
   notify();
   return created;
@@ -80,12 +100,23 @@ export function patchStickyNoteLocal(id: string, input: UpdateStickyNoteInput): 
   notify();
 }
 
+/**
+ * A failed update must not leave the UI showing a "Saved" state for content the server
+ * never received — reverting the optimistic patch on rejection surfaces the loss instead
+ * of silently diverging from what's actually persisted.
+ */
 export function updateStickyNoteShared(id: string, input: UpdateStickyNoteInput): void {
+  const previous = (notes ?? []).find((note) => note.id === id);
   patchStickyNoteLocal(id, input);
-  void updateStickyNote(id, input);
+  updateStickyNote(id, input).catch(() => {
+    if (!previous) return;
+    notes = (notes ?? []).map((note) => (note.id === id ? previous : note));
+    notify();
+  });
 }
 
 export function deleteStickyNoteShared(id: string): void {
+  if (inFlight) deletedSinceLoadStarted.add(id);
   notes = (notes ?? []).filter((note) => note.id !== id);
   notify();
   void deleteStickyNote(id);

@@ -532,9 +532,8 @@ class of report recurs.
   CRUD against the `sticky_notes` table (migration
   `00000000000050_sticky_notes.sql`; RLS contract documented in `BACKEND.md`'s
   Row Level Security section). The "All Notes" page (`app/notes`, linked from `Nav`) lists the same rows
-  newest-first and shares the same query module, so edits/deletes from either
-  surface are consistent (not live-synced — each surface re-fetches on its
-  own mount). Drag/resize is implemented with plain pointer events (no drag
+  newest-first and shares the same query module and live-synced store (see next
+  bullet). Drag/resize is implemented with plain pointer events (no drag
   library) on `StickyNoteCard.tsx`; any interactive control nested inside the
   draggable header (e.g. the Save/delete buttons) must call
   `event.stopPropagation()` on `onPointerDown`, or the header's
@@ -555,6 +554,23 @@ class of report recurs.
   during render when it changes (React's prop-change pattern, not a
   `useEffect` — `react-hooks/set-state-in-effect` flags the effect form) or
   edits made elsewhere silently stop reaching an already-mounted card.
+- **A note created/deleted while the store's initial `ensureStickyNotesLoaded` fetch
+  is still in flight could be silently wiped when that fetch resolved** (PR #40 fixed
+  cross-surface sync but missed this): `loadFromServer` unconditionally replaced the
+  shared `notes` array with the fetch response, but that response reflects a server
+  snapshot from when the request was sent — if a create/delete happened during the
+  round trip, the response won't include it, and assigning it wholesale drops the
+  optimistic change from the UI even though it's genuinely persisted (create) or not
+  yet actually deleted server-side (delete). Most likely to bite the very first note a
+  user creates right after login, before the initial load resolves — exactly matching
+  a "click Save doesn't make it show up" report with real network latency, though hard
+  to reproduce on localhost where the round trip is too fast to race. Fixed in
+  `lib/sticky-notes/store.ts` by tracking notes created/deleted while a load is in
+  flight (`createdSinceLoadStarted`/`deletedSinceLoadStarted`) and reconciling them
+  against the fetch result instead of overwriting. `updateStickyNoteShared` also now
+  reverts its optimistic patch if the server update actually rejects, so a failed save
+  can't leave the UI showing content as saved that never reached the database.
+  Regression coverage: `tests/component/sticky-notes-store.test.tsx`.
 
 ## "College/Job-Ready 0 lessons" + missing Job-Ready content-depth — root causes and fix (2026-08-02)
 
