@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "@/lib/supabase/auth-context";
+import { isParentWithChildFlow } from "@/lib/supabase/profile-helpers";
 import { fetchAccountBalances, fetchSavingsGoalProgress } from "@/lib/pocket-money/queries";
 import { SavingsGoalCard } from "@/components/pocket-money/SavingsGoalCard";
 import { CreateGoalForm } from "@/components/pocket-money/CreateGoalForm";
@@ -62,7 +63,7 @@ function StudentPlanner({ profileId }: { profileId: string }) {
 export function PocketMoneyPlanner() {
   const { profile, loading: isLoading } = useAuth();
 
-  if (isLoading || (profile && profile.role === "student")) {
+  if (isLoading || (profile && !isParentWithChildFlow(profile))) {
     return (
       <motion.section
         initial={{ opacity: 0, y: 32 }}
@@ -83,7 +84,7 @@ export function PocketMoneyPlanner() {
     );
   }
 
-  if (profile && profile.role === "parent") {
+  if (profile && isParentWithChildFlow(profile)) {
     return (
       <motion.section
         initial={{ opacity: 0, y: 32 }}

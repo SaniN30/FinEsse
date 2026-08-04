@@ -8,6 +8,7 @@ import { Button } from "@/components/Button";
 import { Skeleton } from "@/components/Skeleton";
 import { ChildRollupCard } from "@/components/parent-dashboard/ChildRollupCard";
 import { useAuth } from "@/lib/supabase/auth-context";
+import { isParentWithChildFlow, tierBasePath } from "@/lib/supabase/profile-helpers";
 import { fetchParentDashboardChildren } from "@/lib/parent-dashboard/queries";
 import type { ParentDashboardChild } from "@/lib/supabase/types";
 
@@ -60,15 +61,22 @@ function ChildRollupSkeleton() {
 
 export default function ParentDashboardPage() {
   const router = useRouter();
-  const { session, loading } = useAuth();
+  const { session, profile, loading } = useAuth();
   const [children, setChildren] = useState<ParentDashboardChild[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!loading && !session) {
+    if (loading) return;
+    if (!session) {
       router.replace("/login");
+      return;
     }
-  }, [loading, session, router]);
+    // A school/college self-service account has no child flow -- this page
+    // isn't a valid destination for it even by direct URL.
+    if (profile && !isParentWithChildFlow(profile)) {
+      router.replace(tierBasePath(profile.tier ?? null));
+    }
+  }, [loading, session, profile, router]);
 
   useEffect(() => {
     if (!session) return;
@@ -97,7 +105,7 @@ export default function ParentDashboardPage() {
     );
   }
 
-  if (loading || !session) {
+  if (loading || !session || (profile && !isParentWithChildFlow(profile))) {
     return null;
   }
 

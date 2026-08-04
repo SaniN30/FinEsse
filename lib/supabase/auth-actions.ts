@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase/client";
+import { educationLevelToTier } from "@/lib/supabase/profile-helpers";
 import type { EducationLevel, Profile } from "@/lib/supabase/types";
 
 export interface ActionResult<T> {
@@ -24,7 +25,7 @@ interface ParentProfileFields {
   phoneNumber?: string | null;
 }
 
-const PROFILE_SELECT = "id, role, parent_id, tier, display_name" as const;
+const PROFILE_SELECT = "id, role, parent_id, tier, display_name, education_level" as const;
 
 /** Postgres unique_violation -- see idx_profiles_phone_number_unique. */
 const UNIQUE_VIOLATION = "23505";
@@ -43,6 +44,11 @@ async function insertParentProfile(
       education_level: fields.educationLevel ?? null,
       institution_name: fields.institutionName ?? null,
       phone_number: fields.phoneNumber ?? null,
+      // Only meaningful for the school/college self-service path (a
+      // working_professional account uses the parent/child flow instead
+      // and never reads tier content directly) -- see
+      // profile-helpers.ts#educationLevelToTier.
+      tier: educationLevelToTier(fields.educationLevel),
     })
     .select(PROFILE_SELECT)
     .single();

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Nav } from "@/components/Nav";
 import { useAuth } from "@/lib/supabase/auth-context";
+import { isParentWithChildFlow } from "@/lib/supabase/profile-helpers";
 import { PracticeFilters } from "@/components/practice/PracticeFilters";
 import { PracticeList } from "@/components/practice/PracticeList";
 import { InterviewPracticeList } from "@/components/practice/InterviewPracticeList";
@@ -45,7 +46,7 @@ export default function PracticePage() {
               Sign in →
             </a>
           </div>
-        ) : profile?.role !== "student" ? (
+        ) : !profile || isParentWithChildFlow(profile) ? (
           <p className="text-sm text-muted-foreground">
             Practice is available on a student account -- sign in as a student to use it.
           </p>

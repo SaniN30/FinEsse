@@ -779,6 +779,36 @@ own.
   unique name to get an isolated browser instance before doing any live
   verification that takes more than one navigation.
 
+## Signup role gate: self-service (school/college) vs. parent/child (working_professional)
+
+- `/signup`'s `educationLevel` choice now decides which flow the account gets, not just
+  copy: `working_professional` keeps the original parent/consent/`/create-student` flow
+  unchanged (`role: "parent"` profile managing a separate linked child). `school`/
+  `college` selections instead land the signing-up person directly in their own tier
+  content — no child profile is created for them.
+- This works entirely within the existing schema: a `school`/`college` self-service
+  account is still `role: "parent"` (the only self-signup identity `profiles` has) but
+  gets `tier` set to the matching value at insert time (`educationLevelToTier`, in
+  `lib/supabase/profile-helpers.ts`) instead of the schema default. Every RLS policy and
+  RPC gating lesson/quiz/ledger/badge access (`lessons_select`, `grade_quiz_attempt`,
+  `get_or_create_student_wallet`, etc.) keys off `profiles.tier`/`profiles.id`, never
+  `role`, so this "self-serve parent" reads and writes tier content exactly like a real
+  student profile would.
+- `isParentWithChildFlow(profile)` (same file) is the one place that answers "does this
+  account have the parent/child model" — `role === "parent" && education_level ===
+  "working_professional"`. Every place that used to branch on `profile.role ===
+  "student"`/`"parent"` to decide "is this the tier-content consumer" now branches on
+  this helper instead (`Nav`'s Dashboard link, `PocketMoneyPlanner`'s student-wallet vs.
+  parent-rollup view, `BadgeShelf`, `/practice`'s access gate, `/dashboard` and
+  `/parent/dashboard`'s redirect targets). `role === "student"` itself is still correct
+  and unchanged for anything specific to the synthetic PIN-login student flow (e.g.
+  `/student-login`, `fund_student_wallet`'s linked-child check) — don't conflate the two;
+  a self-service school/college account is `role: "parent"` and will never match a
+  `role === "student"` check.
+- `tierBasePath(tier)` (same file) maps a tier to its route segment (`job_ready` →
+  `/job-ready`) and is shared by `/signup`, `/login`, `/dashboard`, and `/student-login`
+  post-auth routing — add new tier-aware redirects here rather than re-deriving the path.
+
 ## Maintaining this file
 
 Keep this file short and durable — project structure, conventions, and

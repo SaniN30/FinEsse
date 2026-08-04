@@ -8,6 +8,7 @@ import { FormField } from "@/components/auth/FormField";
 import { SelectField } from "@/components/auth/SelectField";
 import { Button } from "@/components/Button";
 import { signUpParent } from "@/lib/supabase/auth-actions";
+import { educationLevelToTier, tierBasePath } from "@/lib/supabase/profile-helpers";
 import type { EducationLevel } from "@/lib/supabase/types";
 
 const EDUCATION_LEVEL_OPTIONS: { value: EducationLevel; label: string }[] = [
@@ -78,7 +79,15 @@ export default function SignUpPage() {
       return;
     }
 
-    router.push("/consent");
+    // Only the working_professional path is a parent managing a separate
+    // child login -- school/college signups are a direct, self-service
+    // account for the person who just signed up (see profile-helpers.ts).
+    if (educationLevel === "working_professional") {
+      router.push("/consent");
+      return;
+    }
+
+    router.push(tierBasePath(educationLevelToTier(educationLevel)));
   }
 
   if (needsConfirmation) {
@@ -90,17 +99,25 @@ export default function SignUpPage() {
           <Link href="/login" className="font-medium text-primary-500 hover:text-primary-600">
             log in
           </Link>{" "}
-          to set up parental consent and create your child&apos;s account.
+          {educationLevel === "working_professional"
+            ? "to set up parental consent and create your child's account."
+            : "to start your lessons."}
         </p>
       </AuthCard>
     );
   }
 
+  const isWorkingProfessional = educationLevel === "working_professional";
+
   return (
     <AuthCard
       eyebrow="Get started"
-      title="Create your parent account"
-      description="This account is yours — you'll set up your child's login in the next steps."
+      title={isWorkingProfessional ? "Create your parent account" : "Create your account"}
+      description={
+        isWorkingProfessional
+          ? "This account is yours — you'll set up your child's login in the next steps."
+          : "This account is yours — sign up to start your own lessons right away."
+      }
     >
       <form onSubmit={handleSubmit}>
         <FormField

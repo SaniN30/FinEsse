@@ -9,15 +9,7 @@ import { Button } from "@/components/Button";
 import { signInStudent } from "@/lib/supabase/auth-actions";
 import { listKnownStudents, type KnownStudent } from "@/lib/supabase/student-registry";
 import { useAuth } from "@/lib/supabase/auth-context";
-import type { Tier } from "@/lib/supabase/types";
-
-// A student profile always has a tier set at creation (create-student-account
-// defaults it to "school"), but the column is nullable at the type level, so
-// this falls back to School rather than producing an invalid "/null" route.
-function tierBasePath(tier: Tier | null): string {
-  if (tier === "job_ready") return "/job-ready";
-  return `/${tier ?? "school"}`;
-}
+import { tierBasePath } from "@/lib/supabase/profile-helpers";
 
 export default function StudentLoginPage() {
   const router = useRouter();
