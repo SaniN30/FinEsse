@@ -208,6 +208,15 @@ body {
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Reserve room below page content on small viewports so the fixed sticky-note
+   FAB (bottom-6 right-6, components/sticky-notes/StickyNotesWidget.tsx) never
+   sits on top of the last on-screen element. */
+@media (max-width: 640px) {
+  body {
+    padding-bottom: 4.5rem;
+  }
+}
+
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
 }

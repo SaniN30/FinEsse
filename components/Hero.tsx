@@ -1,7 +1,24 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/Button";
+
+const DESKTOP_QUERY = "(min-width: 1024px)";
+
+function subscribeToDesktopQuery(onChange: () => void) {
+  const query = window.matchMedia(DESKTOP_QUERY);
+  query.addEventListener("change", onChange);
+  return () => query.removeEventListener("change", onChange);
+}
+
+function useIsDesktop() {
+  return useSyncExternalStore(
+    subscribeToDesktopQuery,
+    () => window.matchMedia(DESKTOP_QUERY).matches,
+    () => false,
+  );
+}
 
 const container = {
   hidden: {},
@@ -26,6 +43,8 @@ const tierDots: Array<{ label: string; className: string }> = [
 ];
 
 export function Hero() {
+  const isDesktop = useIsDesktop();
+
   return (
     <section className="relative overflow-hidden px-6 pb-28 pt-16 sm:pt-20">
       <div
@@ -94,14 +113,14 @@ export function Hero() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.25, 1, 0.5, 1] as const, delay: 0.2 }}
-          className="relative mx-auto h-[22rem] w-full max-w-md lg:mx-0"
+          className="relative mx-auto flex w-full max-w-md flex-col gap-4 lg:mx-0 lg:h-[22rem] lg:block"
         >
           <motion.div
-            initial={{ rotate: -6, y: 0 }}
-            animate={{ y: [0, -10, 0] }}
+            initial={{ y: 0 }}
+            animate={{ y: isDesktop ? [0, -10, 0] : 0 }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            style={{ rotate: -6 }}
-            className="absolute left-0 top-6 w-64 rounded-[var(--radius-card)] border-2 border-foreground bg-surface p-5 shadow-[var(--shadow-offset)]"
+            style={{ rotate: isDesktop ? -6 : 0 }}
+            className="w-full rounded-[var(--radius-card)] border-2 border-foreground bg-surface p-5 shadow-[var(--shadow-offset)] lg:absolute lg:left-0 lg:top-6 lg:w-64"
           >
             <p className="text-xs font-semibold text-muted-foreground">Today&apos;s lesson</p>
             <p className="mt-1 font-display text-lg font-semibold">Needs vs. wants</p>
@@ -112,11 +131,11 @@ export function Hero() {
           </motion.div>
 
           <motion.div
-            initial={{ rotate: 5 }}
-            animate={{ y: [0, 10, 0] }}
+            initial={{ y: 0 }}
+            animate={{ y: isDesktop ? [0, 10, 0] : 0 }}
             transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            style={{ rotate: 5 }}
-            className="absolute bottom-6 right-0 w-56 rounded-[var(--radius-card)] border-2 border-foreground bg-primary-500 p-5 text-white shadow-[var(--shadow-offset)]"
+            style={{ rotate: isDesktop ? 5 : 0 }}
+            className="w-full rounded-[var(--radius-card)] border-2 border-foreground bg-primary-500 p-5 text-white shadow-[var(--shadow-offset)] lg:absolute lg:bottom-6 lg:right-0 lg:w-56"
           >
             <p className="text-xs font-semibold text-primary-100">Level up</p>
             <p className="mt-1 font-display text-2xl font-bold">+120 XP</p>
@@ -126,11 +145,11 @@ export function Hero() {
           </motion.div>
 
           <motion.div
-            initial={{ rotate: -2 }}
-            animate={{ y: [0, -6, 0] }}
+            initial={{ y: 0 }}
+            animate={{ y: isDesktop ? [0, -6, 0] : 0 }}
             transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            style={{ rotate: -2 }}
-            className="absolute left-14 top-52 w-48 rounded-[var(--radius-card)] border-2 border-foreground bg-tier-jobready p-4 text-white shadow-[var(--shadow-offset)]"
+            style={{ rotate: isDesktop ? -2 : 0 }}
+            className="w-full rounded-[var(--radius-card)] border-2 border-foreground bg-tier-jobready p-4 text-white shadow-[var(--shadow-offset)] lg:absolute lg:left-14 lg:top-52 lg:w-48"
           >
             <p className="text-xs font-semibold">Pocket money</p>
             <p className="mt-1 font-display text-xl font-bold">₹340 saved</p>
