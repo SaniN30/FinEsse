@@ -3,8 +3,16 @@
 import { useState } from "react";
 import { Button } from "@/components/Button";
 import { createSavingsGoal } from "@/lib/pocket-money/queries";
+import { currencyOrDefault } from "@/lib/currency/config";
+import { displayAmountToUsdCents, formatUsdCents } from "@/lib/currency/format";
 
-export function CreateGoalForm({ onCreated }: { onCreated: () => void }) {
+interface CreateGoalFormProps {
+  currency: string | null;
+  onCreated: () => void;
+}
+
+export function CreateGoalForm({ currency, onCreated }: CreateGoalFormProps) {
+  const resolvedCurrency = currencyOrDefault(currency);
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
   const [target, setTarget] = useState("");
@@ -13,14 +21,14 @@ export function CreateGoalForm({ onCreated }: { onCreated: () => void }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const targetCents = Math.round(Number(target) * 100);
+    const targetCents = displayAmountToUsdCents(Number(target), resolvedCurrency);
 
     if (!name.trim()) {
       setError("Give your goal a name.");
       return;
     }
     if (!Number.isFinite(targetCents) || targetCents <= 0) {
-      setError("Set a target amount greater than $0.");
+      setError(`Set a target amount greater than ${formatUsdCents(0, currency)}.`);
       return;
     }
 
@@ -63,7 +71,9 @@ export function CreateGoalForm({ onCreated }: { onCreated: () => void }) {
         />
       </label>
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-muted-foreground">Target amount (USD)</span>
+        <span className="mb-1 block font-medium text-muted-foreground">
+          Target amount ({resolvedCurrency})
+        </span>
         <input
           type="number"
           min="0.01"

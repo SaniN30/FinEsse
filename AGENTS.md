@@ -912,6 +912,40 @@ own.
   School variants) already rendered a lesson *count*, not an assumed single
   lesson, so neither needed a structural change.
 
+## Multi-currency pocket money
+
+- `profiles.currency` (`00000000000110_profile_currency.sql`, default `USD`, checked
+  against a fixed 7-code enum: USD/INR/GBP/EUR/CAD/AUD/JPY) is a per-profile display
+  currency. The ledger (`accounts`/`postings`, see `BACKEND.md`) stays canonical USD
+  cents unconditionally — this is a display/input conversion only, via a static
+  USD-rate table in `lib/currency/config.ts` (`SUPPORTED_CURRENCIES[code].usdRate`), not
+  a live FX feed. That's a deliberate proportionality call for a learning-app feature,
+  not a real payments product — revisit only if the captain asks for live rates.
+  `lib/currency/format.ts` has the two conversion primitives every pocket-money surface
+  uses: `formatUsdCents(cents, currency)` (ledger → display string) and
+  `displayAmountToUsdCents(majorUnits, currency)` (user input → ledger cents, used by
+  every pocket-money form before calling `deposit_to_savings_goal`/
+  `fund_student_wallet`/`create_savings_goal`). Add a new currency by adding one entry
+  to `SUPPORTED_CURRENCIES` and to the `profiles_currency_check` constraint in a new
+  migration — no other code changes needed.
+- A profile picks its own currency at `/signup` (self-service school/college accounts)
+  or via `/settings` (`AccountSection`, own currency + a per-linked-child selector using
+  the same `updateProfileCurrency`/`updateChildCurrency` RLS-scoped update as
+  `renameChildProfile`/`updateChildTier` — no new RPC). A parent can also change a
+  linked child's currency from `/parent/dashboard`'s `ChildRollupCard` (same select-as-
+  badge pattern as its existing tier switcher). `create-student-account`'s Edge Function
+  was intentionally left alone (still creates every new student at the `USD` column
+  default) rather than adding a third currency-collection surface + redeploy — a parent
+  sets the real currency via the dashboard/settings selector post-creation, mirroring
+  how tier itself works today via the same `ChildRollupCard`.
+  `parent_dashboard_children` (`00000000000111_parent_dashboard_currency.sql`) exposes
+  `currency` alongside the existing rollup columns so `ChildRollupCard` never needs a
+  second query.
+- Lesson/quiz `content_body` money examples (e.g. "$5 a week") were deliberately left as
+  USD-denominated prose — rewriting embedded example amounts across every seed migration
+  is a content-authoring pass, disproportionate to a currency-*model* task; only the
+  live ledger/wallet/goal amounts convert per-profile.
+
 ## Maintaining this file
 
 Keep this file short and durable — project structure, conventions, and

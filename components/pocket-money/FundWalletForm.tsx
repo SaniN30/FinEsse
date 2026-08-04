@@ -3,28 +3,35 @@
 import { useState } from "react";
 import { Button } from "@/components/Button";
 import { fundStudentWallet } from "@/lib/pocket-money/queries";
+import { currencyOrDefault } from "@/lib/currency/config";
+import { displayAmountToUsdCents, formatUsdCents } from "@/lib/currency/format";
 
 interface FundWalletFormProps {
   studentProfileId: string;
+  currency: string | null;
   onComplete: () => void;
 }
 
 /**
  * The only place a parent can put real (virtual) money into a student's
  * wallet -- see fund_student_wallet in
- * supabase/migrations/00000000000024_pocket_money_funding.sql.
+ * supabase/migrations/00000000000024_pocket_money_funding.sql. The amount
+ * is entered in the child's own display currency (currency is a per-profile
+ * setting, so a parent's own currency need not match) and converted to USD
+ * cents before the RPC call.
  */
-export function FundWalletForm({ studentProfileId, onComplete }: FundWalletFormProps) {
+export function FundWalletForm({ studentProfileId, currency, onComplete }: FundWalletFormProps) {
+  const resolvedCurrency = currencyOrDefault(currency);
   const [amount, setAmount] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const amountCents = Math.round(Number(amount) * 100);
+    const amountCents = displayAmountToUsdCents(Number(amount), resolvedCurrency);
 
     if (!Number.isFinite(amountCents) || amountCents <= 0) {
-      setError("Enter an amount greater than $0.");
+      setError(`Enter an amount greater than ${formatUsdCents(0, currency)}.`);
       return;
     }
 
@@ -46,7 +53,9 @@ export function FundWalletForm({ studentProfileId, onComplete }: FundWalletFormP
     <form onSubmit={handleSubmit} className="mt-3 space-y-2">
       <div className="flex items-end gap-2">
         <label className="block flex-1 text-sm">
-          <span className="mb-1 block font-medium text-muted-foreground">Add allowance (USD)</span>
+          <span className="mb-1 block font-medium text-muted-foreground">
+            Add allowance ({resolvedCurrency})
+          </span>
           <input
             type="number"
             min="0.01"

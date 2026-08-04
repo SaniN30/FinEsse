@@ -80,13 +80,14 @@ export async function fundStudentWallet(
 export interface ChildProfile {
   id: string;
   display_name: string | null;
+  currency: string | null;
 }
 
 export async function fetchLinkedChildren(parentId: string): Promise<ChildProfile[]> {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, display_name")
+    .select("id, display_name, currency")
     .eq("parent_id", parentId);
 
   if (error) throw error;

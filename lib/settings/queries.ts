@@ -32,3 +32,8 @@ export async function updateParentPassword(newPassword: string): Promise<void> {
   const { error } = await supabase.auth.updateUser({ password: newPassword });
   if (error) throw new Error(error.message);
 }
+
+export async function updateProfileCurrency(profileId: string, currency: string): Promise<void> {
+  const { error } = await supabase.from("profiles").update({ currency }).eq("id", profileId);
+  if (error) throw new Error(error.message);
+}

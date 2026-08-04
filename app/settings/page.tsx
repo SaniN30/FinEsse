@@ -11,11 +11,12 @@ import { HelpSection } from "@/components/settings/HelpSection";
 import { LegalSection } from "@/components/settings/LegalSection";
 import { useAuth } from "@/lib/supabase/auth-context";
 import { fetchLinkedChildren } from "@/lib/supabase/auth-actions";
+import type { CurrencyCode } from "@/lib/currency/config";
 import type { Profile } from "@/lib/supabase/types";
 
 export default function SettingsPage() {
   const router = useRouter();
-  const { session, loading } = useAuth();
+  const { session, profile, loading } = useAuth();
   const [children, setChildren] = useState<Profile[]>([]);
 
   useEffect(() => {
@@ -34,6 +35,12 @@ export default function SettingsPage() {
   function handleChildRenamed(childId: string, displayName: string) {
     setChildren((prev) =>
       prev.map((child) => (child.id === childId ? { ...child, display_name: displayName } : child)),
+    );
+  }
+
+  function handleChildCurrencyChanged(childId: string, currency: CurrencyCode) {
+    setChildren((prev) =>
+      prev.map((child) => (child.id === childId ? { ...child, currency } : child)),
     );
   }
 
@@ -58,8 +65,10 @@ export default function SettingsPage() {
           <div className="space-y-6">
             <AccountSection
               email={session.user.email}
+              profile={profile}
               linkedChildren={children}
               onChildRenamed={handleChildRenamed}
+              onChildCurrencyChanged={handleChildCurrencyChanged}
             />
             <AppearanceSection />
             <NotificationsSection />

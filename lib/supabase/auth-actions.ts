@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase/client";
 import { educationLevelToTier } from "@/lib/supabase/profile-helpers";
+import { DEFAULT_CURRENCY, isSupportedCurrency } from "@/lib/currency/config";
 import type { EducationLevel, Profile } from "@/lib/supabase/types";
 
 export interface ActionResult<T> {
@@ -15,6 +16,7 @@ export interface ParentSignUpDetails {
   educationLevel: EducationLevel;
   institutionName: string | null;
   phoneNumber: string;
+  currency: string;
 }
 
 interface ParentProfileFields {
@@ -23,9 +25,10 @@ interface ParentProfileFields {
   educationLevel?: string | null;
   institutionName?: string | null;
   phoneNumber?: string | null;
+  currency?: string | null;
 }
 
-const PROFILE_SELECT = "id, role, parent_id, tier, display_name, education_level" as const;
+const PROFILE_SELECT = "id, role, parent_id, tier, display_name, education_level, currency" as const;
 
 /** Postgres unique_violation -- see idx_profiles_phone_number_unique. */
 const UNIQUE_VIOLATION = "23505";
@@ -44,6 +47,7 @@ async function insertParentProfile(
       education_level: fields.educationLevel ?? null,
       institution_name: fields.institutionName ?? null,
       phone_number: fields.phoneNumber ?? null,
+      currency: isSupportedCurrency(fields.currency) ? fields.currency : DEFAULT_CURRENCY,
       // Only meaningful for the school/college self-service path (a
       // working_professional account uses the parent/child flow instead
       // and never reads tier content directly) -- see
@@ -67,8 +71,16 @@ async function insertParentProfile(
 export async function signUpParent(
   details: ParentSignUpDetails,
 ): Promise<ActionResult<{ userId: string; needsEmailConfirmation: boolean }>> {
-  const { email, password, displayName, dateOfBirth, educationLevel, institutionName, phoneNumber } =
-    details;
+  const {
+    email,
+    password,
+    displayName,
+    dateOfBirth,
+    educationLevel,
+    institutionName,
+    phoneNumber,
+    currency,
+  } = details;
 
   // Checked before creating the auth user so a duplicate phone number
   // doesn't leave behind an orphaned auth account with no profile.
@@ -95,6 +107,7 @@ export async function signUpParent(
         education_level: educationLevel,
         institution_name: institutionName,
         phone_number: phoneNumber,
+        currency,
       },
     },
   });
@@ -127,6 +140,7 @@ export async function signUpParent(
     educationLevel,
     institutionName,
     phoneNumber,
+    currency,
   });
 
   if (profileError) {
@@ -178,6 +192,7 @@ export async function ensureParentProfile(): Promise<ActionResult<Profile>> {
     educationLevel: metadata.education_level as string | undefined,
     institutionName: metadata.institution_name as string | undefined,
     phoneNumber: metadata.phone_number as string | undefined,
+    currency: metadata.currency as string | undefined,
   });
 }
 

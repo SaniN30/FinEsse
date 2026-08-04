@@ -5,20 +5,24 @@ import { motion } from "framer-motion";
 import { ProgressBar } from "@/components/ProgressBar";
 import { GoalTransferForm } from "@/components/pocket-money/GoalTransferForm";
 import { GoalProjectionCalculator } from "@/components/pocket-money/GoalProjectionCalculator";
+import { formatUsdCents } from "@/lib/currency/format";
 import type { SavingsGoalProgress } from "@/lib/supabase/types";
-
-function formatCents(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
-}
 
 interface SavingsGoalCardProps {
   goal: SavingsGoalProgress;
+  currency: string | null;
   readOnly?: boolean;
   onChanged?: () => void;
   index?: number;
 }
 
-export function SavingsGoalCard({ goal, readOnly = false, onChanged, index = 0 }: SavingsGoalCardProps) {
+export function SavingsGoalCard({
+  goal,
+  currency,
+  readOnly = false,
+  onChanged,
+  index = 0,
+}: SavingsGoalCardProps) {
   const [isTransferOpen, setIsTransferOpen] = useState(false);
 
   return (
@@ -31,8 +35,8 @@ export function SavingsGoalCard({ goal, readOnly = false, onChanged, index = 0 }
     >
       <h3 className="mb-1 text-xl font-semibold">{goal.name}</h3>
       <p className="mb-4 text-sm text-muted-foreground">
-        {formatCents(goal.balance_cents)}
-        {goal.target_amount_cents ? ` of ${formatCents(goal.target_amount_cents)}` : ""}
+        {formatUsdCents(goal.balance_cents, currency)}
+        {goal.target_amount_cents ? ` of ${formatUsdCents(goal.target_amount_cents, currency)}` : ""}
       </p>
       <ProgressBar
         value={goal.percent_complete ?? 0}
@@ -46,6 +50,7 @@ export function SavingsGoalCard({ goal, readOnly = false, onChanged, index = 0 }
             <GoalTransferForm
               goalAccountId={goal.account_id}
               balanceCents={goal.balance_cents}
+              currency={currency}
               onComplete={() => {
                 setIsTransferOpen(false);
                 onChanged?.();
@@ -67,6 +72,7 @@ export function SavingsGoalCard({ goal, readOnly = false, onChanged, index = 0 }
         goalName={goal.name}
         balanceCents={goal.balance_cents}
         targetAmountCents={goal.target_amount_cents}
+        currency={currency}
       />
     </motion.article>
   );

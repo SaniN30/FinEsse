@@ -3,12 +3,15 @@
 import { useState } from "react";
 import { Button } from "@/components/Button";
 import { depositToSavingsGoal, withdrawFromSavingsGoal } from "@/lib/pocket-money/queries";
+import { currencyOrDefault } from "@/lib/currency/config";
+import { displayAmountToUsdCents, formatUsdCents } from "@/lib/currency/format";
 
 type TransferMode = "deposit" | "withdraw";
 
 interface GoalTransferFormProps {
   goalAccountId: string;
   balanceCents: number;
+  currency: string | null;
   onComplete: () => void;
 }
 
@@ -16,9 +19,17 @@ interface GoalTransferFormProps {
  * Deposit and withdraw are both the student's own call, with no
  * parent-approval step in the data model -- the two actions are styled
  * identically (same button size/weight/prominence) so neither reads as
- * needing more permission than the other.
+ * needing more permission than the other. The amount is entered in the
+ * profile's display currency and converted to USD cents (the ledger's
+ * canonical unit, see lib/currency/format.ts) before hitting the RPC.
  */
-export function GoalTransferForm({ goalAccountId, balanceCents, onComplete }: GoalTransferFormProps) {
+export function GoalTransferForm({
+  goalAccountId,
+  balanceCents,
+  currency,
+  onComplete,
+}: GoalTransferFormProps) {
+  const resolvedCurrency = currencyOrDefault(currency);
   const [mode, setMode] = useState<TransferMode>("deposit");
   const [amount, setAmount] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -26,10 +37,10 @@ export function GoalTransferForm({ goalAccountId, balanceCents, onComplete }: Go
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const amountCents = Math.round(Number(amount) * 100);
+    const amountCents = displayAmountToUsdCents(Number(amount), resolvedCurrency);
 
     if (!Number.isFinite(amountCents) || amountCents <= 0) {
-      setError("Enter an amount greater than $0.");
+      setError(`Enter an amount greater than ${formatUsdCents(0, currency)}.`);
       return;
     }
 
@@ -88,7 +99,9 @@ export function GoalTransferForm({ goalAccountId, balanceCents, onComplete }: Go
       </div>
 
       <label className="block text-sm">
-        <span className="mb-1 block font-medium text-muted-foreground">Amount (USD)</span>
+        <span className="mb-1 block font-medium text-muted-foreground">
+          Amount ({resolvedCurrency})
+        </span>
         <input
           type="number"
           min="0.01"

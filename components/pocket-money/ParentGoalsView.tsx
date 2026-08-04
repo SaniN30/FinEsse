@@ -8,15 +8,13 @@ import {
 } from "@/lib/pocket-money/queries";
 import { SavingsGoalCard } from "@/components/pocket-money/SavingsGoalCard";
 import { FundWalletForm } from "@/components/pocket-money/FundWalletForm";
+import { formatUsdCents } from "@/lib/currency/format";
 import type { AccountBalance, SavingsGoalProgress } from "@/lib/supabase/types";
-
-function formatCents(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
-}
 
 interface ChildGoals {
   childId: string;
   displayName: string | null;
+  currency: string | null;
   walletBalanceCents: number;
   goals: SavingsGoalProgress[];
 }
@@ -38,6 +36,7 @@ export function ParentGoalsView({ parentId }: { parentId: string }) {
           return {
             childId: child.id,
             displayName: child.display_name,
+            currency: child.currency,
             walletBalanceCents: wallet?.balance_cents ?? 0,
             goals,
           };
@@ -69,21 +68,27 @@ export function ParentGoalsView({ parentId }: { parentId: string }) {
 
   return (
     <div className="space-y-10">
-      {childGoals.map(({ childId, displayName, walletBalanceCents, goals }) => (
+      {childGoals.map(({ childId, displayName, currency, walletBalanceCents, goals }) => (
         <section key={childId}>
           <h2 className="mb-1 text-lg font-semibold">{displayName ?? `Student ${childId.slice(0, 8)}`}</h2>
           <p className="mb-4 text-sm text-muted-foreground">
-            Wallet balance: {formatCents(walletBalanceCents)}
+            Wallet balance: {formatUsdCents(walletBalanceCents, currency)}
           </p>
 
-          <FundWalletForm studentProfileId={childId} onComplete={load} />
+          <FundWalletForm studentProfileId={childId} currency={currency} onComplete={load} />
 
           {goals.length === 0 ? (
             <p className="mt-6 text-sm text-muted-foreground">No savings goals yet.</p>
           ) : (
             <div className="mt-6 grid gap-5 sm:grid-cols-2">
               {goals.map((goal, index) => (
-                <SavingsGoalCard key={goal.account_id} goal={goal} readOnly index={index} />
+                <SavingsGoalCard
+                  key={goal.account_id}
+                  goal={goal}
+                  currency={currency}
+                  readOnly
+                  index={index}
+                />
               ))}
             </div>
           )}
