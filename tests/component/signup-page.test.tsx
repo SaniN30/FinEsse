@@ -60,6 +60,7 @@ describe("SignUpPage", () => {
       educationLevel: "college",
       institutionName: "State University",
       phoneNumber: "+15551234567",
+      currency: "USD",
     });
     expect(pushMock).toHaveBeenCalledWith("/college");
   });

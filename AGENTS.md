@@ -945,6 +945,21 @@ own.
   USD-denominated prose — rewriting embedded example amounts across every seed migration
   is a content-authoring pass, disproportionate to a currency-*model* task; only the
   live ledger/wallet/goal amounts convert per-profile.
+- `app/parent/dashboard/page.tsx`'s `CombinedStatsStrip` (2+ linked children) sums
+  `wallet_balance_cents`/goal balances across children, who can each have a different
+  `currency` — it always renders that sum in canonical USD via `formatUsdCents(cents,
+  "USD")`, labeled "(USD)" in the UI, rather than picking one child's currency arbitrarily
+  or converting to a currency none of them chose.
+- Both `00000000000110_profile_currency.sql`/`00000000000111_parent_dashboard_currency.sql`
+  were already applied to the live project by the time this branch's implementation was
+  reviewed (checked via `information_schema.columns` per the migration-history postmortems
+  above) — live-verified end-to-end with two real disposable accounts (self-service college
+  tier, one `USD` one `INR`), wallet balance + a funded savings goal created directly via
+  service-role SQL (`get_or_create_student_wallet`/`get_or_create_parent_wallet` +
+  balanced `postings`, since `create_savings_goal`/`deposit_to_savings_goal` are
+  security-definer and key off `auth.uid()`): USD rendered `US$50.00` wallet / `US$20.00 of
+  US$100.00` goal; INR rendered `₹9,960.00` wallet / `₹4,150.00 of ₹20,750.00` goal — correct
+  symbol, comma grouping, and rate conversion in both. Test accounts deleted afterward.
 
 ## Maintaining this file
 
