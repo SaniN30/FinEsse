@@ -29,6 +29,12 @@ export default function JobReadyPage() {
             Practice an interview question →
           </Link>
         </div>
+        <Link
+          href="/job-ready/pocket-money"
+          className="mt-4 inline-block text-sm font-medium text-primary-500 hover:text-primary-600"
+        >
+          Pocket Money Planner →
+        </Link>
         <BadgeShelf />
       </main>
     </div>
