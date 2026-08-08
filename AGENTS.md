@@ -786,19 +786,22 @@ own.
   Job-Ready: minimal green-accent scenario cards) is centralized in
   `lib/lessons/tier-block-styles.ts` so a block component doesn't hardcode
   tier styling itself.
-- A lesson opts in via `lib/lessons/content-overrides.ts`, a `Record<skill_id,
-  LessonBlock[]>` restructuring that skill's existing `content_body` prose
-  into blocks (same facts, no rewrite) — checked by both `components/lessons/
-  LessonDetail.tsx` (College/Job-Ready, now takes a required `tier` prop) and
-  `components/school/LessonDetail.tsx` before falling back to the raw
-  `content_body` paragraph. This lives in code rather than `content_body`
-  itself specifically to avoid touching the live migration history — see the
-  College-depth-pass-2 postmortem above for why that history is fragile right
-  now; a lesson's `content_body` stays the source of truth for facts, and an
-  override entry is a reversible, code-only presentation decision that could
-  be migrated into the database later once that history is stable. Only a
-  representative sample of lessons (a few per tier) has an override entry so
-  far — most lessons still render their plain `content_body`.
+- A lesson opts in via `lib/lessons/content-overrides.ts`, a `Record<"skill_id:
+  order_index", LessonBlock[]>` restructuring that lesson's `content_body`
+  prose into blocks (same facts, no rewrite) — checked by both
+  `components/lessons/LessonDetail.tsx` (College/Job-Ready, now takes a
+  required `tier` prop) and `components/school/LessonDetail.tsx` before
+  falling back to the raw `content_body` paragraph. The key is
+  `skill_id:order_index`, not just `skill_id`, since a skill now has multiple
+  lessons (see next bullet) and each needs its own block entry. This lives in
+  code rather than `content_body` itself specifically to avoid touching the
+  live migration history — see the College-depth-pass-2 postmortem above for
+  why that history is fragile right now; a lesson's `content_body` stays the
+  source of truth for facts, and an override entry is a reversible, code-only
+  presentation decision that could be migrated into the database later once
+  that history is stable. As of the multi-lesson expansion below, every
+  lesson across all three tiers has an override entry — none fall back to
+  plain `content_body` anymore.
 - This worktree had live `service_role`-key access (via the Supabase CLI's
   linked session + Management API, see the College-depth-pass-2 note above on
   how to fetch it) despite no `.env.local` being checked in; that key was used
@@ -887,6 +890,27 @@ own.
 - `tierBasePath(tier)` (same file) maps a tier to its route segment (`job_ready` →
   `/job-ready`) and is shared by `/signup`, `/login`, `/dashboard`, and `/student-login`
   post-auth routing — add new tier-aware redirects here rather than re-deriving the path.
+
+## Multi-lesson sequences per skill
+
+- Every skill now has 2-5 `lessons` rows (same `skill_id`, incrementing
+  `order_index`, the original lesson kept at `order_index = 1`), not one —
+  `supabase/migrations/00000000000100_seed_multi_lesson_sequences.sql` added
+  the additional rows for all 56 skills across School/College/Job-Ready,
+  splitting each topic into a foundational lesson followed by
+  application/deep-dive lessons grounded in the original lesson's
+  `content_body`. `fetchLessonsForSkill` (already existed, tier-agnostic)
+  is the one place both `LessonDetail` components pull the full ordered
+  sequence from — `components/school/LessonDetail.tsx` fetches siblings via
+  the loaded lesson's `skill_id` and renders previous/next links;
+  `components/lessons/LessonDetail.tsx` (College/Job-Ready) already fetched
+  by `skillId` and just needed a "Lesson N of M" label plus the
+  `skill_id:order_index` override-key change above. `mark_lesson_complete`
+  is still called per-lesson-id and quizzes are still fetched per-skill (not
+  per-lesson), so completion tracking and quiz attachment are unaffected by
+  a skill having more lessons. `LessonList.tsx` (both tier-agnostic and
+  School variants) already rendered a lesson *count*, not an assumed single
+  lesson, so neither needed a structural change.
 
 ## Maintaining this file
 

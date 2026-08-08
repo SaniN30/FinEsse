@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { fetchLesson, fetchQuizzesForLesson, fetchSkill } from "@/lib/school/queries";
+import {
+  fetchLesson,
+  fetchLessonsForSkill,
+  fetchQuizzesForLesson,
+  fetchSkill,
+} from "@/lib/school/queries";
 import { BackLink } from "@/components/BackLink";
 import { Skeleton } from "@/components/Skeleton";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -29,7 +34,7 @@ function LessonContent({ lesson }: { lesson: Lesson }) {
     );
   }
 
-  const blocks = lessonContentOverrides[lesson.skill_id];
+  const blocks = lessonContentOverrides[`${lesson.skill_id}:${lesson.order_index}`];
   if (blocks) {
     return <LessonBlockList tier="school" blocks={blocks} />;
   }
@@ -44,6 +49,7 @@ function LessonContent({ lesson }: { lesson: Lesson }) {
 export function LessonDetail({ lessonId }: { lessonId: string }) {
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [skill, setSkill] = useState<Skill | null>(null);
+  const [siblingLessons, setSiblingLessons] = useState<Lesson[] | null>(null);
   const [quizzes, setQuizzes] = useState<Quiz[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,13 +61,15 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
           Promise.resolve(lessonResult),
           fetchQuizzesForLesson(lessonId),
           fetchSkill(lessonResult.skill_id),
+          fetchLessonsForSkill(lessonResult.skill_id),
         ]),
       )
-      .then(([lessonResult, quizzesResult, skillResult]) => {
+      .then(([lessonResult, quizzesResult, skillResult, siblingsResult]) => {
         if (!isMounted) return;
         setLesson(lessonResult);
         setQuizzes(quizzesResult);
         setSkill(skillResult);
+        setSiblingLessons(siblingsResult);
 
         // Best-effort: powers the "first lesson completed" badge only, so a
         // failure here shouldn't interrupt the student reading the lesson.
@@ -95,10 +103,21 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
     );
   }
 
+  const ordered = siblingLessons ?? [];
+  const currentIndex = ordered.findIndex((sibling) => sibling.id === lesson.id);
+  const previousLesson = currentIndex > 0 ? ordered[currentIndex - 1] : null;
+  const nextLesson =
+    currentIndex >= 0 && currentIndex < ordered.length - 1 ? ordered[currentIndex + 1] : null;
+
   return (
     <div>
       <BackLink href={`/school/skills/${lesson.skill_id}`} label="Back to Lessons" />
       {skill ? <LessonHeading title={skill.title} /> : null}
+      {ordered.length > 1 ? (
+        <p className="mb-4 text-sm text-muted-foreground">
+          Lesson {currentIndex + 1} of {ordered.length}
+        </p>
+      ) : null}
       <LessonContent lesson={lesson} />
 
       {quizzes && quizzes.length > 0 ? (
@@ -112,6 +131,29 @@ export function LessonDetail({ lessonId }: { lessonId: string }) {
               Take quiz: {quiz.title}
             </Link>
           ))}
+        </div>
+      ) : null}
+
+      {previousLesson || nextLesson ? (
+        <div className="mt-8 flex items-center justify-between border-t border-surface-border pt-6">
+          {previousLesson ? (
+            <Link
+              href={`/school/lessons/${previousLesson.id}`}
+              className="text-sm font-medium text-primary-500 hover:text-primary-600"
+            >
+              ← Previous lesson
+            </Link>
+          ) : (
+            <span />
+          )}
+          {nextLesson ? (
+            <Link
+              href={`/school/lessons/${nextLesson.id}`}
+              className="text-sm font-medium text-primary-500 hover:text-primary-600"
+            >
+              Next lesson →
+            </Link>
+          ) : null}
         </div>
       ) : null}
     </div>
