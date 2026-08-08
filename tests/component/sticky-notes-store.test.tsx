@@ -119,4 +119,38 @@ describe("sticky notes shared store", () => {
       expect(getStickyNotesSnapshot()?.find((n) => n.id === "note-1")?.content).toBe("original"),
     );
   });
+
+  it("does not let an older, slow-to-fail update revert a note after a newer update already succeeded", async () => {
+    vi.mocked(fetchStickyNotes).mockResolvedValue([makeNote({ content: "original" })]);
+
+    let rejectFirst: (error: Error) => void = () => {};
+    vi.mocked(updateStickyNote).mockImplementationOnce(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectFirst = reject;
+        }),
+    );
+    vi.mocked(updateStickyNote).mockResolvedValueOnce(undefined);
+
+    ensureStickyNotesLoaded("profile-1");
+    await vi.waitFor(() => expect(getStickyNotesSnapshot()).not.toBeNull());
+
+    // First save starts (slow) but hasn't resolved yet.
+    updateStickyNoteShared("note-1", { content: "first edit" });
+    // Second save starts and resolves before the first one fails.
+    updateStickyNoteShared("note-1", { content: "second edit" });
+    await vi.waitFor(() =>
+      expect(getStickyNotesSnapshot()?.find((n) => n.id === "note-1")?.content).toBe(
+        "second edit",
+      ),
+    );
+
+    // Now the stale first save fails -- it must not clobber the successfully-saved second edit.
+    rejectFirst(new Error("network error"));
+    await Promise.resolve().then(() => Promise.resolve());
+
+    expect(getStickyNotesSnapshot()?.find((n) => n.id === "note-1")?.content).toBe(
+      "second edit",
+    );
+  });
 });
