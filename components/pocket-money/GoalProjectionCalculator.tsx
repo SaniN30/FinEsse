@@ -2,33 +2,37 @@
 
 import { useMemo, useState } from "react";
 import { projectSavingsGoal } from "@/lib/pocket-money/projection";
-
-function formatCents(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
-}
+import { currencyOrDefault } from "@/lib/currency/config";
+import { displayAmountToUsdCents, formatUsdCents } from "@/lib/currency/format";
 
 interface GoalProjectionCalculatorProps {
   goalName: string;
   balanceCents: number;
   targetAmountCents: number | null;
+  currency: string | null;
 }
 
 /**
  * A pure "what if" tool: it never touches the ledger, only previews how
  * many weeks a hypothetical recurring contribution would take to reach the
- * goal. Actual deposits still go through GoalTransferForm.
+ * goal. Actual deposits still go through GoalTransferForm. The contribution
+ * input is entered in the profile's display currency and converted to USD
+ * cents (the ledger's canonical unit) before being handed to
+ * projectSavingsGoal, same as GoalTransferForm/FundWalletForm/CreateGoalForm.
  */
 export function GoalProjectionCalculator({
   goalName,
   balanceCents,
   targetAmountCents,
+  currency,
 }: GoalProjectionCalculatorProps) {
+  const resolvedCurrency = currencyOrDefault(currency);
   const [contribution, setContribution] = useState("5.00");
   const [frequencyWeeks, setFrequencyWeeks] = useState("1");
 
   const result = useMemo(() => {
     if (!targetAmountCents) return null;
-    const contributionCents = Math.round(Number(contribution) * 100);
+    const contributionCents = displayAmountToUsdCents(Number(contribution), resolvedCurrency);
     const weeks = Number(frequencyWeeks);
     if (!Number.isFinite(contributionCents) || !Number.isFinite(weeks)) return null;
 
@@ -38,7 +42,7 @@ export function GoalProjectionCalculator({
       contributionCents,
       frequencyWeeks: weeks,
     });
-  }, [balanceCents, targetAmountCents, contribution, frequencyWeeks]);
+  }, [balanceCents, targetAmountCents, contribution, frequencyWeeks, resolvedCurrency]);
 
   if (!targetAmountCents) return null;
 
@@ -50,7 +54,9 @@ export function GoalProjectionCalculator({
 
       <div className="grid grid-cols-2 gap-3">
         <label className="block text-sm">
-          <span className="mb-1 block text-xs font-medium text-muted-foreground">Amount (USD)</span>
+          <span className="mb-1 block text-xs font-medium text-muted-foreground">
+            Amount ({resolvedCurrency})
+          </span>
           <input
             type="number"
             min="0"
@@ -79,12 +85,14 @@ export function GoalProjectionCalculator({
         ) : result.weeksToGoal === 0 ? (
           <p className="font-medium text-accent-600">You&apos;ve already reached this goal.</p>
         ) : result.weeksToGoal === null ? (
-          <p className="text-muted-foreground">Enter a contribution greater than $0 to project a date.</p>
+          <p className="text-muted-foreground">
+            Enter a contribution greater than {formatUsdCents(0, currency)} to project a date.
+          </p>
         ) : (
           <p>
             You&apos;ll hit{" "}
             <span className="font-semibold tabular-nums">
-              {formatCents(targetAmountCents)}
+              {formatUsdCents(targetAmountCents, currency)}
             </span>{" "}
             in about{" "}
             <span className="font-semibold tabular-nums">{result.weeksToGoal}</span> week
@@ -108,7 +116,7 @@ export function GoalProjectionCalculator({
             return (
               <div
                 key={point.week}
-                title={`Week ${point.week}: ${formatCents(point.balanceCents)}`}
+                title={`Week ${point.week}: ${formatUsdCents(point.balanceCents, currency)}`}
                 className="w-3 shrink-0 rounded-t bg-accent-400/70"
                 style={{ height: `${Math.max(4, heightPercent)}px`, maxHeight: "80px" }}
               />

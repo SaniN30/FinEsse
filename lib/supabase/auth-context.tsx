@@ -27,7 +27,7 @@ async function fetchProfile(userId: string): Promise<Profile | null> {
   const supabase = getSupabaseClient();
   const { data } = await supabase
     .from("profiles")
-    .select("id, role, parent_id, tier, display_name, education_level")
+    .select("id, role, parent_id, tier, display_name, education_level, currency")
     .eq("id", userId)
     .maybeSingle();
 

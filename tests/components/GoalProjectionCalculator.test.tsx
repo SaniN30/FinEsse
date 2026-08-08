@@ -57,7 +57,7 @@ describe("GoalProjectionCalculator", () => {
     fireEvent.change(screen.getByLabelText("Amount (USD)"), { target: { value: "0" } });
 
     expect(
-      screen.getByText("Enter a contribution greater than $0 to project a date."),
+      screen.getByText("Enter a contribution greater than $0.00 to project a date."),
     ).toBeInTheDocument();
   });
 });

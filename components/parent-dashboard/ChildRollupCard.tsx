@@ -4,12 +4,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ProgressBar } from "@/components/ProgressBar";
 import { cn } from "@/lib/cn";
-import { updateChildTier } from "@/lib/parent-dashboard/queries";
+import { updateChildTier, updateChildCurrency } from "@/lib/parent-dashboard/queries";
+import { CURRENCY_OPTIONS, currencyOrDefault, type CurrencyCode } from "@/lib/currency/config";
+import { formatUsdCents } from "@/lib/currency/format";
 import type { ParentDashboardChild, Tier } from "@/lib/supabase/types";
-
-function formatCents(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
-}
 
 const tierLabel: Record<Tier, string> = {
   school: "School",
@@ -52,6 +50,9 @@ export function ChildRollupCard({ child, index = 0, onTierChange }: ChildRollupC
   const tier = child.tier ?? "school";
   const [isSavingTier, setIsSavingTier] = useState(false);
   const [tierError, setTierError] = useState<string | null>(null);
+  const [currency, setCurrency] = useState<CurrencyCode>(currencyOrDefault(child.currency));
+  const [isSavingCurrency, setIsSavingCurrency] = useState(false);
+  const [currencyError, setCurrencyError] = useState<string | null>(null);
 
   async function handleTierChange(nextTier: Tier) {
     if (nextTier === tier) return;
@@ -64,6 +65,22 @@ export function ChildRollupCard({ child, index = 0, onTierChange }: ChildRollupC
       setTierError(err instanceof Error ? err.message : "Couldn't change tier.");
     } finally {
       setIsSavingTier(false);
+    }
+  }
+
+  async function handleCurrencyChange(nextCurrency: CurrencyCode) {
+    if (nextCurrency === currency) return;
+    const previousCurrency = currency;
+    setCurrency(nextCurrency);
+    setIsSavingCurrency(true);
+    setCurrencyError(null);
+    try {
+      await updateChildCurrency(child.profile_id, nextCurrency);
+    } catch (err: unknown) {
+      setCurrency(previousCurrency);
+      setCurrencyError(err instanceof Error ? err.message : "Couldn't change currency.");
+    } finally {
+      setIsSavingCurrency(false);
     }
   }
 
@@ -100,6 +117,23 @@ export function ChildRollupCard({ child, index = 0, onTierChange }: ChildRollupC
               <option value="job_ready">{tierLabel.job_ready}</option>
             </select>
             {tierError ? <p className="mt-1 text-xs text-red-600">{tierError}</p> : null}
+            <label className="sr-only" htmlFor={`currency-${child.profile_id}`}>
+              Currency for {child.display_name ?? "this student"}
+            </label>
+            <select
+              id={`currency-${child.profile_id}`}
+              value={currency}
+              disabled={isSavingCurrency}
+              onChange={(event) => handleCurrencyChange(event.target.value as CurrencyCode)}
+              className="mt-1 block rounded-full border border-surface-border bg-background px-2 py-0.5 text-xs font-medium text-muted-foreground"
+            >
+              {CURRENCY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.value}
+                </option>
+              ))}
+            </select>
+            {currencyError ? <p className="mt-1 text-xs text-red-600">{currencyError}</p> : null}
           </div>
         </div>
         <div className="text-right">
@@ -119,7 +153,7 @@ export function ChildRollupCard({ child, index = 0, onTierChange }: ChildRollupC
         <div className="rounded-[calc(var(--radius-card)-0.5rem)] border border-surface-border bg-background/40 p-3">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">Wallet</p>
           <p className="text-lg font-semibold tabular-nums">
-            {formatCents(child.wallet_balance_cents)}
+            {formatUsdCents(child.wallet_balance_cents, currency)}
           </p>
         </div>
         <div className="rounded-[calc(var(--radius-card)-0.5rem)] border border-surface-border bg-background/40 p-3">
@@ -135,8 +169,8 @@ export function ChildRollupCard({ child, index = 0, onTierChange }: ChildRollupC
               <ProgressBar
                 value={goal.percent_complete ?? 0}
                 colorClassName="bg-accent-500"
-                label={`${goal.name} — ${formatCents(goal.balance_cents)}${
-                  goal.target_amount_cents ? ` of ${formatCents(goal.target_amount_cents)}` : ""
+                label={`${goal.name} — ${formatUsdCents(goal.balance_cents, currency)}${
+                  goal.target_amount_cents ? ` of ${formatUsdCents(goal.target_amount_cents, currency)}` : ""
                 }`}
               />
             </div>

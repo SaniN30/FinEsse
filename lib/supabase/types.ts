@@ -14,6 +14,7 @@ export interface Profile {
   education_level?: EducationLevel | null;
   institution_name?: string | null;
   phone_number?: string | null;
+  currency?: string | null;
 }
 
 export interface Skill {
@@ -121,6 +122,7 @@ export interface ParentDashboardChild {
   parent_id: string | null;
   display_name: string | null;
   tier: Tier | null;
+  currency: string | null;
   total_xp: number;
   avg_mastery_pct: number | null;
   wallet_balance_cents: number;

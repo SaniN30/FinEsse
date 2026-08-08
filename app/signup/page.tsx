@@ -9,6 +9,7 @@ import { SelectField } from "@/components/auth/SelectField";
 import { Button } from "@/components/Button";
 import { signUpParent } from "@/lib/supabase/auth-actions";
 import { educationLevelToTier, tierBasePath } from "@/lib/supabase/profile-helpers";
+import { CURRENCY_OPTIONS, DEFAULT_CURRENCY, type CurrencyCode } from "@/lib/currency/config";
 import type { EducationLevel } from "@/lib/supabase/types";
 
 const EDUCATION_LEVEL_OPTIONS: { value: EducationLevel; label: string }[] = [
@@ -32,6 +33,7 @@ export default function SignUpPage() {
   const [educationLevel, setEducationLevel] = useState<EducationLevel | "">("");
   const [institutionName, setInstitutionName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [currency, setCurrency] = useState<CurrencyCode>(DEFAULT_CURRENCY);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
@@ -65,6 +67,7 @@ export default function SignUpPage() {
       educationLevel,
       institutionName: institutionName.trim() || null,
       phoneNumber: phoneNumber.trim(),
+      currency,
     });
 
     setSubmitting(false);
@@ -186,6 +189,14 @@ export default function SignUpPage() {
           onChange={(e) => setPhoneNumber(e.target.value)}
           required
           autoComplete="tel"
+        />
+        <SelectField
+          label="Pocket Money currency"
+          name="currency"
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+          options={CURRENCY_OPTIONS}
+          required
         />
         {error ? <p className="mb-4 text-sm font-medium text-red-500">{error}</p> : null}
         <Button type="submit" size="lg" className="w-full" disabled={submitting}>

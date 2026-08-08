@@ -48,6 +48,7 @@ One row per person (parent or student), `id` = `auth.users.id`.
 | `phone_number` | parent's phone number, collected at `/signup`; unique partial index (`where phone_number is not null`) plus the `is_phone_number_taken(text)` security-definer RPC reject duplicates pre-signup, with a `23505` unique_violation on insert as the race-case fallback |
 | `consent_id` | FK to `parental_consents`, required for students; a unique partial index (`idx_profiles_consent_id_unique`) prevents the same consent record from being reused for more than one student login |
 | `data_retention_requested_at` | set when a deletion/retention request is recorded, for GDPR-K/COPPA compliance |
+| `currency` | per-profile display currency, `not null default 'USD'`, checked against a fixed 7-code enum (USD/INR/GBP/EUR/CAD/AUD/JPY); the pocket-money ledger below stays canonical USD cents regardless — see AGENTS.md's "Multi-currency pocket money" for the display/input conversion layer |
 
 `education_level`/`institution_name`/`phone_number` are collected only on the parent `/signup` flow, not `/create-student` — student accounts intentionally collect no real contact info (data minimization). No RLS changes were needed: the existing `profiles_select`/`profiles_update` policies already scope every column row-wise.
 

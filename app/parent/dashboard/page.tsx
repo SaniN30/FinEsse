@@ -11,10 +11,7 @@ import { useAuth } from "@/lib/supabase/auth-context";
 import { isParentWithChildFlow, tierBasePath } from "@/lib/supabase/profile-helpers";
 import { fetchParentDashboardChildren } from "@/lib/parent-dashboard/queries";
 import type { ParentDashboardChild } from "@/lib/supabase/types";
-
-function formatCents(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
-}
+import { formatUsdCents } from "@/lib/currency/format";
 
 /**
  * Plan calls for a "combined stats strip — total saved across children,
@@ -23,6 +20,11 @@ function formatCents(cents: number): string {
  * the schema/views — see BACKEND.md), so only the total-saved figure, which
  * is derivable from wallet_balance_cents + savings goal balances, is shown
  * here; the weekly-XP stat is deliberately skipped rather than invented.
+ *
+ * Children can each have their own display currency, so a per-child sum
+ * can't be shown in a single non-canonical currency -- this always renders
+ * in the ledger's canonical USD, labeled explicitly, rather than picking
+ * one child's currency arbitrarily.
  */
 function CombinedStatsStrip({ childProfiles }: { childProfiles: ParentDashboardChild[] }) {
   if (childProfiles.length < 2) return null;
@@ -34,8 +36,8 @@ function CombinedStatsStrip({ childProfiles }: { childProfiles: ParentDashboardC
 
   return (
     <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-surface-border bg-surface px-5 py-3 shadow-soft">
-      <span className="text-sm font-medium text-muted-foreground">Total saved across children</span>
-      <span className="text-lg font-semibold tabular-nums">{formatCents(totalSavedCents)}</span>
+      <span className="text-sm font-medium text-muted-foreground">Total saved across children (USD)</span>
+      <span className="text-lg font-semibold tabular-nums">{formatUsdCents(totalSavedCents, "USD")}</span>
     </div>
   );
 }

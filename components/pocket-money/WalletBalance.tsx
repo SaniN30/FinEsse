@@ -1,20 +1,12 @@
+import { formatUsdCents } from "@/lib/currency/format";
 import type { AccountBalance } from "@/lib/supabase/types";
 
-/**
- * Deposits can no longer drive the wallet negative (see
- * deposit_to_savings_goal's balance check in
- * supabase/migrations/00000000000024_pocket_money_funding.sql), but this
- * stays defensive in case a dev/test database still has historical
- * corrupted data -- a negative balance should render as an unmistakable
- * "owed" state, never a confusing plain dollar amount.
- */
-function formatCents(cents: number): string {
-  const isNegative = cents < 0;
-  const amount = `$${(Math.abs(cents) / 100).toFixed(2)}`;
-  return isNegative ? `-${amount}` : amount;
+interface WalletBalanceProps {
+  accounts: AccountBalance[];
+  currency: string | null;
 }
 
-export function WalletBalance({ accounts }: { accounts: AccountBalance[] }) {
+export function WalletBalance({ accounts, currency }: WalletBalanceProps) {
   const wallet = accounts.find((account) => account.type === "student_wallet");
   const balanceCents = wallet?.balance_cents ?? 0;
   const isNegative = balanceCents < 0;
@@ -27,7 +19,7 @@ export function WalletBalance({ accounts }: { accounts: AccountBalance[] }) {
           isNegative ? "text-red-600" : ""
         }`}
       >
-        {formatCents(balanceCents)}
+        {formatUsdCents(balanceCents, currency)}
       </p>
       {isNegative ? (
         <p className="mt-2 text-sm text-red-600">

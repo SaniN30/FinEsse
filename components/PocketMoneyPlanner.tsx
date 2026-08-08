@@ -12,7 +12,7 @@ import { ParentGoalsView } from "@/components/pocket-money/ParentGoalsView";
 import { Skeleton } from "@/components/Skeleton";
 import type { AccountBalance, SavingsGoalProgress } from "@/lib/supabase/types";
 
-function StudentPlanner({ profileId }: { profileId: string }) {
+function StudentPlanner({ profileId, currency }: { profileId: string; currency: string | null }) {
   const [goals, setGoals] = useState<SavingsGoalProgress[] | null>(null);
   const [accounts, setAccounts] = useState<AccountBalance[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -47,15 +47,21 @@ function StudentPlanner({ profileId }: { profileId: string }) {
 
   return (
     <div>
-      <WalletBalance accounts={accounts} />
+      <WalletBalance accounts={accounts} currency={currency} />
 
       <div className="mb-8 grid gap-5 sm:grid-cols-2">
         {goals.map((goal, index) => (
-          <SavingsGoalCard key={goal.account_id} goal={goal} onChanged={load} index={index} />
+          <SavingsGoalCard
+            key={goal.account_id}
+            goal={goal}
+            currency={currency}
+            onChanged={load}
+            index={index}
+          />
         ))}
       </div>
 
-      <CreateGoalForm onCreated={load} />
+      <CreateGoalForm currency={currency} onCreated={load} />
     </div>
   );
 }
@@ -78,7 +84,7 @@ export function PocketMoneyPlanner() {
         {isLoading ? (
           <Skeleton className="h-24 w-full" />
         ) : profile ? (
-          <StudentPlanner profileId={profile.id} />
+          <StudentPlanner profileId={profile.id} currency={profile.currency ?? null} />
         ) : null}
       </motion.section>
     );
