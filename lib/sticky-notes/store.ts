@@ -101,16 +101,23 @@ export function patchStickyNoteLocal(id: string, input: UpdateStickyNoteInput): 
   notify();
 }
 
+const updateSeqByNoteId = new Map<string, number>();
+
 /**
  * A failed update must not leave the UI showing a "Saved" state for content the server
  * never received — reverting the optimistic patch on rejection surfaces the loss instead
- * of silently diverging from what's actually persisted.
+ * of silently diverging from what's actually persisted. Reverts only apply if this call is
+ * still the most recent in-flight update for the note, so an earlier call failing after a
+ * later call has already succeeded can't clobber the later, successfully-persisted change.
  */
 export function updateStickyNoteShared(id: string, input: UpdateStickyNoteInput): void {
   const previous = (notes ?? []).find((note) => note.id === id);
+  const seq = (updateSeqByNoteId.get(id) ?? 0) + 1;
+  updateSeqByNoteId.set(id, seq);
   patchStickyNoteLocal(id, input);
   updateStickyNote(id, input).catch(() => {
     if (!previous) return;
+    if (updateSeqByNoteId.get(id) !== seq) return;
     notes = (notes ?? []).map((note) => (note.id === id ? previous : note));
     notify();
   });
