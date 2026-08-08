@@ -317,7 +317,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
   ],
 
   // ---- School ----
-  "00000000-0000-0000-0001-000000000001:2":   [
+  "00000000-0000-0000-0001-000000000001:2": [
     {
       type: "concept",
       title: "The barter problem",
@@ -338,7 +338,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Money exists to solve barter's core problem: it lets trade happen between people whose wants don't directly match, because everyone accepts and trusts it as a stand-in for real value.",
     },
   ],
-  "00000000-0000-0000-0001-000000000001:3":   [
+  "00000000-0000-0000-0001-000000000001:3": [
     {
       type: "concept",
       title: "Money's three jobs",
@@ -363,7 +363,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Coins, notes, and bank balances became standard money because they do all three jobs — hold value, divide easily, and are widely accepted — better than almost anything else.",
     },
   ],
-  "00000000-0000-0000-0001-000000000001:1":   [
+  "00000000-0000-0000-0001-000000000001:1": [
     {
       type: "concept",
       title: "Why money replaced bartering",
@@ -388,7 +388,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Money works because everyone agrees it has value — whether it's a coin in your pocket or a number in a bank app, that shared trust is what makes it usable.",
     },
   ],
-  "00000000-0000-0000-0001-000000000002:2":   [
+  "00000000-0000-0000-0001-000000000002:2": [
     {
       type: "concept",
       title: "Needs with wants layered on top",
@@ -413,7 +413,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Sorting purchases honestly — not \"is this nice?\" but \"would something bad happen soon without it?\" — keeps wants from crowding out real needs.",
     },
   ],
-  "00000000-0000-0000-0001-000000000002:3":   [
+  "00000000-0000-0000-0001-000000000002:3": [
     {
       type: "concept",
       title: "Needs-first ordering",
@@ -442,7 +442,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Covering needs first with real money, then spending only what remains on wants, is a safer order than hoping needs get covered after wants are already paid for.",
     },
   ],
-  "00000000-0000-0000-0001-000000000002:1":   [
+  "00000000-0000-0000-0001-000000000002:1": [
     {
       type: "concept",
       title: "Needs vs. wants",
@@ -463,7 +463,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Good money habits start with covering needs before spending on wants.",
     },
   ],
-  "00000000-0000-0000-0001-000000000003:2":   [
+  "00000000-0000-0000-0001-000000000003:2": [
     {
       type: "concept",
       title: "Pay yourself first",
@@ -487,7 +487,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Saving a smaller amount first, consistently, beats hoping a larger amount is left over — reliability matters more than the size of any single saving.",
     },
   ],
-  "00000000-0000-0000-0001-000000000003:3":   [
+  "00000000-0000-0000-0001-000000000003:3": [
     {
       type: "concept",
       title: "Separation matters as much as amount",
@@ -512,7 +512,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A labelled jar or a separate account — even without much interest — creates a real barrier against accidentally spending savings, and makes progress toward a goal visible.",
     },
   ],
-  "00000000-0000-0000-0001-000000000003:1":   [
+  "00000000-0000-0000-0001-000000000003:1": [
     {
       type: "concept",
       title: "What saving means",
@@ -528,7 +528,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A specific savings goal makes saving easier to stick with than a vague intention to \"save more.\"",
     },
   ],
-  "00000000-0000-0000-0001-000000000004:2":   [
+  "00000000-0000-0000-0001-000000000004:2": [
     {
       type: "concept",
       title: "Not all income is equally reliable",
@@ -553,7 +553,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Knowing which part of your pocket money is reliable versus a bonus prevents planning spending around money that might not show up.",
     },
   ],
-  "00000000-0000-0000-0001-000000000004:3":   [
+  "00000000-0000-0000-0001-000000000004:3": [
     {
       type: "concept",
       title: "A consistent split beats a case-by-case decision",
@@ -574,7 +574,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A percentage-based savings rule, applied automatically to every bit of income, removes the need to decide fresh each time and scales naturally with how much is earned.",
     },
   ],
-  "00000000-0000-0000-0001-000000000004:1":   [
+  "00000000-0000-0000-0001-000000000004:1": [
     {
       type: "concept",
       title: "Ways to earn pocket money",
@@ -590,7 +590,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Earning your own money and deciding how to split it between spending and saving is good practice for managing money as an adult.",
     },
   ],
-  "00000000-0000-0000-0001-000000000005:2":   [
+  "00000000-0000-0000-0001-000000000005:2": [
     {
       type: "concept",
       title: "Rate and time both drive compound growth",
@@ -620,7 +620,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Extra years of compounding can matter as much as a much bigger contribution made later — starting early is one of the most powerful levers in saving.",
     },
   ],
-  "00000000-0000-0000-0001-000000000005:3":   [
+  "00000000-0000-0000-0001-000000000005:3": [
     {
       type: "concept",
       title: "Compounding frequency matters",
@@ -645,7 +645,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "More frequent compounding produces a slightly higher actual return than the same headline rate compounded just once a year — a real detail worth checking in the fine print.",
     },
   ],
-  "00000000-0000-0000-0001-000000000006:2":   [
+  "00000000-0000-0000-0001-000000000006:2": [
     {
       type: "concept",
       title: "Track before you plan",
@@ -670,7 +670,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A budget is only as good as the numbers it's built on — tracking real spending first, even for just a couple of weeks, makes the resulting plan far more likely to actually work.",
     },
   ],
-  "00000000-0000-0000-0001-000000000006:3":   [
+  "00000000-0000-0000-0001-000000000006:3": [
     {
       type: "concept",
       title: "Budgets need regular review, not just a plan",
@@ -695,7 +695,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Checking a budget regularly against real spending — and being willing to adjust it — is what makes budgeting a genuinely useful ongoing habit rather than a one-time plan that quietly stops matching reality.",
     },
   ],
-  "00000000-0000-0000-0001-000000000007:2":   [
+  "00000000-0000-0000-0001-000000000007:2": [
     {
       type: "concept",
       title: "Where bank interest actually comes from",
@@ -726,7 +726,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Savings interest exists because banks lend deposited money onward — savings accounts often pay more than current accounts because that money is expected to sit longer, making it more useful for the bank to lend against.",
     },
   ],
-  "00000000-0000-0000-0001-000000000007:3":   [
+  "00000000-0000-0000-0001-000000000007:3": [
     {
       type: "concept",
       title: "Inflation compounds too",
@@ -755,7 +755,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Because inflation compounds, even a modest annual rate adds up to a much larger increase over 10-20 years than a simple multiplication suggests — a useful reason to plan savings and goals with that compounding in mind.",
     },
   ],
-  "00000000-0000-0000-0001-000000000008:2":   [
+  "00000000-0000-0000-0001-000000000008:2": [
     {
       type: "concept",
       title: "Fraud protection vs. being tricked into authorising",
@@ -784,7 +784,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "This is exactly why scams often try to get you to willingly send or approve a payment yourself, rather than stealing your details directly — it's the angle that sidesteps most fraud protection.",
     },
   ],
-  "00000000-0000-0000-0001-000000000008:3":   [
+  "00000000-0000-0000-0001-000000000008:3": [
     {
       type: "keyterm",
       term: "Two-factor authentication (2FA)",
@@ -810,7 +810,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Two-factor authentication and unique passwords for important accounts are simple, mostly free habits that sharply limit the damage a single leaked password or breach can cause.",
     },
   ],
-  "00000000-0000-0000-0001-000000000008:1":   [
+  "00000000-0000-0000-0001-000000000008:1": [
     {
       type: "concept",
       title: "Digital payments remove friction",
@@ -835,7 +835,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Treat any request for your PIN or password by message or call as suspicious, and check through the real app or website directly instead of a link — the core habit that avoids most digital payment scams.",
     },
   ],
-  "00000000-0000-0000-0001-000000000009:2":   [
+  "00000000-0000-0000-0001-000000000009:2": [
     {
       type: "concept",
       title: "Diversification reduces single-company risk",
@@ -864,7 +864,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Diversifying across many investments, often through a fund, limits how much damage any single company's bad performance can do — a core way to manage investing risk.",
     },
   ],
-  "00000000-0000-0000-0001-000000000009:3":   [
+  "00000000-0000-0000-0001-000000000009:3": [
     {
       type: "concept",
       title: "Fees compound too — even small ones matter",
@@ -893,7 +893,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A 1-percentage-point difference in annual fee can mean thousands of pounds' difference over decades, because fees compound the same way growth does — always compare fees alongside expected returns.",
     },
   ],
-  "00000000-0000-0000-0001-000000000009:1":   [
+  "00000000-0000-0000-0001-000000000009:1": [
     {
       type: "concept",
       title: "Saving vs. investing",
@@ -914,7 +914,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Match the choice to the timeframe — savings for money needed soon, investing only for money that can stay untouched for years — rather than chasing the highest possible short-term return.",
     },
   ],
-  "00000000-0000-0000-0001-000000000010:2":   [
+  "00000000-0000-0000-0001-000000000010:2": [
     {
       type: "concept",
       title: "Tax bands apply only to the portion within them",
@@ -944,7 +944,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Tax bands only tax the income within each band at that band's rate — earning more always results in more take-home pay overall in a banded system, never less.",
     },
   ],
-  "00000000-0000-0000-0001-000000000010:3":   [
+  "00000000-0000-0000-0001-000000000010:3": [
     {
       type: "concept",
       title: "Tax as long-term shared insurance",
@@ -969,7 +969,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Tax-funded systems like healthcare and pensions work as shared, long-term insurance — the value isn't in one year's personal usage, it's in the system being there for everyone whenever they need it.",
     },
   ],
-  "00000000-0000-0000-0001-000000000010:1":   [
+  "00000000-0000-0000-0001-000000000010:1": [
     {
       type: "concept",
       title: "What tax is for",
@@ -994,7 +994,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "The amount earned or the sticker price is often not the full amount that ends up in your pocket or that you pay at the till, because of automatic income tax and added sales tax.",
     },
   ],
-  "00000000-0000-0000-0001-000000000011:2":   [
+  "00000000-0000-0000-0001-000000000011:2": [
     {
       type: "concept",
       title: "Break-even point",
@@ -1020,7 +1020,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Knowing the break-even point in advance turns starting a venture from a hope into a checkable target: how many sales are actually needed before it's genuinely profitable.",
     },
   ],
-  "00000000-0000-0000-0001-000000000011:3":   [
+  "00000000-0000-0000-0001-000000000011:3": [
     {
       type: "concept",
       title: "Pricing needs to cover more than materials",
@@ -1045,7 +1045,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A sustainable price covers true costs — including a fair value for time — plus a margin, checked against what similar products or services actually sell for elsewhere.",
     },
   ],
-  "00000000-0000-0000-0001-000000000011:4":   [
+  "00000000-0000-0000-0001-000000000011:4": [
     {
       type: "concept",
       title: "Start small to limit risk",
@@ -1070,7 +1070,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A small trial batch turns a guess about demand into real evidence, while keeping the financial risk of an unproven idea low.",
     },
   ],
-  "00000000-0000-0000-0001-000000000011:1":   [
+  "00000000-0000-0000-0001-000000000011:1": [
     {
       type: "concept",
       title: "Revenue, costs, and profit",
@@ -1095,7 +1095,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A venture needs enough sales to cover its fixed costs before each additional sale starts contributing real profit.",
     },
   ],
-  "00000000-0000-0000-0001-000000000012:2":   [
+  "00000000-0000-0000-0001-000000000012:2": [
     {
       type: "concept",
       title: "Credit history affects terms, not just approval",
@@ -1124,7 +1124,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A strong credit history, built by consistently repaying on time, isn't just about being approved for future borrowing — it directly affects how much that future borrowing actually costs.",
     },
   ],
-  "00000000-0000-0000-0001-000000000012:3":   [
+  "00000000-0000-0000-0001-000000000012:3": [
     {
       type: "concept",
       title: "What the debt is used for matters",
@@ -1153,7 +1153,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "The real question for any debt isn't just the interest rate — it's whether what the money was actually spent on realistically has a chance of being worth more than what borrowing it costs.",
     },
   ],
-  "00000000-0000-0000-0001-000000000012:1":   [
+  "00000000-0000-0000-0001-000000000012:1": [
     {
       type: "concept",
       title: "What credit is",
@@ -1174,7 +1174,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Repaying reliably and on time builds a credit history that affects how easily and cheaply you can borrow in future.",
     },
   ],
-  "00000000-0000-0000-0001-000000000013:2":   [
+  "00000000-0000-0000-0001-000000000013:2": [
     {
       type: "keyterm",
       term: "Excess (deductible)",
@@ -1203,7 +1203,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Comparing insurance policies means weighing excess and premium together, not just the headline premium — the better choice depends on how likely and how large a claim is expected to be.",
     },
   ],
-  "00000000-0000-0000-0001-000000000013:3":   [
+  "00000000-0000-0000-0001-000000000013:3": [
     {
       type: "concept",
       title: "Insurance needs genuine uncertainty",
@@ -1228,7 +1228,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Insurance is built around genuine uncertainty shared across a large group — that's why it doesn't (and shouldn't) cover losses that are already certain, already happened, or deliberately self-caused.",
     },
   ],
-  "00000000-0000-0000-0001-000000000013:1":   [
+  "00000000-0000-0000-0001-000000000013:1": [
     {
       type: "concept",
       title: "What insurance trades",
@@ -1254,7 +1254,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Not claiming in a given year is not wasted money — it means the covered bad event did not happen, which is exactly what everyone paying in is hoping for.",
     },
   ],
-  "00000000-0000-0000-0001-000000000014:2":   [
+  "00000000-0000-0000-0001-000000000014:2": [
     {
       type: "concept",
       title: "Pricing and layout shape perception, not value",
@@ -1279,7 +1279,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Recognising pricing and layout techniques for what they are — designed to influence, not to indicate value — helps turn automatic purchases into deliberate ones.",
     },
   ],
-  "00000000-0000-0000-0001-000000000014:3":   [
+  "00000000-0000-0000-0001-000000000014:3": [
     {
       type: "concept",
       title: "Two different kinds of \"return\"",
@@ -1308,7 +1308,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Checking a shop's return policy before buying an expensive item, and knowing the difference between a voluntary policy and a legal right for faulty goods, avoids being stuck with a bad purchase.",
     },
   ],
-  "00000000-0000-0000-0001-000000000014:1":   [
+  "00000000-0000-0000-0001-000000000014:1": [
     {
       type: "concept",
       title: "Unit price beats sticker price",
@@ -1328,7 +1328,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Discounts and bulk sizes are only genuine savings if the final unit price is actually lower and you will realistically use the full quantity.",
     },
   ],
-  "00000000-0000-0000-0001-000000000015:2":   [
+  "00000000-0000-0000-0001-000000000015:2": [
     {
       type: "concept",
       title: "Match the approach to the timescale",
@@ -1357,7 +1357,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A goal's timescale should drive the approach used to save for it — the right approach for a 3-month goal and a 6-year goal is rarely the same one.",
     },
   ],
-  "00000000-0000-0000-0001-000000000015:3":   [
+  "00000000-0000-0000-0001-000000000015:3": [
     {
       type: "concept",
       title: "Prioritising multiple goals deliberately",
@@ -1386,7 +1386,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "With multiple active goals, deliberately prioritising by genuine importance — often safety before pure enjoyment — gets the goals that matter most funded sooner, without abandoning the others entirely.",
     },
   ],
-  "00000000-0000-0000-0001-000000000015:1":   [
+  "00000000-0000-0000-0001-000000000015:1": [
     {
       type: "concept",
       title: "Turning intentions into goals",
@@ -1409,7 +1409,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
   ],
 
   // ---- College ----
-  "00000000-0000-0000-0001-000000000101:2":   [
+  "00000000-0000-0000-0001-000000000101:2": [
     {
       type: "concept",
       title: "Institution shapes the role",
@@ -1441,7 +1441,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Evaluate a finance career by both the role and the institution type it sits inside — the combination, not the title alone, determines what the job actually feels like day to day.",
     },
   ],
-  "00000000-0000-0000-0001-000000000101:3":   [
+  "00000000-0000-0000-0001-000000000101:3": [
     {
       type: "concept",
       title: "Recruiting mirrors the job",
@@ -1466,7 +1466,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Match your preparation to the specific role and institution type you're targeting — the recruiting process for each finance path tests genuinely different skills.",
     },
   ],
-  "00000000-0000-0000-0001-000000000101:1":   [
+  "00000000-0000-0000-0001-000000000101:1": [
     {
       type: "concept",
       title: "There is no single \"finance job\"",
@@ -1498,7 +1498,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Before targeting \"a career in finance,\" identify which specific role's actual day-to-day work fits your interests and strengths — the label \"finance\" covers roles with almost nothing in common.",
     },
   ],
-  "00000000-0000-0000-0001-000000000102:2":   [
+  "00000000-0000-0000-0001-000000000102:2": [
     {
       type: "concept",
       title: "Two kinds of claim: equity and debt",
@@ -1529,7 +1529,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Equity and debt aren't just \"two ways to raise money\" — they represent fundamentally different risk/return claims, which is why a company's mix of the two (its capital structure) matters.",
     },
   ],
-  "00000000-0000-0000-0001-000000000102:3":   [
+  "00000000-0000-0000-0001-000000000102:3": [
     {
       type: "keyterm",
       term: "Derivative",
@@ -1563,7 +1563,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Derivatives derive their value from an underlying asset and can be used to either hedge (reduce risk) or speculate (take on risk) — the instrument is neutral; the purpose depends on the user.",
     },
   ],
-  "00000000-0000-0000-0001-000000000102:1":   [
+  "00000000-0000-0000-0001-000000000102:1": [
     {
       type: "concept",
       title: "Primary vs. secondary market",
@@ -1592,7 +1592,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Capital markets have two distinct stages: raising money (primary market) and trading it afterward (secondary market) — only the first stage moves cash to the issuer.",
     },
   ],
-  "00000000-0000-0000-0001-000000000103:2":   [
+  "00000000-0000-0000-0001-000000000103:2": [
     {
       type: "concept",
       title: "The two inputs that move a DCF the most",
@@ -1617,7 +1617,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A DCF is a spreadsheet built on two sensitive assumptions (discount rate and terminal growth) — a good analyst stress-tests these, not just the cash-flow forecasts themselves.",
     },
   ],
-  "00000000-0000-0000-0001-000000000103:3":   [
+  "00000000-0000-0000-0001-000000000103:3": [
     {
       type: "concept",
       title: "Comps lives or dies on peer selection",
@@ -1647,7 +1647,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Comps' reliability comes almost entirely from peer-group quality, not the ratio formula — always ask whether the peers are truly similar before trusting the multiple.",
     },
   ],
-  "00000000-0000-0000-0001-000000000103:1":   [
+  "00000000-0000-0000-0001-000000000103:1": [
     {
       type: "concept",
       title: "Two roads to the same question",
@@ -1677,7 +1677,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Comps and DCF answer \"what is this company worth\" from two different directions — market-relative pricing versus the company's own projected cash generation — and are usually used together, not alone.",
     },
   ],
-  "00000000-0000-0000-0001-000000000104:2":   [
+  "00000000-0000-0000-0001-000000000104:2": [
     {
       type: "concept",
       title: "The two links that connect the statements",
@@ -1702,7 +1702,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A model is only truly \"linked\" if net income flows into cash flow, and cash flow's ending balance plus retained earnings both flow into the balance sheet — verify these connections explicitly, don't assume them.",
     },
   ],
-  "00000000-0000-0000-0001-000000000104:3":   [
+  "00000000-0000-0000-0001-000000000104:3": [
     {
       type: "concept",
       title: "The balance check as a built-in error catcher",
@@ -1727,7 +1727,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Always build (and check) an explicit balance-check row before trusting any output from a three-statement model — it's the fastest way to catch a broken linkage.",
     },
   ],
-  "00000000-0000-0000-0001-000000000104:1":   [
+  "00000000-0000-0000-0001-000000000104:1": [
     {
       type: "concept",
       title: "One model, three linked statements",
@@ -1757,7 +1757,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A financial model's value comes from the statements being properly linked — a single changed assumption should update all three consistently, not just one.",
     },
   ],
-  "00000000-0000-0000-0001-000000000105:2":   [
+  "00000000-0000-0000-0001-000000000105:2": [
     {
       type: "concept",
       title: "ROE can be inflated by leverage, not just performance",
@@ -1786,7 +1786,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Always decompose ROE with the DuPont breakdown before comparing companies on it — a high ROE driven by leverage is a materially different (and riskier) story than one driven by genuine margin or efficiency.",
     },
   ],
-  "00000000-0000-0000-0001-000000000105:3":   [
+  "00000000-0000-0000-0001-000000000105:3": [
     {
       type: "concept",
       title: "Two benchmarks, two different questions",
@@ -1816,7 +1816,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Always check a ratio against both its own trend over time and its industry peer group — either benchmark alone can mislead, but together they distinguish genuine problems from normal industry variation.",
     },
   ],
-  "00000000-0000-0000-0001-000000000106:2":   [
+  "00000000-0000-0000-0001-000000000106:2": [
     {
       type: "concept",
       title: "Ratings combine ability and willingness to pay",
@@ -1846,7 +1846,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A credit rating is a synthesis of multiple factors, not a single ratio — and the investment-grade/junk boundary is a real threshold with market consequences, not just a symbolic label.",
     },
   ],
-  "00000000-0000-0000-0001-000000000106:3":   [
+  "00000000-0000-0000-0001-000000000106:3": [
     {
       type: "concept",
       title: "Seniority determines who gets paid first",
@@ -1876,7 +1876,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Seniority — where a debt instrument sits in the repayment order — determines recovery in a default independently of the borrower's overall creditworthiness, which is why lenders scrutinize the specific claim, not just the company.",
     },
   ],
-  "00000000-0000-0000-0001-000000000107:2":   [
+  "00000000-0000-0000-0001-000000000107:2": [
     {
       type: "concept",
       title: "The efficient frontier",
@@ -1909,7 +1909,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "The efficient frontier shows the best available risk/return combinations, but choosing a specific point on it is a personal risk-tolerance decision, not a math problem with one right answer.",
     },
   ],
-  "00000000-0000-0000-0001-000000000107:3":   [
+  "00000000-0000-0000-0001-000000000107:3": [
     {
       type: "concept",
       title: "Why portfolios drift from their target",
@@ -1934,7 +1934,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Rebalancing restores a portfolio's intended risk level and, as a byproduct, systematically trims recent winners and adds to laggards — a disciplined process, not a bet on which asset will do better next.",
     },
   ],
-  "00000000-0000-0000-0001-000000000107:1":   [
+  "00000000-0000-0000-0001-000000000107:1": [
     {
       type: "concept",
       title: "Diversification reduces risk, not necessarily return",
@@ -1959,7 +1959,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Expected portfolio return is a straightforward weighted average of the holdings; the diversification benefit shows up in lower-than-average volatility, and only when the holdings aren't perfectly correlated.",
     },
   ],
-  "00000000-0000-0000-0001-000000000108:2":   [
+  "00000000-0000-0000-0001-000000000108:2": [
     {
       type: "keyterm",
       term: "Tax shield",
@@ -1984,7 +1984,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Debt's tax deductibility (the tax shield) means its real cost to a company is always below its stated interest rate — capture this with the (1 − tax rate) adjustment when computing WACC.",
     },
   ],
-  "00000000-0000-0000-0001-000000000108:3":   [
+  "00000000-0000-0000-0001-000000000108:3": [
     {
       type: "concept",
       title: "WACC as a hurdle rate",
@@ -2013,7 +2013,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "WACC is a hurdle rate, not just a valuation input — it changes as a company's financing mix and risk change, and only projects expected to exceed it actually create value for capital providers.",
     },
   ],
-  "00000000-0000-0000-0001-000000000109:2":   [
+  "00000000-0000-0000-0001-000000000109:2": [
     {
       type: "concept",
       title: "Tracking makes the split real",
@@ -2043,7 +2043,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Pick the budget-tracking method you'll actually sustain, not the most detailed one on paper — consistency matters more than granularity.",
     },
   ],
-  "00000000-0000-0000-0001-000000000109:3":   [
+  "00000000-0000-0000-0001-000000000109:3": [
     {
       type: "concept",
       title: "Emergency fund vs. routine savings",
@@ -2068,7 +2068,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Build a modest, dedicated emergency fund separate from routine savings — even a small one changes what an unplanned expense actually costs by avoiding high-interest debt.",
     },
   ],
-  "00000000-0000-0000-0001-000000000109:1":   [
+  "00000000-0000-0000-0001-000000000109:1": [
     {
       type: "concept",
       title: "Fixed vs. variable costs",
@@ -2098,7 +2098,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Convert irregular income and irregular expenses into an equivalent monthly amount so no single month gets blindsided by a cost that was always coming.",
     },
   ],
-  "00000000-0000-0000-0001-000000000110:2":   [
+  "00000000-0000-0000-0001-000000000110:2": [
     {
       type: "concept",
       title: "Standard vs. income-driven repayment is a real trade-off",
@@ -2129,7 +2129,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Income-driven repayment is a genuine trade-off suited to specific situations (low current income, forgiveness eligibility), not a universally worse option — evaluate it against your actual income trajectory and forgiveness plans, not in isolation.",
     },
   ],
-  "00000000-0000-0000-0001-000000000110:3":   [
+  "00000000-0000-0000-0001-000000000110:3": [
     {
       type: "concept",
       title: "Refinancing federal debt is a one-way trade",
@@ -2154,7 +2154,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Only refinance federal loans into private ones if you're confident in stable future income and certain you won't need federal protections or forgiveness eligibility later — the decision is bigger than the interest rate alone.",
     },
   ],
-  "00000000-0000-0000-0001-000000000110:1":   [
+  "00000000-0000-0000-0001-000000000110:1": [
     {
       type: "table",
       caption: "Federal vs. private student loans",
@@ -2184,7 +2184,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Subsidized loans don't accrue interest in school; unsubsidized loans do from day one. Paying accruing interest during school, even without touching principal, meaningfully reduces total cost.",
     },
   ],
-  "00000000-0000-0000-0001-000000000111:2":   [
+  "00000000-0000-0000-0001-000000000111:2": [
     {
       type: "concept",
       title: "Overall vs. per-card utilization",
@@ -2214,7 +2214,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Watch utilization on each individual card, not just the aggregate — a limit increase on a near-maxed card (without new spending) can meaningfully improve a score by lowering that card's per-card ratio.",
     },
   ],
-  "00000000-0000-0000-0001-000000000111:3":   [
+  "00000000-0000-0000-0001-000000000111:3": [
     {
       type: "concept",
       title: "Closing an old card can hurt a score",
@@ -2239,7 +2239,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Keep old, no-fee credit cards open even if rarely used — closing them can lower a score by removing available credit and eventually shortening average account age, both difficult to rebuild quickly.",
     },
   ],
-  "00000000-0000-0000-0001-000000000111:1":   [
+  "00000000-0000-0000-0001-000000000111:1": [
     {
       type: "concept",
       title: "What builds a credit score",
@@ -2268,7 +2268,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Payment history and utilization matter most to a credit score; paying a statement in full every cycle avoids interest entirely thanks to the grace period.",
     },
   ],
-  "00000000-0000-0000-0001-000000000112:2":   [
+  "00000000-0000-0000-0001-000000000112:2": [
     {
       type: "concept",
       title: "Index funds vs. actively managed funds",
@@ -2297,7 +2297,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A fund's fee is a certain, compounding cost; beating the market is not certain — this is why low-cost index funds are the standard baseline recommendation for most long-term investors.",
     },
   ],
-  "00000000-0000-0000-0001-000000000112:3":   [
+  "00000000-0000-0000-0001-000000000112:3": [
     {
       type: "concept",
       title: "Dollar-cost averaging removes timing pressure",
@@ -2322,7 +2322,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Dollar-cost averaging is as much a behavioral discipline as a mathematical one — it replaces the near-impossible goal of perfect timing with a consistent, automatic process.",
     },
   ],
-  "00000000-0000-0000-0001-000000000112:1":   [
+  "00000000-0000-0000-0001-000000000112:1": [
     {
       type: "concept",
       title: "Risk and return trade off",
@@ -2351,7 +2351,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Accept that risk and expected return move together, and use diversification across stocks, bonds, and other assets to manage that risk rather than eliminate it.",
     },
   ],
-  "00000000-0000-0000-0001-000000000113:2":   [
+  "00000000-0000-0000-0001-000000000113:2": [
     {
       type: "concept",
       title: "Marginal, not flat, taxation",
@@ -2376,7 +2376,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A marginal tax system only raises the rate on income within each new bracket — never assume a raise or bonus that crosses a bracket threshold will reduce your net pay.",
     },
   ],
-  "00000000-0000-0000-0001-000000000113:3":   [
+  "00000000-0000-0000-0001-000000000113:3": [
     {
       type: "concept",
       title: "A pay stub has more than one deduction",
@@ -2405,7 +2405,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Read a full pay stub, not just the offer letter's salary figure — payroll taxes and pre-tax benefit deductions both shape real take-home pay, and pre-tax contributions carry a genuine secondary tax benefit.",
     },
   ],
-  "00000000-0000-0000-0001-000000000113:1":   [
+  "00000000-0000-0000-0001-000000000113:1": [
     {
       type: "concept",
       title: "Gross pay vs. what actually arrives",
@@ -2434,7 +2434,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Always budget off net pay (what actually arrives), not the gross salary figure quoted in an offer — the gap between the two can be substantial.",
     },
   ],
-  "00000000-0000-0000-0001-000000000114:2":   [
+  "00000000-0000-0000-0001-000000000114:2": [
     {
       type: "concept",
       title: "Time in the market beats amount contributed",
@@ -2459,7 +2459,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Start retirement contributions as early as possible, even at a small amount — the compounding horizon matters more than the size of any individual contribution.",
     },
   ],
-  "00000000-0000-0000-0001-000000000114:3":   [
+  "00000000-0000-0000-0001-000000000114:3": [
     {
       type: "concept",
       title: "Retirement accounts trade accessibility for tax benefits",
@@ -2484,7 +2484,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Keep a separate emergency fund for near-term needs — retirement accounts are structured with real tax and penalty costs specifically to discourage using them for anything but genuine long-term retirement saving.",
     },
   ],
-  "00000000-0000-0000-0001-000000000114:1":   [
+  "00000000-0000-0000-0001-000000000114:1": [
     {
       type: "concept",
       title: "401(k) match is free money",
@@ -2513,7 +2513,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Whether Roth or traditional is better depends largely on whether you expect a higher or lower tax bracket in retirement than now — paying tax now (Roth) tends to be better if you expect your rate to rise later.",
     },
   ],
-  "00000000-0000-0000-0001-000000000115:2":   [
+  "00000000-0000-0000-0001-000000000115:2": [
     {
       type: "concept",
       title: "Choosing between plans is a personal probability estimate",
@@ -2542,7 +2542,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Compare plans by modeling both a no-claims scenario and a realistic claims scenario, not just the premium alone — the better plan depends on your own likely usage.",
     },
   ],
-  "00000000-0000-0000-0001-000000000115:3":   [
+  "00000000-0000-0000-0001-000000000115:3": [
     {
       type: "concept",
       title: "Two commonly underweighted coverages",
@@ -2572,7 +2572,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Carry auto liability coverage meaningfully above the legal minimum if affordable, and seriously evaluate disability insurance even when young and healthy — both cover real risks that are easy to underestimate.",
     },
   ],
-  "00000000-0000-0000-0001-000000000115:1":   [
+  "00000000-0000-0000-0001-000000000115:1": [
     {
       type: "concept",
       title: "Insurance pools risk",
@@ -2603,7 +2603,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "For a young adult, health, renters, and auto insurance (where applicable) matter most; term life insurance is generally only worth considering once someone has dependents.",
     },
   ],
-  "00000000-0000-0000-0001-000000000116:2":   [
+  "00000000-0000-0000-0001-000000000116:2": [
     {
       type: "keyterm",
       term: "Anchoring",
@@ -2628,7 +2628,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Deflect an early request for a specific salary number toward the employer's own budgeted range rather than naming your own figure first — anchoring makes the first number mentioned disproportionately powerful.",
     },
   ],
-  "00000000-0000-0000-0001-000000000116:3":   [
+  "00000000-0000-0000-0001-000000000116:3": [
     {
       type: "concept",
       title: "Not every lever is equally flexible",
@@ -2659,7 +2659,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "When one negotiating lever is genuinely constrained, pivot to a different one rather than repeating the same ask — total compensation has multiple levers, and not all are equally flexible for a given employer.",
     },
   ],
-  "00000000-0000-0000-0001-000000000116:1":   [
+  "00000000-0000-0000-0001-000000000116:1": [
     {
       type: "concept",
       title: "A negotiated raise compounds forward",
@@ -2684,7 +2684,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Negotiate after an offer, not before; ground any counter in real market data; and negotiate the whole package, not just base salary.",
     },
   ],
-  "00000000-0000-0000-0001-000000000117:2":   [
+  "00000000-0000-0000-0001-000000000117:2": [
     {
       type: "concept",
       title: "A freelance rate covers more than an hourly wage",
@@ -2709,7 +2709,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Price freelance work well above a directly comparable employee's hourly rate — the multiplier isn't overcharging, it's covering real costs (tax, benefits, unpaid time) that an employee's salary doesn't have to.",
     },
   ],
-  "00000000-0000-0000-0001-000000000117:3":   [
+  "00000000-0000-0000-0001-000000000117:3": [
     {
       type: "concept",
       title: "Sole proprietor vs. LLC",
@@ -2738,7 +2738,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Revisit your business structure as freelance income and client risk grow — an LLC's liability protection becomes proportionally more valuable as the financial stakes of a lawsuit or business debt increase.",
     },
   ],
-  "00000000-0000-0000-0001-000000000117:1":   [
+  "00000000-0000-0000-0001-000000000117:1": [
     {
       type: "concept",
       title: "No automatic withholding on freelance income",
@@ -2764,7 +2764,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Freelance income requires proactively setting aside and often quarterly-paying your own taxes — treat the tax portion as never really available to spend.",
     },
   ],
-  "00000000-0000-0000-0001-000000000118:2":   [
+  "00000000-0000-0000-0001-000000000118:2": [
     {
       type: "concept",
       title: "The priority order is ranked by effective return",
@@ -2794,7 +2794,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Rank competing financial priorities by their effective guaranteed return, not by which feels most urgent — this is what makes the standard priority order (match, then high-interest debt, then further saving/investing) a calculated decision, not just conventional wisdom.",
     },
   ],
-  "00000000-0000-0000-0001-000000000118:3":   [
+  "00000000-0000-0000-0001-000000000118:3": [
     {
       type: "concept",
       title: "Housing choice constrains every other financial goal",
@@ -2819,7 +2819,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Evaluate housing and transportation choices early and deliberately — they're usually the largest controllable costs in a post-grad budget, and an outsized choice here constrains every other financial goal for as long as it lasts.",
     },
   ],
-  "00000000-0000-0000-0001-000000000118:1":   [
+  "00000000-0000-0000-0001-000000000118:1": [
     {
       type: "concept",
       title: "A priority order for a first real paycheck",
@@ -2846,7 +2846,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
   ],
 
   // ---- Job-Ready ----
-  "00000000-0000-0000-0001-000000000201:2":   [
+  "00000000-0000-0000-0001-000000000201:2": [
     {
       type: "concept",
       title: "What each question type actually tests",
@@ -2871,7 +2871,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A small bank of real, flexible stories told from different angles prepares you more efficiently than memorizing one script per question.",
     },
   ],
-  "00000000-0000-0000-0001-000000000201:3":   [
+  "00000000-0000-0000-0001-000000000201:3": [
     {
       type: "steps",
       title: "A simple answering habit",
@@ -2896,7 +2896,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A brief pause to plan structure, plus a headline-first answer style, keeps responses focused under interview pressure.",
     },
   ],
-  "00000000-0000-0000-0001-000000000202:2":   [
+  "00000000-0000-0000-0001-000000000202:2": [
     {
       type: "concept",
       title: "Ordinary experience is usable material",
@@ -2921,7 +2921,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Start from a concrete result and work backward — it produces sharper, more specific STAR stories than starting from the situation.",
     },
   ],
-  "00000000-0000-0000-0001-000000000202:3":   [
+  "00000000-0000-0000-0001-000000000202:3": [
     {
       type: "concept",
       title: "Resume and interview should match",
@@ -2946,7 +2946,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Quantify results even roughly, and make sure every resume claim survives being expanded into a full, specific STAR answer.",
     },
   ],
-  "00000000-0000-0000-0001-000000000202:1":   [
+  "00000000-0000-0000-0001-000000000202:1": [
     {
       type: "keyterm",
       term: "STAR",
@@ -2971,7 +2971,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Both resume bullets and STAR answers reward the same discipline: specific context, a clear personal action, and a concrete result.",
     },
   ],
-  "00000000-0000-0000-0001-000000000203:2":   [
+  "00000000-0000-0000-0001-000000000203:2": [
     {
       type: "mistake",
       body: "Going silent to work out the full answer in your head, leaving the interviewer with no visibility into your reasoning process.",
@@ -2991,7 +2991,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Narrate your reasoning out loud from the start rather than solving silently — it shows process and invites early correction.",
     },
   ],
-  "00000000-0000-0000-0001-000000000203:3":   [
+  "00000000-0000-0000-0001-000000000203:3": [
     {
       type: "concept",
       title: "An estimate isn't the finish line",
@@ -3012,7 +3012,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Naming your weakest assumption and what data would clarify it shows real analytical maturity, not just arithmetic.",
     },
   ],
-  "00000000-0000-0000-0001-000000000204:2":   [
+  "00000000-0000-0000-0001-000000000204:2": [
     {
       type: "keyterm",
       term: "Comparable company analysis (comps)",
@@ -3033,7 +3033,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Explaining why multiples differ between similar companies matters more than just knowing how to calculate one.",
     },
   ],
-  "00000000-0000-0000-0001-000000000204:3":   [
+  "00000000-0000-0000-0001-000000000204:3": [
     {
       type: "concept",
       title: "Applying mechanics to new scenarios",
@@ -3053,7 +3053,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Practicing self-generated \"what if\" variations on your anchor explanations builds the flexibility live technical questions test for.",
     },
   ],
-  "00000000-0000-0000-0001-000000000204:1":   [
+  "00000000-0000-0000-0001-000000000204:1": [
     {
       type: "concept",
       title: "What technical questions test",
@@ -3074,7 +3074,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A small set of core mechanics is asked constantly — fluent, correct explanations of those beat broad but shallow knowledge.",
     },
   ],
-  "00000000-0000-0000-0001-000000000205:2":   [
+  "00000000-0000-0000-0001-000000000205:2": [
     {
       type: "concept",
       title: "Point estimates understate uncertainty",
@@ -3095,7 +3095,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A quick range around your shakiest assumption shows more analytical sophistication than a single point estimate alone.",
     },
   ],
-  "00000000-0000-0000-0001-000000000205:3":   [
+  "00000000-0000-0000-0001-000000000205:3": [
     {
       type: "concept",
       title: "Commercial judgment beyond the arithmetic",
@@ -3121,7 +3121,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "One brief, genuinely relevant factor beyond the numbers — not a tangent — demonstrates commercial judgment interviewers value.",
     },
   ],
-  "00000000-0000-0000-0001-000000000205:1":   [
+  "00000000-0000-0000-0001-000000000205:1": [
     {
       type: "concept",
       title: "Finance cases add a decision layer",
@@ -3142,7 +3142,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "State what the number implies for the decision, and name the biggest assumption that could most change the answer.",
     },
   ],
-  "00000000-0000-0000-0001-000000000206:2":   [
+  "00000000-0000-0000-0001-000000000206:2": [
     {
       type: "concept",
       title: "A conflict exists before any wrongdoing",
@@ -3163,7 +3163,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Disclosure, not just avoidance, is often the right response to a conflict of interest — especially around compensation structures.",
     },
   ],
-  "00000000-0000-0000-0001-000000000206:3":   [
+  "00000000-0000-0000-0001-000000000206:3": [
     {
       type: "concept",
       title: "Ambiguous scenarios test process, not a label",
@@ -3183,7 +3183,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "When a scenario is genuinely ambiguous, let the normal process run rather than acting on an unconfirmed assumption about motive.",
     },
   ],
-  "00000000-0000-0000-0001-000000000206:1":   [
+  "00000000-0000-0000-0001-000000000206:1": [
     {
       type: "keyterm",
       term: "Insider trading",
@@ -3209,7 +3209,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Default to escalating a gray-area ethics situation rather than deciding unilaterally.",
     },
   ],
-  "00000000-0000-0000-0001-000000000207:2":   [
+  "00000000-0000-0000-0001-000000000207:2": [
     {
       type: "mistake",
       body: "Undervaluing informal leadership and saying \"I've never officially led anything,\" missing what the question is actually testing.",
@@ -3229,7 +3229,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Make sure a leadership story involves coordinating other people, not just your own solo effort — that's what separates it from a different kind of story.",
     },
   ],
-  "00000000-0000-0000-0001-000000000207:3":   [
+  "00000000-0000-0000-0001-000000000207:3": [
     {
       type: "mistake",
       body: "Describing a conflict so smoothly resolved it barely sounds like real tension existed — reads as evasive.",
@@ -3249,7 +3249,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "An honest conflict story with real tension and a specific resolution step is more credible than one where you're clearly always right.",
     },
   ],
-  "00000000-0000-0000-0001-000000000207:1":   [
+  "00000000-0000-0000-0001-000000000207:1": [
     {
       type: "concept",
       title: "Three categories, three different tests",
@@ -3274,7 +3274,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "For failure questions, name a real mistake, its real consequence, and a specific, still-in-use behavior change.",
     },
   ],
-  "00000000-0000-0000-0001-000000000208:2":   [
+  "00000000-0000-0000-0001-000000000208:2": [
     {
       type: "concept",
       title: "Negotiation is a back-and-forth",
@@ -3295,7 +3295,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Deciding your walk-away point in advance, and considering non-salary concessions, leads to better negotiation outcomes than reacting in the moment.",
     },
   ],
-  "00000000-0000-0000-0001-000000000208:3":   [
+  "00000000-0000-0000-0001-000000000208:3": [
     {
       type: "concept",
       title: "Tone: enthusiastic but direct",
@@ -3315,7 +3315,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "An enthusiastic, specific, direct tone negotiates more effectively than either an adversarial or an overly passive approach.",
     },
   ],
-  "00000000-0000-0000-0001-000000000209:2":   [
+  "00000000-0000-0000-0001-000000000209:2": [
     {
       type: "steps",
       title: "Comparing offers on total value",
@@ -3335,7 +3335,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A consistent, realistic discounting method for bonus and benefits often narrows or reverses which offer looks better on headline base alone.",
     },
   ],
-  "00000000-0000-0000-0001-000000000209:3":   [
+  "00000000-0000-0000-0001-000000000209:3": [
     {
       type: "concept",
       title: "Compensation structure signals philosophy",
@@ -3356,7 +3356,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Ask about raise and promotion timelines at the offer stage — compensation structure, not just this year's number, affects long-term income predictability.",
     },
   ],
-  "00000000-0000-0000-0001-000000000209:1":   [
+  "00000000-0000-0000-0001-000000000209:1": [
     {
       type: "concept",
       title: "A package has four parts",
@@ -3380,7 +3380,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Estimate total package value, not just base salary — the gap between two offers is often smaller than it first appears.",
     },
   ],
-  "00000000-0000-0000-0001-000000000210:2":   [
+  "00000000-0000-0000-0001-000000000210:2": [
     {
       type: "concept",
       title: "Withholding is a choice you make",
@@ -3400,7 +3400,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Revisit your withholding setting after major life changes to avoid a surprise tax bill or an unnecessarily large refund.",
     },
   ],
-  "00000000-0000-0000-0001-000000000210:3":   [
+  "00000000-0000-0000-0001-000000000210:3": [
     {
       type: "concept",
       title: "Voluntary deductions are choices",
@@ -3420,7 +3420,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Reconstruct expected net pay by hand before your first paycheck arrives, using your actual elections, rather than assuming it's close to gross pay.",
     },
   ],
-  "00000000-0000-0000-0001-000000000210:1":   [
+  "00000000-0000-0000-0001-000000000210:1": [
     {
       type: "keyterm",
       term: "Gross pay vs. net pay",
@@ -3441,7 +3441,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Budget against net pay, not the headline salary — the gap between the two is easy to underestimate on a first paycheck.",
     },
   ],
-  "00000000-0000-0000-0001-000000000211:2":   [
+  "00000000-0000-0000-0001-000000000211:2": [
     {
       type: "table",
       caption: "Common match formula types",
@@ -3466,7 +3466,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Read your specific plan's match formula and vesting schedule directly — don't rely on a secondhand or generic summary.",
     },
   ],
-  "00000000-0000-0000-0001-000000000211:3":   [
+  "00000000-0000-0000-0001-000000000211:3": [
     {
       type: "steps",
       title: "A common general priority order",
@@ -3487,7 +3487,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "This priority order isn't rigid — but high-interest debt usually deserves priority over retirement contributions beyond the employer match.",
     },
   ],
-  "00000000-0000-0000-0001-000000000211:1":   [
+  "00000000-0000-0000-0001-000000000211:1": [
     {
       type: "concept",
       title: "The employer match is compensation",
@@ -3508,7 +3508,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Aim to contribute at least enough to capture the full employer match — it's guaranteed extra pay contingent on your own contribution.",
     },
   ],
-  "00000000-0000-0000-0001-000000000212:2":   [
+  "00000000-0000-0000-0001-000000000212:2": [
     {
       type: "keyterm",
       term: "Out-of-pocket maximum",
@@ -3529,7 +3529,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Check out-of-pocket maximum and coinsurance, not just premium and deductible, for the full picture of a plan's financial risk.",
     },
   ],
-  "00000000-0000-0000-0001-000000000212:3":   [
+  "00000000-0000-0000-0001-000000000212:3": [
     {
       type: "concept",
       title: "A plan choice isn't permanent",
@@ -3550,7 +3550,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Review actual usage against the alternative plan's cost each year — it's a more reliable guide than guessing usage in advance.",
     },
   ],
-  "00000000-0000-0000-0001-000000000212:1":   [
+  "00000000-0000-0000-0001-000000000212:1": [
     {
       type: "keyterm",
       term: "Premium vs. deductible",
@@ -3575,7 +3575,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "The right plan depends on expected usage — low usage favors low-premium/high-deductible; regular care favors higher premium/lower deductible.",
     },
   ],
-  "00000000-0000-0000-0001-000000000213:2":   [
+  "00000000-0000-0000-0001-000000000213:2": [
     {
       type: "concept",
       title: "Small habits build trust over time",
@@ -3595,7 +3595,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Prompt repayment of shared costs and asking about unclear policies are low-cost habits that build workplace trust over time.",
     },
   ],
-  "00000000-0000-0000-0001-000000000213:3":   [
+  "00000000-0000-0000-0001-000000000213:3": [
     {
       type: "concept",
       title: "Pay discussion norms vary",
@@ -3615,7 +3615,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Be open about your own compensation if asked; frame any ask about someone else's pay as explicitly optional, respecting their comfort level.",
     },
   ],
-  "00000000-0000-0000-0001-000000000213:1":   [
+  "00000000-0000-0000-0001-000000000213:1": [
     {
       type: "concept",
       title: "Expense reports need documentation",
@@ -3636,7 +3636,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Careful, well-documented expense reporting is a low-cost way to build trust with a manager or finance team early in a role.",
     },
   ],
-  "00000000-0000-0000-0001-000000000214:2":   [
+  "00000000-0000-0000-0001-000000000214:2": [
     {
       type: "concept",
       title: "50/30/20 is a diagnostic, not a rule",
@@ -3657,7 +3657,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Adjust the 50/30/20 percentages deliberately for real cost of living rather than abandoning budgeting when the default split doesn't fit.",
     },
   ],
-  "00000000-0000-0000-0001-000000000214:3":   [
+  "00000000-0000-0000-0001-000000000214:3": [
     {
       type: "keyterm",
       term: "Sinking fund",
@@ -3677,7 +3677,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Divide predictable irregular annual costs by 12 and set that amount aside monthly, rather than budgeting only for recurring monthly expenses.",
     },
   ],
-  "00000000-0000-0000-0001-000000000214:1":   [
+  "00000000-0000-0000-0001-000000000214:1": [
     {
       type: "keyterm",
       term: "Lifestyle inflation",
@@ -3702,7 +3702,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Budget against net pay, not headline salary, and decide savings and discretionary spending deliberately rather than by default.",
     },
   ],
-  "00000000-0000-0000-0001-000000000215:2":   [
+  "00000000-0000-0000-0001-000000000215:2": [
     {
       type: "concept",
       title: "Your target should reflect your real risk",
@@ -3726,7 +3726,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Choose your target based on your actual risk factors, and keep the fund conceptually separate from other savings goals.",
     },
   ],
-  "00000000-0000-0000-0001-000000000215:3":   [
+  "00000000-0000-0000-0001-000000000215:3": [
     {
       type: "steps",
       title: "Building the fund sustainably",
@@ -3747,7 +3747,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Break a large emergency fund goal into a smaller starter milestone and automate contributions to sustain progress.",
     },
   ],
-  "00000000-0000-0000-0001-000000000215:1":   [
+  "00000000-0000-0000-0001-000000000215:1": [
     {
       type: "concept",
       title: "Purpose of an emergency fund",
@@ -3768,7 +3768,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Keep the fund accessible and low-risk (a savings account), not invested where it could lose value right when needed.",
     },
   ],
-  "00000000-0000-0000-0001-000000000216:2":   [
+  "00000000-0000-0000-0001-000000000216:2": [
     {
       type: "steps",
       title: "Questions worth asking about an equity offer",
@@ -3789,7 +3789,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Ask about strike price context, total shares outstanding, and layoff treatment — a raw option count alone doesn't reveal a grant's real value.",
     },
   ],
-  "00000000-0000-0000-0001-000000000216:3":   [
+  "00000000-0000-0000-0001-000000000216:3": [
     {
       type: "keyterm",
       term: "ISO vs. NSO",
@@ -3810,7 +3810,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Understand that exercising options can create an immediate tax bill on an illiquid paper gain — get professional tax advice before exercising a meaningful grant.",
     },
   ],
-  "00000000-0000-0000-0001-000000000216:1":   [
+  "00000000-0000-0000-0001-000000000216:1": [
     {
       type: "keyterm",
       term: "Strike price",
@@ -3831,7 +3831,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Because most startup equity ends up worth little, treat it as speculative upside on top of cash compensation, not a substitute for it.",
     },
   ],
-  "00000000-0000-0000-0001-000000000217:2":   [
+  "00000000-0000-0000-0001-000000000217:2": [
     {
       type: "concept",
       title: "Specific questions signal real interest",
@@ -3852,7 +3852,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Specific, researched questions produce a more genuine conversation and respect the other person's generosity in agreeing to talk.",
     },
   ],
-  "00000000-0000-0000-0001-000000000217:3":   [
+  "00000000-0000-0000-0001-000000000217:3": [
     {
       type: "steps",
       title: "Following up well",
@@ -3872,7 +3872,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A specific, timely follow-up and genuine periodic staying-in-touch turn a single conversation into a lasting professional relationship.",
     },
   ],
-  "00000000-0000-0000-0001-000000000217:1":   [
+  "00000000-0000-0000-0001-000000000217:1": [
     {
       type: "concept",
       title: "Networking is relationship-building, not favors",
@@ -3892,7 +3892,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Genuine, mutually useful relationships built over time — not transactional asks — are what real networking is.",
     },
   ],
-  "00000000-0000-0000-0001-000000000218:2":   [
+  "00000000-0000-0000-0001-000000000218:2": [
     {
       type: "mistake",
       body: "Filling a LinkedIn summary with generic language (\"passionate, hardworking team player\") that could describe almost anyone.",
@@ -3912,7 +3912,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A specific, first-person summary stands out precisely because most profiles skip it or fill it with generic language.",
     },
   ],
-  "00000000-0000-0000-0001-000000000218:3":   [
+  "00000000-0000-0000-0001-000000000218:3": [
     {
       type: "concept",
       title: "Ongoing activity matters, not just a static profile",
@@ -3932,7 +3932,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Small, genuine ongoing activity keeps a personal brand credible and current far more than a one-time polished but then-abandoned profile.",
     },
   ],
-  "00000000-0000-0000-0001-000000000218:1":   [
+  "00000000-0000-0000-0001-000000000218:1": [
     {
       type: "concept",
       title: "Personal brand is a consistent impression",
@@ -3952,7 +3952,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A specific headline, a genuine summary, and resume-quality bullets do most of the work — plus keeping the story consistent across surfaces.",
     },
   ],
-  "00000000-0000-0000-0001-000000000219:2":   [
+  "00000000-0000-0000-0001-000000000219:2": [
     {
       type: "concept",
       title: "FSA elections require forecasting expenses in advance",
@@ -3972,7 +3972,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Start conservative on FSA elections in your first year and adjust with real data afterward, since overestimating risks forfeiting real money.",
     },
   ],
-  "00000000-0000-0000-0001-000000000219:3":   [
+  "00000000-0000-0000-0001-000000000219:3": [
     {
       type: "concept",
       title: "Benefits beyond health insurance",
@@ -3992,7 +3992,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Review disability and supplemental life insurance options deliberately each year — they're often available at cheaper group rates and cover real risks health insurance alone misses.",
     },
   ],
-  "00000000-0000-0000-0001-000000000219:1":   [
+  "00000000-0000-0000-0001-000000000219:1": [
     {
       type: "concept",
       title: "Open enrollment is a defined window",
@@ -4013,7 +4013,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Estimate FSA contributions carefully since unused funds are forfeited; HSA balances carry no such risk.",
     },
   ],
-  "00000000-0000-0000-0001-000000000220:2":   [
+  "00000000-0000-0000-0001-000000000220:2": [
     {
       type: "concept",
       title: "Not every card suits a first-time applicant",
@@ -4034,7 +4034,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "A first card should prioritize building payment history over rewards or fees — secured or student cards are a common, reliable starting point.",
     },
   ],
-  "00000000-0000-0000-0001-000000000220:3":   [
+  "00000000-0000-0000-0001-000000000220:3": [
     {
       type: "concept",
       title: "Older accounts generally help your score",
@@ -4054,7 +4054,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Keep old accounts open when reasonable, and space out new credit applications, since both length of history and inquiry frequency affect your score.",
     },
   ],
-  "00000000-0000-0000-0001-000000000220:1":   [
+  "00000000-0000-0000-0001-000000000220:1": [
     {
       type: "concept",
       title: "A credit score reflects repayment reliability",
@@ -4075,7 +4075,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Missing a payment is typically the single most damaging action, since payment history carries more weight than almost any other factor.",
     },
   ],
-  "00000000-0000-0000-0001-000000000221:2":   [
+  "00000000-0000-0000-0001-000000000221:2": [
     {
       type: "keyterm",
       term: "Public Service Loan Forgiveness (PSLF)",
@@ -4095,7 +4095,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Understand whether you might realistically use federal loan protections, based on your likely career path, before refinancing into a private loan permanently forfeits them.",
     },
   ],
-  "00000000-0000-0000-0001-000000000221:3":   [
+  "00000000-0000-0000-0001-000000000221:3": [
     {
       type: "concept",
       title: "Not all extra payments are equal",
@@ -4116,7 +4116,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Always explicitly designate extra payments as principal-only to actually capture the intended interest savings.",
     },
   ],
-  "00000000-0000-0000-0001-000000000221:1":   [
+  "00000000-0000-0000-0001-000000000221:1": [
     {
       type: "concept",
       title: "Use the grace period to understand your loans",
@@ -4141,7 +4141,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Income-driven plans lower near-term payments but usually extend total repayment time and total interest paid — a real trade-off, not a free upgrade.",
     },
   ],
-  "00000000-0000-0000-0001-000000000222:2":   [
+  "00000000-0000-0000-0001-000000000222:2": [
     {
       type: "concept",
       title: "Written tone is easy to misread",
@@ -4161,7 +4161,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Pause before sending a message written while frustrated, and default to a call or in-person conversation for high-stakes or nuanced topics.",
     },
   ],
-  "00000000-0000-0000-0001-000000000222:3":   [
+  "00000000-0000-0000-0001-000000000222:3": [
     {
       type: "concept",
       title: "Reliability is built from small consistent habits",
@@ -4182,7 +4182,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Proactively communicating when you can't follow through as agreed preserves trust far better than silence followed by a missed deadline.",
     },
   ],
-  "00000000-0000-0000-0001-000000000222:1":   [
+  "00000000-0000-0000-0001-000000000222:1": [
     {
       type: "concept",
       title: "Norms are rarely explicitly taught",
@@ -4203,7 +4203,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Raising a clear, reasoned concern privately preserves the relationship better than staying silent or pushing back combatively in a group.",
     },
   ],
-  "00000000-0000-0000-0001-000000000223:2":   [
+  "00000000-0000-0000-0001-000000000223:2": [
     {
       type: "concept",
       title: "Recognize relevant concepts before reading questions",
@@ -4224,7 +4224,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Priming yourself on which lessons a scenario draws on, before reading the questions, makes each individual question faster and more confident to answer.",
     },
   ],
-  "00000000-0000-0000-0001-000000000223:3":   [
+  "00000000-0000-0000-0001-000000000223:3": [
     {
       type: "concept",
       title: "Lead with your core claim",
@@ -4244,7 +4244,7 @@ export const lessonContentOverrides: Record<string, LessonBlock[]> = {
       body: "Name specific concepts by their actual terms and lead with your core claim — both make a free-response answer easier to credit.",
     },
   ],
-  "00000000-0000-0000-0001-000000000223:1":   [
+  "00000000-0000-0000-0001-000000000223:1": [
     {
       type: "concept",
       title: "Real situations combine concepts",
